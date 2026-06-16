@@ -1,0 +1,23 @@
+{
+  "name": "Maintainerd",
+  "short_name": "Maintainerd",
+  "description": "A modular open-source infrastructure ecosystem for identity, orchestration, storage, workflows, messaging, functions, and data services.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/assets/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -3,7 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maintainerd</title>
+    <title>Maintainerd | Open-source modular infrastructure services</title>
+    <meta name="description" content="Maintainerd is a modular open-source infrastructure ecosystem for identity, orchestration, storage, workflows, messaging, functions, and data services.">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://maintainerd.github.io/">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.svg">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta property="og:site_name" content="Maintainerd">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Maintainerd | Open-source modular infrastructure services">
+    <meta property="og:description" content="Run Maintainerd services standalone or orchestrate them together under M9d-Core to build a comprehensive open-source cloud platform.">
+    <meta property="og:url" content="https://maintainerd.github.io/">
+    <meta property="og:image" content="https://maintainerd.github.io/assets/m9d-auth-console.svg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Maintainerd | Open-source modular infrastructure services">
+    <meta name="twitter:description" content="A modular open-source infrastructure ecosystem for identity, orchestration, storage, workflows, messaging, functions, and data services.">
+    <meta name="twitter:image" content="https://maintainerd.github.io/assets/m9d-auth-console.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -76,7 +93,7 @@
                     <a href="#" class="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors">Documentation</a>
                     <a href="#" class="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors">Community</a>
                     <div class="h-4 w-px bg-gray-200"></div>
-                    <a href="https://github.com/maintainerd" target="_blank" class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                    <a href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
                         <i data-feather="github" class="w-5 h-5"></i>
                         GitHub
                     </a>
@@ -96,7 +113,7 @@
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="#ecosystem" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md">Ecosystem</a>
                 <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md">Documentation</a>
-                <a href="https://github.com/maintainerd" target="_blank" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md">GitHub</a>
+                <a href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md">GitHub</a>
             </div>
         </div>
     </nav>
@@ -119,7 +136,7 @@
                     <a href="#ecosystem" class="w-full sm:w-auto px-8 py-3.5 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                         Explore the Ecosystem
                     </a>
-                    <a href="https://github.com/maintainerd" target="_blank" class="w-full sm:w-auto px-8 py-3.5 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 shadow-sm transition-all flex items-center justify-center gap-2">
+                    <a href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-8 py-3.5 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 shadow-sm transition-all flex items-center justify-center gap-2">
                         <i data-feather="github" class="w-5 h-5"></i>
                         Follow on GitHub
                     </a>
@@ -228,7 +245,7 @@
                 <div>
                     <h4 class="font-semibold text-gray-900 mb-4">Community</h4>
                     <ul class="space-y-3">
-                        <li><a href="https://github.com/maintainerd" target="_blank" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">GitHub Organization</a></li>
+                        <li><a href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">GitHub Organization</a></li>
                         <li><a href="#" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">Discord Server</a></li>
                         <li><a href="#" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">Contribute</a></li>
                     </ul>
@@ -258,7 +275,7 @@
                     { icon: 'key', title: 'OAuth & API Keys', desc: 'Robust credential management and token issuance.' },
                     { icon: 'lock', title: 'Security Policies', desc: 'Define access policies to keep inter-service communication secure.' }
                 ],
-                image: 'Screenshot from 2026-06-12 18-12-11.png',
+                image: '/assets/m9d-auth-console.svg',
                 repo: 'https://github.com/maintainerd/maintainerd-auth-console'
             },
             {
@@ -405,7 +422,7 @@
             let buttonsHtml = '';
             if (service.repo !== '#') {
                 buttonsHtml = `
-                    <a href="${service.repo}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors">
+                    <a href="${service.repo}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors">
                         <i data-feather="github" class="w-4 h-4"></i> View Repository
                     </a>
                 `;
@@ -426,7 +443,7 @@
                             <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
                             <div class="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
                         </div>
-                        <img src="${service.image}" alt="${service.name} Interface" class="w-full h-auto block object-cover" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop';">
+                        <img src="${service.image}" alt="${service.name} interface preview" class="w-full h-auto block object-cover">
                     </div>
                 `;
             } else {
