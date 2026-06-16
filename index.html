@@ -42,6 +42,18 @@
         .mockup-shadow {
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0,0,0,0.05);
         }
+        /* Custom scrollbar for the services list */
+        .services-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .services-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .services-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body class="font-sans text-gray-800 bg-white antialiased">
@@ -55,21 +67,18 @@
                     <div class="w-8 h-8 bg-primary-600 rounded flex items-center justify-center text-white font-bold text-lg">
                         M
                     </div>
-                    <span class="font-bold text-xl text-gray-900 tracking-tight">M9d-Auth</span>
+                    <span class="font-bold text-xl text-gray-900 tracking-tight">Maintainerd</span>
                 </div>
 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
+                    <a href="#ecosystem" class="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors">Ecosystem</a>
                     <a href="#" class="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors">Documentation</a>
-                    <a href="#" class="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors">API Reference</a>
                     <a href="#" class="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors">Community</a>
                     <div class="h-4 w-px bg-gray-200"></div>
-                    <a href="https://github.com/maintainerd/maintainerd-auth-console" target="_blank" class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                    <a href="https://github.com/maintainerd" target="_blank" class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
                         <i data-feather="github" class="w-5 h-5"></i>
                         GitHub
-                    </a>
-                    <a href="#" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-colors">
-                        Get Started
                     </a>
                 </div>
 
@@ -82,169 +91,114 @@
             </div>
         </div>
 
-        <!-- Mobile Menu (Hidden by default) -->
+        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#ecosystem" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md">Ecosystem</a>
                 <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md">Documentation</a>
-                <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md">API Reference</a>
-                <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md">Community</a>
-                <a href="https://github.com/maintainerd/maintainerd-auth-console" target="_blank" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md">GitHub</a>
+                <a href="https://github.com/maintainerd" target="_blank" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md">GitHub</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <div class="pt-24 pb-16 lg:pt-32 lg:pb-24 gradient-bg overflow-hidden">
+    <div class="pt-24 pb-16 lg:pt-32 lg:pb-24 gradient-bg overflow-hidden border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div class="text-center max-w-3xl mx-auto">
+            <div class="text-center max-w-4xl mx-auto">
                 <div class="inline-flex items-center px-3 py-1 rounded-full bg-primary-50 text-primary-600 text-sm font-semibold mb-6 border border-primary-100">
                     <span class="flex h-2 w-2 rounded-full bg-primary-600 mr-2"></span>
-                    Open Source IAM
+                    The Open Source Cloud
                 </div>
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight mb-6">
-                    Identity & Access Management for <span class="text-primary-600">Modern Apps</span>
+                    A modular infrastructure ecosystem for <span class="text-primary-600">everyone.</span>
                 </h1>
                 <p class="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed">
-                    Maintainerd-Auth is a comprehensive, open-source platform designed to secure your applications, APIs, and resources. Control everything from a clean, developer-friendly console.
+                    Maintainerd (M9d) is a collection of powerful open-source services. Run them entirely standalone, or orchestrate them together under Maintainerd-Core to build your own comprehensive cloud platform.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="#" class="w-full sm:w-auto px-8 py-3.5 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                        View Documentation
+                    <a href="#ecosystem" class="w-full sm:w-auto px-8 py-3.5 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        Explore the Ecosystem
                     </a>
-                    <a href="https://github.com/maintainerd/maintainerd-auth-console" target="_blank" class="w-full sm:w-auto px-8 py-3.5 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 shadow-sm transition-all flex items-center justify-center gap-2">
+                    <a href="https://github.com/maintainerd" target="_blank" class="w-full sm:w-auto px-8 py-3.5 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 shadow-sm transition-all flex items-center justify-center gap-2">
                         <i data-feather="github" class="w-5 h-5"></i>
-                        Star on GitHub
-                    </a>
-                </div>
-            </div>
-
-            <!-- Dashboard Preview / Mockup -->
-            <div class="mt-16 lg:mt-24 relative max-w-5xl mx-auto">
-                <div class="rounded-xl bg-slate-800 p-2 sm:p-4 mockup-shadow">
-                    <div class="rounded-lg overflow-hidden border border-slate-700 bg-slate-900 relative">
-                        <!-- Mac-like top bar for mockup aesthetic -->
-                        <div class="h-6 bg-slate-900 flex items-center px-3 gap-1.5 border-b border-slate-700">
-                            <div class="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
-                        </div>
-                        <!-- Provide instructions to replace with the real screenshot -->
-                        <img src="Screenshot from 2026-06-12 18-12-11.png" alt="Maintainerd-Auth Console Dashboard" class="w-full h-auto block object-cover" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop';">
-                        
-                        <!-- Fallback overlay if image is missing -->
-                        <div class="absolute inset-0 top-6 flex items-center justify-center bg-gray-50/90 backdrop-blur text-gray-500 hidden" id="fallback-overlay">
-                            Please ensure 'Screenshot from 2026-06-12 18-12-11.png' is in the same directory.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Features Section -->
-    <div class="py-24 bg-white" id="features">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Everything you need to manage access</h2>
-                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Built from the ground up to provide total control over your users, authentication flows, and application security.</p>
-            </div>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600 mb-6">
-                        <i data-feather="users" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">User & Identity Management</h3>
-                    <p class="text-gray-600 leading-relaxed">Centralize your user base. Easily manage identities, authentication pools, and federated providers from a single dashboard.</p>
-                </div>
-
-                <!-- Feature 2 -->
-                <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600 mb-6">
-                        <i data-feather="box" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Applications & Clients</h3>
-                    <p class="text-gray-600 leading-relaxed">Register Single Page Apps (SPAs), backend services, and APIs. Manage client UUIDs, origins, and metadata with ease.</p>
-                </div>
-
-                <!-- Feature 3 -->
-                <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600 mb-6">
-                        <i data-feather="key" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">OAuth & API Keys</h3>
-                    <p class="text-gray-600 leading-relaxed">Robust credential management. Handle OAuth tokens, generate secure API keys, and define strict API permissions.</p>
-                </div>
-
-                <!-- Feature 4 -->
-                <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600 mb-6">
-                        <i data-feather="shield" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Security Policies</h3>
-                    <p class="text-gray-600 leading-relaxed">Enforce robust security rules globally or per-application. Define access policies to keep your infrastructure secure.</p>
-                </div>
-
-                <!-- Feature 5 -->
-                <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600 mb-6">
-                        <i data-feather="activity" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Events & Webhooks</h3>
-                    <p class="text-gray-600 leading-relaxed">Stay informed in real-time. Monitor operations and trigger automated workflows via custom event webhooks.</p>
-                </div>
-
-                <!-- Feature 6 -->
-                <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600 mb-6">
-                        <i data-feather="layout" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Branding & Messaging</h3>
-                    <p class="text-gray-600 leading-relaxed">Make the authentication experience yours. Customize branding, emails, and messaging to match your company's identity.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stats/Open Source Callout -->
-    <div class="bg-dark py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row items-center justify-between">
-                <div class="mb-8 md:mb-0 text-center md:text-left">
-                    <h2 class="text-2xl font-bold text-white mb-2">Proudly Open Source</h2>
-                    <p class="text-gray-400 text-lg">Transparent, self-hostable, and driven by the community.</p>
-                </div>
-                <div class="flex items-center gap-6">
-                    <a href="https://github.com/maintainerd/maintainerd-auth-console" target="_blank" class="flex items-center gap-2 text-white bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg transition-colors border border-white/10">
-                        <i data-feather="github" class="w-5 h-5"></i>
-                        <span class="font-medium">View Source Code</span>
+                        Follow on GitHub
                     </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- CTA Section -->
-    <div class="py-24 bg-white relative overflow-hidden">
-        <div class="absolute inset-0 bg-primary-50/50 transform -skew-y-2 origin-top-left -z-10"></div>
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Ready to secure your stack?</h2>
-            <p class="text-xl text-gray-600 mb-10">Start setting up Maintainerd-Auth today. Follow our quickstart guide to get your console running locally in minutes.</p>
-            
-            <div class="bg-gray-900 rounded-lg p-1 max-w-2xl mx-auto flex items-center justify-between text-left shadow-lg mb-8">
-                <code class="text-primary-300 font-mono text-sm px-4 py-3 block overflow-x-auto whitespace-nowrap">
-                    <span class="text-gray-500"># Clone the console repository</span><br>
-                    <span class="text-green-400">git</span> clone https://github.com/maintainerd/maintainerd-auth-console.git<br>
-                    <span class="text-gray-500"># Install & run</span><br>
-                    <span class="text-green-400">cd</span> maintainerd-auth-console && <span class="text-green-400">npm</span> install && <span class="text-green-400">npm</span> run dev
-                </code>
+    <!-- Interactive Ecosystem Section -->
+    <div class="py-24 bg-gray-50" id="ecosystem">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">The Maintainerd Ecosystem</h2>
+                <p class="text-lg text-gray-600 max-w-3xl">Select a service below to learn more. Services function independently but unlock powerful synergies when managed via M9d-Core.</p>
             </div>
 
-            <a href="#" class="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-all">
-                Read the Setup Guide
-                <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
-            </a>
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Sidebar: Service List -->
+                <div class="w-full lg:w-1/3 xl:w-1/4 flex-shrink-0">
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden sticky top-24">
+                        <div class="p-4 border-b border-gray-100 bg-gray-50">
+                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Services</h3>
+                        </div>
+                        <div class="max-h-[60vh] overflow-y-auto services-scroll p-2 space-y-1" id="service-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content: Service Details -->
+                <div class="w-full lg:w-2/3 xl:w-3/4">
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-10 min-h-[600px] flex flex-col" id="service-details">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How it works (Standalone vs Ecosystem) -->
+    <div class="py-24 bg-white border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Designed for flexibility.</h2>
+                    <div class="space-y-8">
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600">
+                                <i data-feather="box" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Use Standalone</h3>
+                                <p class="text-gray-600 leading-relaxed">Need just an IAM or a Storage API? Spin up a single Docker container. Our services don't strictly depend on each other, giving you zero lock-in.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center text-green-600">
+                                <i data-feather="layers" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Run as an Ecosystem</h3>
+                                <p class="text-gray-600 leading-relaxed">Deploy <b>M9d-Core</b> to manage tenants, provision multiple instances of services (like Auth or Storage), and secure inter-service communication automatically.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-900 rounded-xl p-8 text-sm font-mono text-gray-300 shadow-xl mockup-shadow">
+                    <div class="text-gray-500 mb-4">// Approach 1: Standalone</div>
+                    <div class="mb-6"><span class="text-green-400">docker</span> run -d -p 3000:3000 maintainerd/auth</div>
+                    
+                    <div class="text-gray-500 mb-4">// Approach 2: Ecosystem Provisioning</div>
+                    <div class="text-blue-400">const</div> <span class="text-yellow-200">core</span> = <span class="text-blue-400">new</span> <span class="text-green-200">M9dCore</span>({ provider: <span class="text-orange-300">'kubernetes'</span> });<br>
+                    <br>
+                    <span class="text-yellow-200">core</span>.<span class="text-blue-200">provision</span>({<br>
+                    &nbsp;&nbsp;tenant: <span class="text-orange-300">'acme-corp'</span>,<br>
+                    &nbsp;&nbsp;services: [<span class="text-orange-300">'auth'</span>, <span class="text-orange-300">'storage'</span>, <span class="text-orange-300">'workflow'</span>]<br>
+                    });
+                </div>
+            </div>
         </div>
     </div>
 
@@ -255,28 +209,26 @@
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center gap-2 mb-4">
                         <div class="w-6 h-6 bg-primary-600 rounded flex items-center justify-center text-white font-bold text-xs">M</div>
-                        <span class="font-bold text-lg text-gray-900">Maintainerd-Auth</span>
+                        <span class="font-bold text-lg text-gray-900">Maintainerd</span>
                     </div>
                     <p class="text-gray-500 text-sm max-w-sm mb-6">
-                        An open-source Identity and Access Management platform built for developers. Secure APIs, manage applications, and control user access with ease.
+                        An open-source infrastructure ecosystem built for developers. Secure APIs, manage applications, and control resources with ease.
                     </p>
                 </div>
                 
                 <div>
-                    <h4 class="font-semibold text-gray-900 mb-4">Resources</h4>
+                    <h4 class="font-semibold text-gray-900 mb-4">Ecosystem</h4>
                     <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">Documentation</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">API Reference</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">Getting Started</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">Self-Hosting Guide</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">M9d-Auth (IAM)</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">M9d-Core <span class="text-xs bg-gray-100 px-1 py-0.5 rounded ml-1">Planned</span></a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">M9d-Storage <span class="text-xs bg-gray-100 px-1 py-0.5 rounded ml-1">Planned</span></a></li>
                     </ul>
                 </div>
 
                 <div>
                     <h4 class="font-semibold text-gray-900 mb-4">Community</h4>
                     <ul class="space-y-3">
-                        <li><a href="https://github.com/maintainerd/maintainerd-auth-console" target="_blank" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">GitHub Repository</a></li>
-                        <li><a href="https://github.com/maintainerd/maintainerd-auth-console/issues" target="_blank" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">Issue Tracker</a></li>
+                        <li><a href="https://github.com/maintainerd" target="_blank" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">GitHub Organization</a></li>
                         <li><a href="#" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">Discord Server</a></li>
                         <li><a href="#" class="text-gray-500 hover:text-primary-600 text-sm transition-colors">Contribute</a></li>
                     </ul>
@@ -287,38 +239,263 @@
                 <p class="text-gray-400 text-sm">
                     &copy; 2026 Maintainerd. Released under Open Source License.
                 </p>
-                <div class="flex space-x-6 text-gray-400">
-                    <a href="https://github.com/maintainerd/maintainerd-auth-console" class="hover:text-gray-600 transition-colors">
-                        <span class="sr-only">GitHub</span>
-                        <i data-feather="github" class="w-5 h-5"></i>
-                    </a>
-                    <a href="#" class="hover:text-gray-600 transition-colors">
-                        <span class="sr-only">Twitter</span>
-                        <i data-feather="twitter" class="w-5 h-5"></i>
-                    </a>
-                </div>
             </div>
         </div>
     </footer>
 
     <script>
-        // Initialize Feather Icons
-        feather.replace();
-
-        // Mobile Menu Toggle
-        const btn = document.getElementById('mobile-menu-btn');
-        const menu = document.getElementById('mobile-menu');
-
-        btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
-        });
-
-        // Error handling for image if file isn't found
-        window.addEventListener('load', function() {
-            const img = document.querySelector('img[alt="Maintainerd-Auth Console Dashboard"]');
-            if(img.naturalWidth === 0) {
-                 document.getElementById('fallback-overlay').classList.remove('hidden');
+        // Ecosystem Data
+        const services = [
+            {
+                id: 'auth',
+                name: 'M9d-Auth',
+                shortDesc: 'Identity & Access Mgmt',
+                status: 'Active',
+                icon: 'shield',
+                description: 'The foundation of the Maintainerd ecosystem. A comprehensive IAM platform designed to secure your applications, APIs, and resources. Provides global policies for other M9d services.',
+                features: [
+                    { icon: 'users', title: 'User Management', desc: 'Centralize identities, authentication pools, and federated providers.' },
+                    { icon: 'key', title: 'OAuth & API Keys', desc: 'Robust credential management and token issuance.' },
+                    { icon: 'lock', title: 'Security Policies', desc: 'Define access policies to keep inter-service communication secure.' }
+                ],
+                image: 'Screenshot from 2026-06-12 18-12-11.png',
+                repo: 'https://github.com/maintainerd/maintainerd-auth-console'
+            },
+            {
+                id: 'core',
+                name: 'M9d-Core',
+                shortDesc: 'Orchestration & Tenants',
+                status: 'In Development',
+                icon: 'cpu',
+                description: 'The control plane. M9d-Core acts like a lightweight cloud provider, managing tenants, provisioning service instances (via Docker or Kubernetes), and handling infrastructure state.',
+                features: [
+                    { icon: 'layers', title: 'Multi-Tenancy', desc: 'Isolate resources and services per tenant or organization.' },
+                    { icon: 'server', title: 'Provisioning', desc: 'Spin up new instances of Auth, Storage, or Email on demand.' },
+                    { icon: 'activity', title: 'Health & Metrics', desc: 'Monitor the status of all running M9d services centrally.' }
+                ],
+                image: null,
+                repo: '#'
+            },
+            {
+                id: 'storage',
+                name: 'M9d-Storage',
+                shortDesc: 'S3 Wrapper & Block',
+                status: 'Planned',
+                icon: 'hard-drive',
+                description: 'A unified storage API that sits on top of multiple S3 providers and local block storage. Includes both a developer console and an end-user Drive-like application.',
+                features: [
+                    { icon: 'cloud', title: 'Multi-Cloud S3', desc: 'Abstract away AWS, GCP, or MinIO behind a single API.' },
+                    { icon: 'folder', title: 'End-User Drive App', desc: 'Ready-to-use file management interface for your users.' },
+                    { icon: 'database', title: 'Block Storage', desc: 'Manage persistent volumes for your containerized workloads.' }
+                ],
+                image: null,
+                repo: '#'
+            },
+            {
+                id: 'workflow',
+                name: 'M9d-Workflow',
+                shortDesc: 'Process & Approvals',
+                status: 'Planned',
+                icon: 'git-merge',
+                description: 'A robust engine for organizational business logic. Define state machines, handle approval chains, and trigger actions across other Maintainerd services.',
+                features: [
+                    { icon: 'check-circle', title: 'Approval Chains', desc: 'Multi-step manual or automated approval workflows.' },
+                    { icon: 'zap', title: 'Event Triggers', desc: 'React to Webhooks or events from M9d-Auth.' },
+                    { icon: 'eye', title: 'Visual Editor', desc: 'Build complex state machines via a developer console.' }
+                ],
+                image: null,
+                repo: '#'
+            },
+            {
+                id: 'messaging',
+                name: 'M9d-Messaging',
+                shortDesc: 'Email, SMS & Chat',
+                status: 'Planned',
+                icon: 'message-square',
+                description: 'Centralized communication service. Send transactional emails, SMS notifications, or embed real-time chat and video calling into your apps.',
+                features: [
+                    { icon: 'mail', title: 'Transactional Email', desc: 'Template management and SMTP routing.' },
+                    { icon: 'smartphone', title: 'SMS Integration', desc: 'Connect to Twilio/SNS to handle text messaging.' },
+                    { icon: 'video', title: 'Real-time Comms', desc: 'WebSockets for chat and WebRTC signaling for video.' }
+                ],
+                image: null,
+                repo: '#'
+            },
+            {
+                id: 'functions',
+                name: 'M9d-Functions',
+                shortDesc: 'Serverless Compute',
+                status: 'Idea',
+                icon: 'code',
+                description: 'Execute backend code without managing servers. Hook functions into M9d-Workflow or trigger them directly via HTTP endpoints managed by M9d-Core.',
+                features: [
+                    { icon: 'play-circle', title: 'Instant Execution', desc: 'Run Node, Python, or Go snippets on demand.' },
+                    { icon: 'clock', title: 'Cron Jobs', desc: 'Schedule recurring tasks across your ecosystem.' }
+                ],
+                image: null,
+                repo: '#'
+            },
+            {
+                id: 'database',
+                name: 'M9d-Database',
+                shortDesc: 'Managed Data Stores',
+                status: 'Idea',
+                icon: 'database',
+                description: 'Provision and manage relational (Postgres) and NoSQL (Redis, Mongo) databases with automated backups, tying directly into M9d-Core tenancy.',
+                features: [
+                    { icon: 'refresh-cw', title: 'Auto-Backups', desc: 'Automated snapshotting stored in M9d-Storage.' },
+                    { icon: 'key', title: 'Secure Access', desc: 'Credentials auto-managed and rotated by M9d-Auth.' }
+                ],
+                image: null,
+                repo: '#'
             }
+        ];
+
+        let activeServiceId = 'auth';
+
+        function renderServiceList() {
+            const listEl = document.getElementById('service-list');
+            listEl.innerHTML = '';
+
+            services.forEach(service => {
+                const isActive = service.id === activeServiceId;
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left px-4 py-3 rounded-lg flex flex-col gap-1 transition-all group ${
+                    isActive 
+                        ? 'bg-primary-50 border border-primary-200' 
+                        : 'hover:bg-gray-50 border border-transparent hover:border-gray-200'
+                }`;
+                
+                let badgeColor = service.status === 'Active' ? 'bg-green-100 text-green-700' : 
+                                 service.status === 'Idea' ? 'bg-purple-100 text-purple-700' : 
+                                 'bg-amber-100 text-amber-700';
+
+                btn.innerHTML = `
+                    <div class="flex items-center justify-between w-full">
+                        <div class="flex items-center gap-2">
+                            <i data-feather="${service.icon}" class="w-4 h-4 ${isActive ? 'text-primary-600' : 'text-gray-400 group-hover:text-primary-500'}"></i>
+                            <span class="font-bold ${isActive ? 'text-primary-700' : 'text-gray-700 group-hover:text-gray-900'}">${service.name}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mt-1">
+                        <span class="text-xs text-gray-500">${service.shortDesc}</span>
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${badgeColor}">${service.status}</span>
+                    </div>
+                `;
+                
+                btn.onclick = () => {
+                    activeServiceId = service.id;
+                    renderServiceList();
+                    renderServiceDetails();
+                };
+                
+                listEl.appendChild(btn);
+            });
+            feather.replace();
+        }
+
+        function renderServiceDetails() {
+            const container = document.getElementById('service-details');
+            const service = services.find(s => s.id === activeServiceId);
+            
+            let badgeColor = service.status === 'Active' ? 'bg-green-100 text-green-700 border-green-200' : 
+                             service.status === 'Idea' ? 'bg-purple-100 text-purple-700 border-purple-200' : 
+                             'bg-amber-100 text-amber-700 border-amber-200';
+
+            let buttonsHtml = '';
+            if (service.repo !== '#') {
+                buttonsHtml = `
+                    <a href="${service.repo}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors">
+                        <i data-feather="github" class="w-4 h-4"></i> View Repository
+                    </a>
+                `;
+            } else {
+                buttonsHtml = `
+                    <button disabled class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 text-gray-400 cursor-not-allowed text-sm font-medium rounded-lg">
+                        <i data-feather="clock" class="w-4 h-4"></i> Coming Soon
+                    </button>
+                `;
+            }
+
+            let visualHtml = '';
+            if (service.image) {
+                visualHtml = `
+                    <div class="mt-10 rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                        <div class="h-8 bg-slate-900 flex items-center px-3 gap-1.5 border-b border-slate-700">
+                            <div class="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
+                        </div>
+                        <img src="${service.image}" alt="${service.name} Interface" class="w-full h-auto block object-cover" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop';">
+                    </div>
+                `;
+            } else {
+                visualHtml = `
+                    <div class="mt-10 rounded-xl overflow-hidden border border-dashed border-gray-300 bg-gray-50 h-64 flex flex-col items-center justify-center text-gray-400">
+                        <i data-feather="code" class="w-10 h-10 mb-3 opacity-50"></i>
+                        <p class="font-medium">Interface currently in design phase.</p>
+                    </div>
+                `;
+            }
+
+            const featuresHtml = service.features.map(f => `
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary-600">
+                        <i data-feather="${f.icon}" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-sm mb-1">${f.title}</h4>
+                        <p class="text-sm text-gray-600">${f.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="flex flex-col h-full">
+                    <div class="flex items-start justify-between mb-6">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600">
+                                    <i data-feather="${service.icon}" class="w-5 h-5"></i>
+                                </div>
+                                <h2 class="text-3xl font-extrabold text-gray-900">${service.name}</h2>
+                            </div>
+                            <span class="inline-flex items-center border px-2.5 py-0.5 rounded-full text-xs font-semibold ${badgeColor}">
+                                Status: ${service.status}
+                            </span>
+                        </div>
+                        <div class="hidden sm:block">${buttonsHtml}</div>
+                    </div>
+                    
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-2xl">${service.description}</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        ${featuresHtml}
+                    </div>
+                    
+                    <div class="sm:hidden mb-8">${buttonsHtml}</div>
+
+                    <div class="mt-auto">
+                        ${visualHtml}
+                    </div>
+                </div>
+            `;
+            feather.replace();
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            renderServiceList();
+            renderServiceDetails();
+            feather.replace();
+            
+            // Mobile Menu Toggle
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+
+            btn.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+            });
         });
     </script>
 </body>
