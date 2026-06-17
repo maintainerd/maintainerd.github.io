@@ -5,8 +5,11 @@
       <stop offset="0.45" stop-color="#2563eb"/>
       <stop offset="1" stop-color="#1d4ed8"/>
     </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#1d4ed8" flood-opacity=".28"/>
+    </filter>
   </defs>
-  <rect x="6" y="6" width="52" height="52" rx="15" fill="url(#blue)"/>
+  <rect x="6" y="6" width="52" height="52" rx="15" fill="url(#blue)" filter="url(#shadow)"/>
   <path d="M32 14 46 20v10.5c0 10-5.6 17.8-14 20.5-8.4-2.7-14-10.5-14-20.5V20l14-6Z" fill="#eff6ff" opacity=".22"/>
   <path d="M20 43V22h6.2L32 35.4 37.8 22H44v21h-5.5V32.1L34.4 43h-4.8l-4.1-10.9V43H20Z" fill="#fff"/>
   <path d="M17 19 32 12l15 7" fill="none" stroke="#dbeafe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".72"/>

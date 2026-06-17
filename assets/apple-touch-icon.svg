@@ -1,5 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Maintainerd">
-  <rect width="180" height="180" rx="38" fill="#2563eb"/>
-  <path d="M90 22 140 44v39c0 35.2-20.5 62.4-50 72-29.5-9.6-50-36.8-50-72V44l50-22Z" fill="#fff" opacity=".18"/>
-  <path d="M54 121V58h20.2L90 96.5 105.8 58H126v63h-17.4V86.1L95.3 121H84.7L71.4 86.1V121H54Z" fill="#fff"/>
+  <defs>
+    <linearGradient id="blue" x1="22" y1="18" x2="158" y2="162" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60a5fa"/>
+      <stop offset="0.45" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="148" height="148" rx="40" fill="url(#blue)"/>
+  <path d="M90 40 130 57v31c0 28.5-16.3 50.8-40 59-23.7-8.2-40-30.5-40-59V57l40-17Z" fill="#eff6ff" opacity=".22"/>
+  <path d="M58 122V60h18.2L90 99.4 103.8 60H122v62h-16.2V88.8L94.6 122h-9.2L74.2 88.8V122H58Z" fill="#fff"/>
+  <path d="M48 55 90 35l42 20" fill="none" stroke="#dbeafe" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity=".72"/>
 </svg>
