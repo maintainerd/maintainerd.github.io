@@ -467,17 +467,34 @@
                         docs: '#'
                     },
                     {
+                        id: 'project',
+                        name: 'M9d Project',
+                        shortDesc: 'Issues, Boards & Roadmaps',
+                        status: 'Idea',
+                        icon: 'trello',
+                        cmd: 'docker pull maintainerd/maintainerd-project',
+                        description: 'A first-party project management product for issue tracking, boards, roadmaps, milestones, and software team planning. It is the Maintainerd answer to the work organizations repeatedly manage in tools like Jira or Linear.',
+                        features: [
+                            { icon: 'check-square', title: 'Issues & Tasks', desc: 'Track bugs, features, chores, epics, owners, priorities, labels, and status.' },
+                            { icon: 'columns', title: 'Boards & Roadmaps', desc: 'Plan work through kanban boards, milestones, releases, and product roadmaps.' },
+                            { icon: 'git-pull-request', title: 'Developer Workflow', desc: 'Connect issues to repositories, deployments, support tickets, and workflow automations.' }
+                        ],
+                        image: null,
+                        repo: '#',
+                        docs: '#'
+                    },
+                    {
                         id: 'support',
                         name: 'M9d Support',
                         shortDesc: 'Tickets & Feedback',
                         status: 'Idea',
                         icon: 'life-buoy',
                         cmd: 'docker pull maintainerd/maintainerd-support',
-                        description: 'A support product for tickets, feedback, issue intake, customer communication, and internal response workflows. It can become a future Jira or Linear-like surface for organizations.',
+                        description: 'A support product for customer tickets, feedback, issue intake, helpdesk workflows, and customer communication. It can link to M9d Project when support work becomes product or engineering work.',
                         features: [
                             { icon: 'inbox', title: 'Ticket Intake', desc: 'Capture support requests, feedback, and issues from public or authenticated users.' },
-                            { icon: 'users', title: 'Team Workflows', desc: 'Assign, prioritize, comment, and route issues through support or product teams.' },
-                            { icon: 'git-branch', title: 'Future Work Management', desc: 'Foundation for a broader planning, issue, and project management app.' }
+                            { icon: 'users', title: 'Support Workflows', desc: 'Assign, prioritize, comment, respond, and route customer-facing requests.' },
+                            { icon: 'git-branch', title: 'Project Handoff', desc: 'Escalate tickets into M9d Project issues when they require roadmap or engineering work.' }
                         ],
                         image: null,
                         repo: '#',
