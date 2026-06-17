@@ -150,7 +150,7 @@
                     Maintainerd open-source cloud <span class="text-primary-400">ecosystem.</span>
                 </h1>
                 <p class="text-gray-400 text-lg">
-                    High-quality, modular infrastructure services. Run them standalone for complete control, or orchestrate them seamlessly with M9d-Core.
+                    Reusable product and platform services teams keep rebuilding. Run each service standalone, or connect them through M9d-Core for a shared control plane.
                 </p>
             </div>
             <div class="flex-shrink-0 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -202,65 +202,59 @@
     </footer>
 
     <script>
-        // Ecosystem Data grouped by categories
+        // Ecosystem Data grouped by categories. Each product is designed to run
+        // standalone first, then optionally connect to M9d-Core for oversight.
         const categories = [
             {
-                id: 'core',
-                title: 'Core & Identity',
+                id: 'control',
+                title: 'Control Plane',
                 services: [
-                    {
-                        id: 'auth',
-                        name: 'M9d Auth',
-                        shortDesc: 'Identity & Access Management',
-                        status: 'Active',
-                        icon: 'shield',
-                        cmd: 'docker pull maintainerd/maintainerd-auth',
-                        description: 'The secure foundation of the Maintainerd ecosystem. A comprehensive IAM platform designed to secure your applications, APIs, and resources. Provides global policies for other M9d services.',
-                        features: [
-                            { icon: 'users', title: 'User Management', desc: 'Centralize identities, authentication pools, and federated providers (Google, GitHub, etc).' },
-                            { icon: 'key', title: 'OAuth & API Keys', desc: 'Robust credential management, token issuance, and standardized OAuth2 flows.' },
-                            { icon: 'lock', title: 'Security Policies', desc: 'Define granular access policies to keep inter-service communication fully secure.' },
-                            { icon: 'layout', title: 'Admin Console', desc: 'Dedicated web interface for developers to manage clients, tenants, and logs.' }
-                        ],
-                        image: 'assets/m9d-auth-console.png',
-                        repo: 'https://github.com/maintainerd/maintainerd-auth-console',
-                        docs: '#'
-                    },
                     {
                         id: 'core-orchestrator',
                         name: 'M9d Core',
-                        shortDesc: 'Orchestration & Tenancy',
-                        status: 'In Dev',
+                        shortDesc: 'Tenant & Service Control',
+                        status: 'Planned',
                         icon: 'cpu',
                         cmd: 'docker pull maintainerd/maintainerd-core',
-                        description: 'The central control plane. M9d-Core acts like a lightweight cloud provider interface, managing tenants, provisioning service instances (via Docker or Kubernetes), and handling infrastructure state.',
+                        description: 'The central control plane for the Maintainerd ecosystem. Core manages tenants, registered services, health, topology, and high-level operations, but delegates actual provisioning to runtime providers like M9d Docker or M9d Kubernetes.',
                         features: [
-                            { icon: 'layers', title: 'Multi-Tenancy built-in', desc: 'Strictly isolate resources, databases, and services per tenant or organization.' },
-                            { icon: 'server', title: 'Dynamic Provisioning', desc: 'Spin up new dedicated instances of Auth, Storage, or Email automatically on demand.' },
-                            { icon: 'activity', title: 'Health & Metrics', desc: 'Monitor the status and resource usage of all running M9d services centrally.' }
+                            { icon: 'layers', title: 'Tenant Overview', desc: 'Track tenants, environments, services, ownership, and global platform state from one place.' },
+                            { icon: 'activity', title: 'Health & Topology', desc: 'Observe service health, dependencies, runtime status, and incidents across connected services.' },
+                            { icon: 'send', title: 'Delegated Operations', desc: 'Communicate with provider services for deployment, database, and infrastructure operations.' }
                         ],
                         image: null,
                         repo: '#',
                         docs: '#'
-                    }
-                ]
-            },
-            {
-                id: 'data',
-                title: 'Data & Storage',
-                services: [
+                    },
                     {
-                        id: 'storage',
-                        name: 'M9d Storage',
-                        shortDesc: 'S3 Wrapper & Block Volumes',
-                        status: 'Planned',
-                        icon: 'hard-drive',
-                        cmd: 'docker pull maintainerd/maintainerd-storage',
-                        description: 'A unified storage API that sits securely on top of multiple S3 providers (AWS, GCP) and local block storage. Includes an API and an end-user Drive-like application.',
+                        id: 'docker',
+                        name: 'M9d Docker',
+                        shortDesc: 'Docker Runtime Provider',
+                        status: 'Idea',
+                        icon: 'box',
+                        cmd: 'docker pull maintainerd/maintainerd-docker',
+                        description: 'A runtime provider that handles Docker-based deployments for services and applications. Core can ask it to deploy, inspect, restart, or report on workloads, but it can also run independently for smaller setups.',
                         features: [
-                            { icon: 'cloud', title: 'Multi-Cloud S3 Adapter', desc: 'Abstract away specific cloud providers behind a single, consistent open API.' },
-                            { icon: 'folder', title: 'User Drive App', desc: 'Ready-to-use, Google Drive-like file management interface for your end-users.' },
-                            { icon: 'database', title: 'Block Storage', desc: 'Manage persistent volumes for your containerized M9d workloads.' }
+                            { icon: 'server', title: 'Container Deployments', desc: 'Run Maintainerd services or customer apps on Docker hosts.' },
+                            { icon: 'refresh-cw', title: 'Lifecycle Actions', desc: 'Start, stop, restart, update, and inspect containers through a controlled provider API.' },
+                            { icon: 'activity', title: 'Runtime Signals', desc: 'Report health, ports, images, and basic runtime metadata back to Core.' }
+                        ],
+                        image: null,
+                        repo: '#',
+                        docs: '#'
+                    },
+                    {
+                        id: 'kubernetes',
+                        name: 'M9d Kubernetes',
+                        shortDesc: 'Kubernetes Runtime Provider',
+                        status: 'Idea',
+                        icon: 'server',
+                        cmd: 'docker pull maintainerd/maintainerd-kubernetes',
+                        description: 'A Kubernetes provider for provisioning services, workloads, and platform components into clusters. It lets Maintainerd support production-grade orchestration without making Core responsible for cluster-specific behavior.',
+                        features: [
+                            { icon: 'box', title: 'Cluster Workloads', desc: 'Deploy services as Kubernetes resources while preserving the same product contract.' },
+                            { icon: 'sliders', title: 'Environment Profiles', desc: 'Map tenants and services to namespaces, ingress, secrets, and resource policies.' },
+                            { icon: 'activity', title: 'Cluster Health', desc: 'Expose workload readiness, rollout state, and cluster provider health to Core.' }
                         ],
                         image: null,
                         repo: '#',
@@ -269,14 +263,15 @@
                     {
                         id: 'database',
                         name: 'M9d Database',
-                        shortDesc: 'Managed Data Stores',
+                        shortDesc: 'Database Provisioning Control',
                         status: 'Idea',
                         icon: 'database',
                         cmd: 'docker pull maintainerd/maintainerd-database',
-                        description: 'Provision and manage relational (Postgres) and NoSQL (Redis, Mongo) databases easily with automated backups, tying directly into M9d-Core tenancy rules.',
+                        description: 'A control service for provisioning and managing existing database engines such as PostgreSQL, MySQL, Redis, or MongoDB. Maintainerd does not replace those databases; it standardizes how organizations create, attach, monitor, and back them up.',
                         features: [
-                            { icon: 'refresh-cw', title: 'Automated Backups', desc: 'Snapshotting stored safely in M9d-Storage based on cron schedules.' },
-                            { icon: 'key', title: 'Secure Credential Injection', desc: 'Database passwords auto-managed, rotated, and secured by M9d-Auth.' }
+                            { icon: 'plus-circle', title: 'Provision Existing Engines', desc: 'Create and register Postgres, MySQL, Redis, or MongoDB instances through provider-specific integrations.' },
+                            { icon: 'key', title: 'Credential Handoff', desc: 'Coordinate generated credentials with M9d Secret or external secret managers.' },
+                            { icon: 'archive', title: 'Backup Policy Hooks', desc: 'Define backup and retention policies while delegating execution to the chosen runtime or database provider.' }
                         ],
                         image: null,
                         repo: '#',
@@ -285,21 +280,79 @@
                 ]
             },
             {
-                id: 'logic',
-                title: 'Business Logic & Comms',
+                id: 'security',
+                title: 'Identity & Security',
                 services: [
                     {
-                        id: 'workflow',
-                        name: 'M9d Workflow',
-                        shortDesc: 'Process & State Machines',
-                        status: 'Planned',
-                        icon: 'git-merge',
-                        cmd: 'docker pull maintainerd/maintainerd-workflow',
-                        description: 'A robust engine for organizational business logic. Define state machines, handle approval chains, and trigger actions safely across other Maintainerd services.',
+                        id: 'auth',
+                        name: 'M9d Auth',
+                        shortDesc: 'Identity & Access Management',
+                        status: 'Active',
+                        icon: 'shield',
+                        cmd: 'docker pull maintainerd/maintainerd-auth',
+                        description: 'The IAM product suite for Maintainerd. It includes the auth backend, a management console for administrators and developers, and a public identity interface for login, OAuth2, account flows, MFA, consent, and user-facing auth experiences.',
                         features: [
-                            { icon: 'check-circle', title: 'Approval Chains', desc: 'Create multi-step manual or automated approval workflows for your organization.' },
-                            { icon: 'zap', title: 'Event Triggers', desc: 'React instantly to Webhooks or internal events emitted from M9d-Auth.' },
-                            { icon: 'eye', title: 'Visual State Editor', desc: 'Build and debug complex state machines visually via the developer console.' }
+                            { icon: 'server', title: 'maintainerd-auth', desc: 'Backend API and identity service for users, tenants, OAuth clients, API keys, roles, permissions, policies, sessions, and MFA.' },
+                            { icon: 'layout', title: 'maintainerd-auth-console', desc: 'Management app for administrators and developers to operate tenants, clients, users, policies, providers, and security settings.' },
+                            { icon: 'user-check', title: 'maintainerd-auth-identity', desc: 'Public-facing identity app for OAuth2 login, account flows, consent, MFA, and regular user authentication.' },
+                            { icon: 'lock', title: 'Global Policies', desc: 'Owns the permissions and policy model used across the broader Maintainerd ecosystem.' }
+                        ],
+                        image: 'assets/m9d-auth-console.png',
+                        repo: 'https://github.com/maintainerd/maintainerd-auth-console',
+                        docs: '#'
+                    },
+                    {
+                        id: 'secret',
+                        name: 'M9d Secret',
+                        shortDesc: 'Internal or External Secrets',
+                        status: 'Idea',
+                        icon: 'key',
+                        cmd: 'docker pull maintainerd/maintainerd-secret',
+                        description: 'A secrets layer that can run as an internal Maintainerd secret store or delegate to external providers such as AWS Secrets Manager, Vault, or cloud KMS products when organizations prefer to keep secrets outside Maintainerd.',
+                        features: [
+                            { icon: 'lock', title: 'Internal Store Option', desc: 'Provide a simple built-in secrets workflow for local, self-hosted, or lower-friction deployments.' },
+                            { icon: 'external-link', title: 'External Provider Option', desc: 'Bridge to trusted external secret managers without changing the service contract.' },
+                            { icon: 'refresh-cw', title: 'Rotation & References', desc: 'Expose consistent secret references, rotation hooks, and audit trails to other services.' }
+                        ],
+                        image: null,
+                        repo: '#',
+                        docs: '#'
+                    },
+                    {
+                        id: 'gateway',
+                        name: 'M9d Gateway',
+                        shortDesc: 'API Edge & Routing',
+                        status: 'Idea',
+                        icon: 'shuffle',
+                        cmd: 'docker pull maintainerd/maintainerd-gateway',
+                        description: 'An application edge service for public and private routing, API exposure, rate limits, service-to-service checks, and request policy enforcement. It complements M9d Auth without moving the auth policy model out of Auth.',
+                        features: [
+                            { icon: 'globe', title: 'Public & Private Routes', desc: 'Expose APIs, apps, and service endpoints through a consistent routing layer.' },
+                            { icon: 'shield', title: 'Auth-Aware Edge', desc: 'Validate tokens, API keys, and service policies using M9d Auth as the source of truth.' },
+                            { icon: 'activity', title: 'Traffic Controls', desc: 'Apply rate limits, request logs, health probes, and traffic-level visibility.' }
+                        ],
+                        image: null,
+                        repo: '#',
+                        docs: '#'
+                    }
+                ]
+            },
+            {
+                id: 'productivity',
+                title: 'Application Products',
+                services: [
+                    {
+                        id: 'storage',
+                        name: 'M9d Storage',
+                        shortDesc: 'Storage APIs & Drive App',
+                        status: 'Planned',
+                        icon: 'hard-drive',
+                        cmd: 'docker pull maintainerd/maintainerd-storage',
+                        description: 'A storage product suite built around common file and object storage needs. The service can expose developer-facing storage controls and a consumer-facing drive app similar to Google Drive.',
+                        features: [
+                            { icon: 'cloud', title: 'Object Storage API', desc: 'Wrap existing S3-compatible providers or local storage behind a consistent service API.' },
+                            { icon: 'layout', title: 'Storage Console', desc: 'Developer and administrator surface for buckets, policies, quotas, and storage providers.' },
+                            { icon: 'folder', title: 'M9d Drive', desc: 'Consumer-facing file manager for end users, teams, uploads, sharing, and folders.' }
                         ],
                         image: null,
                         repo: '#',
@@ -308,31 +361,123 @@
                     {
                         id: 'messaging',
                         name: 'M9d Messaging',
-                        shortDesc: 'Email, SMS & WebRTC',
+                        shortDesc: 'Notifications & Comms',
                         status: 'Planned',
                         icon: 'message-square',
                         cmd: 'docker pull maintainerd/maintainerd-messaging',
-                        description: 'Centralized communication service. Send transactional emails, SMS notifications, or embed real-time chat and video calling directly into your applications.',
+                        description: 'A communication product for common notification and messaging needs. It can send transactional email, SMS, push, and eventually support customer-facing inbox or chat-style experiences.',
                         features: [
-                            { icon: 'mail', title: 'Transactional Email', desc: 'Rich template management and reliable SMTP routing/delivery.' },
-                            { icon: 'smartphone', title: 'SMS Integration', desc: 'Connect securely to Twilio/SNS to handle automated text messaging.' },
-                            { icon: 'video', title: 'Real-time Comms API', desc: 'Managed WebSockets for chat and WebRTC signaling for peer-to-peer video.' }
+                            { icon: 'mail', title: 'Templates & Delivery', desc: 'Reusable email, SMS, and push templates with provider routing and delivery logs.' },
+                            { icon: 'layout', title: 'Messaging Console', desc: 'Management surface for templates, channels, provider credentials, and event-triggered sends.' },
+                            { icon: 'message-circle', title: 'Future Inbox Apps', desc: 'Possible consumer-facing inbox, support chat, or notification center experiences.' }
                         ],
                         image: null,
                         repo: '#',
                         docs: '#'
                     },
                     {
-                        id: 'functions',
-                        name: 'M9d Functions',
-                        shortDesc: 'Serverless Compute',
+                        id: 'cms',
+                        name: 'M9d CMS',
+                        shortDesc: 'Content & Sites',
                         status: 'Idea',
-                        icon: 'code',
-                        cmd: 'docker pull maintainerd/maintainerd-functions',
-                        description: 'Execute backend code snippets without managing servers. Hook functions into M9d-Workflow or trigger them directly via HTTP endpoints managed by M9d-Core.',
+                        icon: 'file-text',
+                        cmd: 'docker pull maintainerd/maintainerd-cms',
+                        description: 'A content product for pages, announcements, knowledge bases, marketing sites, and product content that organizations repeatedly build around their applications.',
                         features: [
-                            { icon: 'play-circle', title: 'Instant Execution', desc: 'Run isolated Node, Python, or Go environments on demand.' },
-                            { icon: 'clock', title: 'Cron Scheduling', desc: 'Schedule recurring tasks and maintenance jobs across your ecosystem.' }
+                            { icon: 'edit-3', title: 'Structured Content', desc: 'Manage reusable page blocks, articles, announcements, and app content models.' },
+                            { icon: 'layout', title: 'CMS Console', desc: 'Editorial and developer-facing management interface for content schemas and publishing.' },
+                            { icon: 'globe', title: 'Public Delivery', desc: 'Serve public content through API, static rendering, or product-specific frontends.' }
+                        ],
+                        image: null,
+                        repo: '#',
+                        docs: '#'
+                    }
+                ]
+            },
+            {
+                id: 'operations',
+                title: 'Operations & Business',
+                services: [
+                    {
+                        id: 'workflow',
+                        name: 'M9d Workflow',
+                        shortDesc: 'Approvals & State Machines',
+                        status: 'Planned',
+                        icon: 'git-merge',
+                        cmd: 'docker pull maintainerd/maintainerd-workflow',
+                        description: 'A workflow product for approval chains, state machines, background business processes, and automations that connect Auth, Storage, Messaging, and future services.',
+                        features: [
+                            { icon: 'check-circle', title: 'Approval Chains', desc: 'Create multi-step manual or automated approval workflows for organizations.' },
+                            { icon: 'zap', title: 'Event Triggers', desc: 'React to internal events, webhooks, or user actions emitted by other Maintainerd services.' },
+                            { icon: 'eye', title: 'Workflow Console', desc: 'Developer and operator interface for designing, observing, and debugging workflows.' }
+                        ],
+                        image: null,
+                        repo: '#',
+                        docs: '#'
+                    },
+                    {
+                        id: 'jobs',
+                        name: 'M9d Jobs',
+                        shortDesc: 'Queues & Scheduled Work',
+                        status: 'Idea',
+                        icon: 'clock',
+                        cmd: 'docker pull maintainerd/maintainerd-jobs',
+                        description: 'A jobs product for scheduled tasks, queues, retries, background workers, and recurring maintenance work that nearly every organization eventually builds around its apps.',
+                        features: [
+                            { icon: 'repeat', title: 'Retryable Work', desc: 'Run durable background jobs with retry policies, delays, and dead-letter handling.' },
+                            { icon: 'calendar', title: 'Schedules', desc: 'Create cron-like tasks for reminders, cleanup, billing cycles, and recurring operations.' },
+                            { icon: 'activity', title: 'Worker Visibility', desc: 'Track job state, failures, throughput, and worker health from a management console.' }
+                        ],
+                        image: null,
+                        repo: '#',
+                        docs: '#'
+                    },
+                    {
+                        id: 'observability',
+                        name: 'M9d Observability',
+                        shortDesc: 'Logs, Metrics & Health',
+                        status: 'Idea',
+                        icon: 'activity',
+                        cmd: 'docker pull maintainerd/maintainerd-observability',
+                        description: 'An operations product for logs, metrics, traces, alerts, dashboards, and service health. It can integrate with open tools instead of replacing them, while giving Maintainerd services a shared operational view.',
+                        features: [
+                            { icon: 'bar-chart-2', title: 'Metrics & Dashboards', desc: 'Surface service metrics and health summaries for operators and developers.' },
+                            { icon: 'file-text', title: 'Logs & Audit Signals', desc: 'Centralize application logs and connect operational events to Auth and Core context.' },
+                            { icon: 'bell', title: 'Alerts', desc: 'Route incidents and health changes to teams through Messaging, Support, or external tools.' }
+                        ],
+                        image: null,
+                        repo: '#',
+                        docs: '#'
+                    },
+                    {
+                        id: 'billing',
+                        name: 'M9d Billing',
+                        shortDesc: 'Subscriptions & Usage',
+                        status: 'Idea',
+                        icon: 'credit-card',
+                        cmd: 'docker pull maintainerd/maintainerd-billing',
+                        description: 'A billing product for plans, subscriptions, usage tracking, invoices, and payment provider integrations. It targets the billing logic organizations repeatedly wire into SaaS products.',
+                        features: [
+                            { icon: 'dollar-sign', title: 'Plans & Subscriptions', desc: 'Model products, plans, trials, invoices, and subscription lifecycle events.' },
+                            { icon: 'bar-chart-2', title: 'Usage Metering', desc: 'Collect billable usage from Maintainerd services or application-specific events.' },
+                            { icon: 'layout', title: 'Billing Console', desc: 'Management surface for pricing, customers, invoices, and provider connections.' }
+                        ],
+                        image: null,
+                        repo: '#',
+                        docs: '#'
+                    },
+                    {
+                        id: 'support',
+                        name: 'M9d Support',
+                        shortDesc: 'Tickets & Feedback',
+                        status: 'Idea',
+                        icon: 'life-buoy',
+                        cmd: 'docker pull maintainerd/maintainerd-support',
+                        description: 'A support product for tickets, feedback, issue intake, customer communication, and internal response workflows. It can become a future Jira or Linear-like surface for organizations.',
+                        features: [
+                            { icon: 'inbox', title: 'Ticket Intake', desc: 'Capture support requests, feedback, and issues from public or authenticated users.' },
+                            { icon: 'users', title: 'Team Workflows', desc: 'Assign, prioritize, comment, and route issues through support or product teams.' },
+                            { icon: 'git-branch', title: 'Future Work Management', desc: 'Foundation for a broader planning, issue, and project management app.' }
                         ],
                         image: null,
                         repo: '#',
