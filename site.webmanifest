@@ -1,7 +1,7 @@
 {
   "name": "Maintainerd",
   "short_name": "Maintainerd",
-  "description": "Reusable product and platform services teams keep rebuilding. Run each service standalone, or connect them through M9d-Core for a shared control plane.",
+  "description": "Maintainerd is a self-hostable catalog of cloud-style product and platform services. Run each service standalone, or connect them through M9d-Core for a shared control plane.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
