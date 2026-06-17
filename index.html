@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maintainerd | The Open Source Infrastructure Ecosystem</title>
-    <meta name="description" content="Maintainerd is an open-source cloud ecosystem of modular infrastructure services for identity, orchestration, storage, workflows, messaging, functions, and data.">
+    <meta name="description" content="Maintainerd is an open-source ecosystem of standalone product and platform services for identity, control planes, deployment providers, storage, messaging, workflows, billing, project management, and support.">
     <meta name="theme-color" content="#2563eb">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://maintainerd.github.io/">
@@ -14,7 +14,7 @@
     <meta property="og:site_name" content="Maintainerd">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Maintainerd | The Open Source Infrastructure Ecosystem">
-    <meta property="og:description" content="High-quality, modular infrastructure services. Run them standalone for complete control, or orchestrate them with M9d-Core.">
+    <meta property="og:description" content="Standalone product and platform services teams repeatedly build: IAM, control plane, Docker/Kubernetes providers, storage, messaging, workflow, billing, project management, and support.">
     <meta property="og:url" content="https://maintainerd.github.io/">
     <meta property="og:image" content="https://maintainerd.github.io/assets/m9d-auth-console.png">
     <meta property="og:image:alt" content="M9d Auth admin console client details screen">
@@ -22,21 +22,53 @@
     <meta property="og:image:height" content="1012">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Maintainerd | The Open Source Infrastructure Ecosystem">
-    <meta name="twitter:description" content="An open-source cloud ecosystem of modular infrastructure services for identity, orchestration, storage, workflows, messaging, functions, and data.">
+    <meta name="twitter:description" content="An open-source ecosystem of standalone product and platform services for identity, control, deployment, storage, messaging, workflows, billing, project management, and support.">
     <meta name="twitter:image" content="https://maintainerd.github.io/assets/m9d-auth-console.png">
     <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "Maintainerd",
-            "alternateName": "M9d",
-            "url": "https://maintainerd.github.io/",
-            "logo": "https://maintainerd.github.io/assets/favicon.svg",
-            "sameAs": [
-                "https://github.com/maintainerd"
-            ],
-            "description": "Maintainerd is an open-source cloud ecosystem of modular infrastructure services for identity, orchestration, storage, workflows, messaging, functions, and data."
-        }
+        [
+            {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "Maintainerd",
+                "alternateName": "M9d",
+                "url": "https://maintainerd.github.io/",
+                "logo": "https://maintainerd.github.io/assets/favicon.svg",
+                "sameAs": [
+                    "https://github.com/maintainerd"
+                ],
+                "description": "Maintainerd is an open-source ecosystem of standalone product and platform services for identity, control planes, deployment providers, storage, messaging, workflows, billing, project management, and support."
+            },
+            {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "Maintainerd",
+                "url": "https://maintainerd.github.io/",
+                "description": "The public catalog for Maintainerd open-source services."
+            },
+            {
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                "name": "Maintainerd service catalog",
+                "itemListElement": [
+                    { "@type": "ListItem", "position": 1, "name": "M9d Core", "description": "Tenant and service control plane." },
+                    { "@type": "ListItem", "position": 2, "name": "M9d Docker", "description": "Docker runtime provider." },
+                    { "@type": "ListItem", "position": 3, "name": "M9d Kubernetes", "description": "Kubernetes runtime provider." },
+                    { "@type": "ListItem", "position": 4, "name": "M9d Database", "description": "Database provisioning control." },
+                    { "@type": "ListItem", "position": 5, "name": "M9d Auth", "description": "Identity and access management product suite." },
+                    { "@type": "ListItem", "position": 6, "name": "M9d Secret", "description": "Internal or external secrets layer." },
+                    { "@type": "ListItem", "position": 7, "name": "M9d Gateway", "description": "API edge and routing service." },
+                    { "@type": "ListItem", "position": 8, "name": "M9d Storage", "description": "Storage APIs and drive app." },
+                    { "@type": "ListItem", "position": 9, "name": "M9d Messaging", "description": "Notifications and communication service." },
+                    { "@type": "ListItem", "position": 10, "name": "M9d CMS", "description": "Content and sites product." },
+                    { "@type": "ListItem", "position": 11, "name": "M9d Workflow", "description": "Approvals and state machines." },
+                    { "@type": "ListItem", "position": 12, "name": "M9d Jobs", "description": "Queues and scheduled work." },
+                    { "@type": "ListItem", "position": 13, "name": "M9d Observability", "description": "Logs, metrics, traces, and health." },
+                    { "@type": "ListItem", "position": 14, "name": "M9d Billing", "description": "Subscriptions and usage." },
+                    { "@type": "ListItem", "position": 15, "name": "M9d Project", "description": "Issues, boards, and roadmaps." },
+                    { "@type": "ListItem", "position": 16, "name": "M9d Support", "description": "Tickets and feedback." }
+                ]
+            }
+        ]
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter & JetBrains Mono Fonts -->
