@@ -1,7 +1,7 @@
 {
   "name": "Maintainerd",
   "short_name": "Maintainerd",
-  "description": "A modular open-source infrastructure ecosystem for identity, orchestration, storage, workflows, messaging, functions, and data services.",
+  "description": "An open-source cloud ecosystem of modular infrastructure services for identity, orchestration, storage, workflows, messaging, functions, and data.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
