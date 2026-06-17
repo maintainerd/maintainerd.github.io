@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maintainerd | The Open Source Infrastructure Ecosystem</title>
-    <meta name="description" content="Maintainerd is an open-source ecosystem of standalone product and platform services for identity, control planes, deployment providers, storage, messaging, workflows, billing, project management, and support.">
+    <meta name="description" content="Maintainerd is an open-source ecosystem of standalone product and platform services for identity, control planes, domains, deployment providers, storage, messaging, workflows, billing, project management, and support.">
     <meta name="theme-color" content="#2563eb">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://maintainerd.github.io/">
@@ -22,7 +22,7 @@
     <meta property="og:image:height" content="1012">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Maintainerd | The Open Source Infrastructure Ecosystem">
-    <meta name="twitter:description" content="An open-source ecosystem of standalone product and platform services for identity, control, deployment, storage, messaging, workflows, billing, project management, and support.">
+    <meta name="twitter:description" content="An open-source ecosystem of standalone product and platform services for identity, control, domains, deployment, storage, messaging, workflows, billing, project management, and support.">
     <meta name="twitter:image" content="https://maintainerd.github.io/assets/m9d-auth-console.png">
     <script type="application/ld+json">
         [
@@ -36,7 +36,7 @@
                 "sameAs": [
                     "https://github.com/maintainerd"
                 ],
-                "description": "Maintainerd is an open-source ecosystem of standalone product and platform services for identity, control planes, deployment providers, storage, messaging, workflows, billing, project management, and support."
+                "description": "Maintainerd is an open-source ecosystem of standalone product and platform services for identity, control planes, domains, deployment providers, storage, messaging, workflows, billing, project management, and support."
             },
             {
                 "@context": "https://schema.org",
@@ -51,21 +51,22 @@
                 "name": "Maintainerd service catalog",
                 "itemListElement": [
                     { "@type": "ListItem", "position": 1, "name": "M9d Core", "description": "Tenant and service control plane." },
-                    { "@type": "ListItem", "position": 2, "name": "M9d Docker", "description": "Docker runtime provider." },
-                    { "@type": "ListItem", "position": 3, "name": "M9d Kubernetes", "description": "Kubernetes runtime provider." },
-                    { "@type": "ListItem", "position": 4, "name": "M9d Database", "description": "Database provisioning control." },
-                    { "@type": "ListItem", "position": 5, "name": "M9d Auth", "description": "Identity and access management product suite." },
-                    { "@type": "ListItem", "position": 6, "name": "M9d Secret", "description": "Internal or external secrets layer." },
-                    { "@type": "ListItem", "position": 7, "name": "M9d Gateway", "description": "API edge and routing service." },
-                    { "@type": "ListItem", "position": 8, "name": "M9d Storage", "description": "Storage APIs and drive app." },
-                    { "@type": "ListItem", "position": 9, "name": "M9d Messaging", "description": "Notifications and communication service." },
-                    { "@type": "ListItem", "position": 10, "name": "M9d CMS", "description": "Content and sites product." },
-                    { "@type": "ListItem", "position": 11, "name": "M9d Workflow", "description": "Approvals and state machines." },
-                    { "@type": "ListItem", "position": 12, "name": "M9d Jobs", "description": "Queues and scheduled work." },
-                    { "@type": "ListItem", "position": 13, "name": "M9d Observability", "description": "Logs, metrics, traces, and health." },
-                    { "@type": "ListItem", "position": 14, "name": "M9d Billing", "description": "Subscriptions and usage." },
-                    { "@type": "ListItem", "position": 15, "name": "M9d Project", "description": "Issues, boards, and roadmaps." },
-                    { "@type": "ListItem", "position": 16, "name": "M9d Support", "description": "Tickets and feedback." }
+                    { "@type": "ListItem", "position": 2, "name": "M9d Domains", "description": "Domain bindings, DNS automation, and certificate lifecycle." },
+                    { "@type": "ListItem", "position": 3, "name": "M9d Docker", "description": "Docker runtime provider." },
+                    { "@type": "ListItem", "position": 4, "name": "M9d Kubernetes", "description": "Kubernetes runtime provider." },
+                    { "@type": "ListItem", "position": 5, "name": "M9d Database", "description": "Database provisioning control." },
+                    { "@type": "ListItem", "position": 6, "name": "M9d Auth", "description": "Identity and access management product suite." },
+                    { "@type": "ListItem", "position": 7, "name": "M9d Secret", "description": "Internal or external secrets layer." },
+                    { "@type": "ListItem", "position": 8, "name": "M9d Gateway", "description": "API edge and routing service." },
+                    { "@type": "ListItem", "position": 9, "name": "M9d Storage", "description": "Storage APIs and drive app." },
+                    { "@type": "ListItem", "position": 10, "name": "M9d Messaging", "description": "Notifications and communication service." },
+                    { "@type": "ListItem", "position": 11, "name": "M9d CMS", "description": "Content and sites product." },
+                    { "@type": "ListItem", "position": 12, "name": "M9d Workflow", "description": "Approvals and state machines." },
+                    { "@type": "ListItem", "position": 13, "name": "M9d Jobs", "description": "Queues and scheduled work." },
+                    { "@type": "ListItem", "position": 14, "name": "M9d Observability", "description": "Logs, metrics, traces, and health." },
+                    { "@type": "ListItem", "position": 15, "name": "M9d Billing", "description": "Subscriptions and usage." },
+                    { "@type": "ListItem", "position": 16, "name": "M9d Project", "description": "Issues, boards, and roadmaps." },
+                    { "@type": "ListItem", "position": 17, "name": "M9d Support", "description": "Tickets and feedback." }
                 ]
             }
         ]
@@ -253,6 +254,23 @@
                             { icon: 'layers', title: 'Tenant Overview', desc: 'Track tenants, environments, services, ownership, and global platform state from one place.' },
                             { icon: 'activity', title: 'Health & Topology', desc: 'Observe service health, dependencies, runtime status, and incidents across connected services.' },
                             { icon: 'send', title: 'Delegated Operations', desc: 'Communicate with provider services for deployment, database, and infrastructure operations.' }
+                        ],
+                        image: null,
+                        repo: '#',
+                        docs: '#'
+                    },
+                    {
+                        id: 'domains',
+                        name: 'M9d Domains',
+                        shortDesc: 'DNS & Certificates',
+                        status: 'Idea',
+                        icon: 'globe',
+                        cmd: 'docker pull maintainerd/maintainerd-domains',
+                        description: 'A Core-controlled domain and certificate service for provisioned applications and Maintainerd products. It manages domain bindings, DNS provider updates, TLS certificates, renewals, and service-to-domain assignments so teams do not manually wire domains for every deployed service.',
+                        features: [
+                            { icon: 'link', title: 'Service Domain Bindings', desc: 'Assign domains and subdomains to provisioned services, apps, tenants, and environments through Core.' },
+                            { icon: 'globe', title: 'DNS Provider Automation', desc: 'Create and update DNS records through providers such as Cloudflare, Route 53, or other integrations.' },
+                            { icon: 'shield', title: 'Certificate Lifecycle', desc: 'Issue, renew, and attach TLS certificates for public endpoints without manual certificate setup.' }
                         ],
                         image: null,
                         repo: '#',

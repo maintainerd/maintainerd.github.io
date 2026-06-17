@@ -1,7 +1,7 @@
 {
   "name": "Maintainerd",
   "short_name": "Maintainerd",
-  "description": "An open-source ecosystem of standalone product and platform services for identity, control planes, deployment providers, storage, messaging, workflows, billing, project management, and support.",
+  "description": "An open-source ecosystem of standalone product and platform services for identity, control planes, domains, deployment providers, storage, messaging, workflows, billing, project management, and support.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
