@@ -8,9 +8,9 @@
     <meta name="theme-color" content="#2563eb">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://maintainerd.github.io/">
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.svg">
-    <link rel="manifest" href="/site.webmanifest">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.svg">
+    <link rel="manifest" href="site.webmanifest">
     <meta property="og:site_name" content="Maintainerd">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Maintainerd | The Open Source Infrastructure Ecosystem">
@@ -113,9 +113,7 @@
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
-                    <div class="w-8 h-8 bg-primary-600 rounded-md flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                        M
-                    </div>
+                    <img src="assets/maintainerd-mark.svg" alt="" class="w-8 h-8 shadow-sm">
                     <span class="font-bold text-xl text-dark tracking-tight">Maintainerd</span>
                 </div>
 
@@ -190,7 +188,7 @@
     <footer class="bg-gray-50 border-t border-gray-200 py-12 mt-auto">
         <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="flex items-center gap-2">
-                <div class="w-6 h-6 bg-primary-600 rounded flex items-center justify-center text-white font-bold text-xs">M</div>
+                <img src="assets/maintainerd-mark.svg" alt="" class="w-6 h-6">
                 <span class="font-bold text-lg text-dark">Maintainerd</span>
             </div>
             <p class="text-gray-500 text-sm text-center md:text-left">
@@ -216,7 +214,7 @@
                         shortDesc: 'Identity & Access Management',
                         status: 'Active',
                         icon: 'shield',
-                        cmd: 'docker pull maintainerd/auth',
+                        cmd: 'docker pull maintainerd/maintainerd-auth',
                         description: 'The secure foundation of the Maintainerd ecosystem. A comprehensive IAM platform designed to secure your applications, APIs, and resources. Provides global policies for other M9d services.',
                         features: [
                             { icon: 'users', title: 'User Management', desc: 'Centralize identities, authentication pools, and federated providers (Google, GitHub, etc).' },
@@ -224,7 +222,7 @@
                             { icon: 'lock', title: 'Security Policies', desc: 'Define granular access policies to keep inter-service communication fully secure.' },
                             { icon: 'layout', title: 'Admin Console', desc: 'Dedicated web interface for developers to manage clients, tenants, and logs.' }
                         ],
-                        image: '/assets/m9d-auth-console.png',
+                        image: 'assets/m9d-auth-console.png',
                         repo: 'https://github.com/maintainerd/maintainerd-auth-console',
                         docs: '#'
                     },
@@ -234,7 +232,7 @@
                         shortDesc: 'Orchestration & Tenancy',
                         status: 'In Dev',
                         icon: 'cpu',
-                        cmd: 'npm install @maintainerd/core',
+                        cmd: 'docker pull maintainerd/maintainerd-core',
                         description: 'The central control plane. M9d-Core acts like a lightweight cloud provider interface, managing tenants, provisioning service instances (via Docker or Kubernetes), and handling infrastructure state.',
                         features: [
                             { icon: 'layers', title: 'Multi-Tenancy built-in', desc: 'Strictly isolate resources, databases, and services per tenant or organization.' },
@@ -257,7 +255,7 @@
                         shortDesc: 'S3 Wrapper & Block Volumes',
                         status: 'Planned',
                         icon: 'hard-drive',
-                        cmd: 'docker pull maintainerd/storage',
+                        cmd: 'docker pull maintainerd/maintainerd-storage',
                         description: 'A unified storage API that sits securely on top of multiple S3 providers (AWS, GCP) and local block storage. Includes an API and an end-user Drive-like application.',
                         features: [
                             { icon: 'cloud', title: 'Multi-Cloud S3 Adapter', desc: 'Abstract away specific cloud providers behind a single, consistent open API.' },
@@ -274,7 +272,7 @@
                         shortDesc: 'Managed Data Stores',
                         status: 'Idea',
                         icon: 'database',
-                        cmd: 'm9d provision db --type postgres',
+                        cmd: 'docker pull maintainerd/maintainerd-database',
                         description: 'Provision and manage relational (Postgres) and NoSQL (Redis, Mongo) databases easily with automated backups, tying directly into M9d-Core tenancy rules.',
                         features: [
                             { icon: 'refresh-cw', title: 'Automated Backups', desc: 'Snapshotting stored safely in M9d-Storage based on cron schedules.' },
@@ -296,7 +294,7 @@
                         shortDesc: 'Process & State Machines',
                         status: 'Planned',
                         icon: 'git-merge',
-                        cmd: 'docker pull maintainerd/workflow',
+                        cmd: 'docker pull maintainerd/maintainerd-workflow',
                         description: 'A robust engine for organizational business logic. Define state machines, handle approval chains, and trigger actions safely across other Maintainerd services.',
                         features: [
                             { icon: 'check-circle', title: 'Approval Chains', desc: 'Create multi-step manual or automated approval workflows for your organization.' },
@@ -313,7 +311,7 @@
                         shortDesc: 'Email, SMS & WebRTC',
                         status: 'Planned',
                         icon: 'message-square',
-                        cmd: 'docker pull maintainerd/messaging',
+                        cmd: 'docker pull maintainerd/maintainerd-messaging',
                         description: 'Centralized communication service. Send transactional emails, SMS notifications, or embed real-time chat and video calling directly into your applications.',
                         features: [
                             { icon: 'mail', title: 'Transactional Email', desc: 'Rich template management and reliable SMTP routing/delivery.' },
@@ -330,7 +328,7 @@
                         shortDesc: 'Serverless Compute',
                         status: 'Idea',
                         icon: 'code',
-                        cmd: 'm9d deploy function ./src',
+                        cmd: 'docker pull maintainerd/maintainerd-functions',
                         description: 'Execute backend code snippets without managing servers. Hook functions into M9d-Workflow or trigger them directly via HTTP endpoints managed by M9d-Core.',
                         features: [
                             { icon: 'play-circle', title: 'Instant Execution', desc: 'Run isolated Node, Python, or Go environments on demand.' },
