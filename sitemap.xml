@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
->
-  <url>
-    <loc>https://maintainerd.github.io/</loc>
-    <lastmod>2026-06-17</lastmod>
-    <image:image>
-      <image:loc>https://maintainerd.github.io/assets/m9d-auth-console.png</image:loc>
-      <image:caption>M9d Auth admin console client details screen</image:caption>
-    </image:image>
-  </url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url><loc>https://maintainerd.github.io/</loc><lastmod>2026-08-09</lastmod><image:image><image:loc>https://maintainerd.github.io/assets/m9d-auth-console.png</image:loc><image:caption>M9d Auth console interface</image:caption></image:image></url>
+  <url><loc>https://maintainerd.github.io/services/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/core/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/domains/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/docker/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/kubernetes/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/database/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/auth/</loc><lastmod>2026-08-09</lastmod><image:image><image:loc>https://maintainerd.github.io/assets/m9d-auth-console.png</image:loc><image:caption>M9d Auth console interface</image:caption></image:image></url>
+  <url><loc>https://maintainerd.github.io/services/secret/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/gateway/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/storage/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/messaging/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/cms/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/workflow/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/jobs/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/observability/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/billing/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/project/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/support/</loc><lastmod>2026-08-09</lastmod></url>
+  <url><loc>https://maintainerd.github.io/services/auth/docs/</loc><lastmod>2026-08-09</lastmod><image:image><image:loc>https://maintainerd.github.io/assets/m9d-auth-console.png</image:loc><image:caption>M9d Auth console interface</image:caption></image:image></url>
+  <url><loc>https://maintainerd.github.io/services/auth/api/</loc><lastmod>2026-08-09</lastmod></url>
 </urlset>

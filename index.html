@@ -1,742 +1,108 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maintainerd | Open-Source Self-Hostable Cloud Services</title>
-    <meta name="description" content="Open-source, self-hostable cloud services for app teams. Maintainerd gives developers cloud-style product and platform services they can inspect, run, and own themselves.">
-    <meta name="theme-color" content="#2563eb">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://maintainerd.github.io/">
-    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="assets/apple-touch-icon.svg">
-    <link rel="manifest" href="site.webmanifest">
-    <meta property="og:site_name" content="Maintainerd">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Maintainerd | Open-Source Self-Hostable Cloud Services">
-    <meta property="og:description" content="Open-source, self-hostable cloud services for app teams. Maintainerd gives developers cloud-style product and platform services they can inspect, run, and own themselves.">
-    <meta property="og:url" content="https://maintainerd.github.io/">
-    <meta property="og:image" content="https://maintainerd.github.io/assets/m9d-auth-console.png">
-    <meta property="og:image:alt" content="M9d Auth admin console client details screen">
-    <meta property="og:image:width" content="1920">
-    <meta property="og:image:height" content="1012">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Maintainerd | Open-Source Self-Hostable Cloud Services">
-    <meta name="twitter:description" content="Open-source, self-hostable cloud services for app teams. Maintainerd gives developers cloud-style product and platform services they can inspect, run, and own themselves.">
-    <meta name="twitter:image" content="https://maintainerd.github.io/assets/m9d-auth-console.png">
-    <script type="application/ld+json">
-        [
-            {
-                "@context": "https://schema.org",
-                "@type": "Organization",
-                "name": "Maintainerd",
-                "alternateName": "M9d",
-                "url": "https://maintainerd.github.io/",
-                "logo": "https://maintainerd.github.io/assets/favicon.svg",
-                "sameAs": [
-                    "https://github.com/maintainerd"
-                ],
-                "description": "Open-source, self-hostable cloud services for app teams. Maintainerd gives developers cloud-style product and platform services they can inspect, run, and own themselves."
-            },
-            {
-                "@context": "https://schema.org",
-                "@type": "WebSite",
-                "name": "Maintainerd",
-                "url": "https://maintainerd.github.io/",
-                "description": "Open-source, self-hostable cloud services for app teams. Learn about Maintainerd's modular services and shared control plane options."
-            },
-            {
-                "@context": "https://schema.org",
-                "@type": "ItemList",
-                "name": "Maintainerd service catalog",
-                "itemListElement": [
-                    { "@type": "ListItem", "position": 1, "name": "M9d Core", "description": "Tenant and service control plane." },
-                    { "@type": "ListItem", "position": 2, "name": "M9d Domains", "description": "Domain bindings, DNS automation, and certificate lifecycle." },
-                    { "@type": "ListItem", "position": 3, "name": "M9d Docker", "description": "Docker runtime provider." },
-                    { "@type": "ListItem", "position": 4, "name": "M9d Kubernetes", "description": "Kubernetes runtime provider." },
-                    { "@type": "ListItem", "position": 5, "name": "M9d Database", "description": "Database provisioning control." },
-                    { "@type": "ListItem", "position": 6, "name": "M9d Auth", "description": "Identity and access management product suite in development, with v0.1.0 estimated around July 14, 2026." },
-                    { "@type": "ListItem", "position": 7, "name": "M9d Secret", "description": "Internal or external secrets layer." },
-                    { "@type": "ListItem", "position": 8, "name": "M9d Gateway", "description": "API edge and routing service." },
-                    { "@type": "ListItem", "position": 9, "name": "M9d Storage", "description": "Storage APIs and drive app." },
-                    { "@type": "ListItem", "position": 10, "name": "M9d Messaging", "description": "Notifications and communication service." },
-                    { "@type": "ListItem", "position": 11, "name": "M9d CMS", "description": "Content and sites product." },
-                    { "@type": "ListItem", "position": 12, "name": "M9d Workflow", "description": "Approvals and state machines." },
-                    { "@type": "ListItem", "position": 13, "name": "M9d Jobs", "description": "Queues and scheduled work." },
-                    { "@type": "ListItem", "position": 14, "name": "M9d Observability", "description": "Logs, metrics, traces, and health." },
-                    { "@type": "ListItem", "position": 15, "name": "M9d Billing", "description": "Subscriptions and usage." },
-                    { "@type": "ListItem", "position": 16, "name": "M9d Project", "description": "Issues, boards, and roadmaps." },
-                    { "@type": "ListItem", "position": 17, "name": "M9d Support", "description": "Tickets and feedback." }
-                ]
-            }
-        ]
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inter & JetBrains Mono Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <!-- Feather Icons -->
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb', /* Main Blue */
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
-                        },
-                        dark: '#0f172a',
-                        darker: '#020617'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
-        }
-        .mockup-shadow {
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0,0,0,0.05);
-        }
-
-        /* Custom scrollbar for sleekness */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        /* Hide scrollbar for mobile tabs but allow scroll */
-        .hide-scroll::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scroll {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintainerd | Open-Source Cloud Platform</title>
+  <meta name="description" content="Maintainerd is an open-source cloud platform with built-in services for identity, deployments, storage, messaging, databases, workflows, observability, billing, support, and external app provisioning.">
+  <meta name="theme-color" content="#111827">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://maintainerd.github.io/">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.svg">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="stylesheet" href="assets/site.css">
+  <meta property="og:site_name" content="Maintainerd">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Maintainerd | Open-Source Cloud Platform">
+  <meta property="og:description" content="Maintainerd is an open-source cloud platform with built-in services for identity, deployments, storage, messaging, databases, workflows, observability, billing, support, and external app provisioning.">
+  <meta property="og:url" content="https://maintainerd.github.io/">
+  <meta property="og:image" content="https://maintainerd.github.io/assets/m9d-auth-console.png">
+  <meta name="twitter:card" content="summary_large_image">
 </head>
-<body class="font-sans text-gray-800 bg-white antialiased flex flex-col min-h-screen">
-
-    <!-- Top Navigation -->
-    <nav class="sticky top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
-                    <img src="assets/maintainerd-mark.svg" alt="" class="w-8 h-8 shadow-sm">
-                    <span class="font-bold text-xl text-dark tracking-tight">Maintainerd</span>
-                </div>
-
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-6">
-                    <a href="#products" class="text-sm font-semibold text-gray-600 hover:text-primary-600 transition-colors">Products</a>
-                    <a href="#" class="text-sm font-semibold text-gray-600 hover:text-primary-600 transition-colors">Documentation</a>
-                    <a href="#" class="text-sm font-semibold text-gray-600 hover:text-primary-600 transition-colors">Community</a>
-                    <div class="h-4 w-px bg-gray-300"></div>
-                    <a href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-dark transition-colors">
-                        <i data-feather="github" class="w-4 h-4"></i>
-                        GitHub
-                    </a>
-                </div>
-
-                <!-- Mobile menu button -->
-                <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-dark focus:outline-none">
-                        <i data-feather="menu" class="w-6 h-6"></i>
-                    </button>
-                </div>
-            </div>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <nav class="nav" aria-label="Primary">
+        <a class="brand" href="/"><img src="assets/maintainerd-mark.svg" alt=""><span>Maintainerd</span></a>
+        <button class="menu-button" type="button" aria-label="Open navigation" aria-expanded="false" data-nav-toggle><span></span></button>
+        <div class="nav-links" data-nav-links>
+          <a class="nav-link" aria-current="page" href="/">Platform</a>
+          <a class="nav-link" href="/services/">Services</a>
+          <a class="nav-link" href="/services/auth/">M9d Auth</a>
+          <a class="nav-link" href="/services/auth/docs/">Docs</a>
+          <a class="nav-link-muted" href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
-    </nav>
-
-    <!-- Brief Hero -->
-    <div class="bg-darker text-white py-12 border-b border-gray-800 relative overflow-hidden">
-        <!-- Subtle background glow -->
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary-600/20 blur-[100px] rounded-full pointer-events-none"></div>
-
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div class="max-w-2xl">
-                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">
-                    Open-source, self-hostable cloud services for <span class="text-primary-400">app teams.</span>
-                </h1>
-                <p class="text-gray-400 text-lg">
-                    Maintainerd gives developers cloud-style product and platform services they can inspect, run, and own themselves. Use each service standalone, or connect them through M9d-Core for a shared control plane.
-                </p>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <p class="eyebrow">Open-source cloud platform</p>
+            <h1>Maintainerd</h1>
+            <p class="lede">An AWS-style catalog of cloud services with Coolify-style ownership. Run built-in Maintainerd products, deploy your own apps, or provision images from Docker Hub and private registries through one open platform.</p>
+            <div class="hero-actions">
+              <a class="button primary" href="/services/">Explore services</a>
+              <a class="button secondary" href="/services/auth/docs/">Read Auth docs</a>
+              <a class="button secondary" href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer">View GitHub</a>
             </div>
-            <div class="flex-shrink-0 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <a href="#products" class="px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white font-semibold rounded-lg text-center transition-colors shadow-lg shadow-primary-600/20">
-                    Explore Services
-                </a>
-                <a href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg text-center backdrop-blur-sm transition-colors flex items-center justify-center gap-2 border border-white/10">
-                    <i data-feather="star" class="w-4 h-4"></i> Star on GitHub
-                </a>
-            </div>
+          </div>
         </div>
-    </div>
-
-    <!-- Product Explorer (TanStack Style Layout) -->
-    <div id="products" class="flex-1 flex flex-col lg:flex-row max-w-[1400px] mx-auto w-full">
-
-        <!-- Sidebar Navigation -->
-        <aside class="w-full lg:w-64 xl:w-72 flex-shrink-0 border-b lg:border-b-0 lg:border-r border-gray-200 bg-gray-50/50">
-            <div class="sticky top-16 h-auto lg:h-[calc(100vh-4rem)] overflow-y-auto hide-scroll lg:scrollbar-default pt-4 pb-8">
-                <div id="sidebar-nav" class="flex lg:flex-col gap-2 px-4 whitespace-nowrap lg:whitespace-normal">
-                    <!-- Populated by JS -->
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Product Content Area -->
-        <main class="flex-1 min-w-0 bg-white">
-            <div class="p-6 sm:p-10 lg:p-12 xl:p-16 max-w-5xl" id="product-content">
-                <!-- Populated by JS -->
-            </div>
-        </main>
-    </div>
-
-    <!-- Footer -->
-    <footer class="bg-gray-50 border-t border-gray-200 py-12 mt-auto">
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-2">
-                <img src="assets/maintainerd-mark.svg" alt="" class="w-6 h-6">
-                <span class="font-bold text-lg text-dark">Maintainerd</span>
-            </div>
-            <p class="text-gray-500 text-sm text-center md:text-left">
-                &copy; 2026 Maintainerd Ecosystem. Open Source under MIT/Apache.
-            </p>
-            <div class="flex gap-4">
-                <a href="#" class="text-gray-400 hover:text-dark transition-colors"><i data-feather="github" class="w-5 h-5"></i></a>
-                <a href="#" class="text-gray-400 hover:text-primary-600 transition-colors"><i data-feather="twitter" class="w-5 h-5"></i></a>
-            </div>
+        <div class="hero-strip" aria-label="Platform highlights">
+          <div class="strip-inner">
+            <div class="strip-item"><strong>17+</strong><span>Built-in service families</span></div>
+            <div class="strip-item"><strong>Any image</strong><span>Deploy external containers</span></div>
+            <div class="strip-item"><strong>Open</strong><span>Inspectable and self-hosted</span></div>
+            <div class="strip-item"><strong>Modular</strong><span>Use one service or the platform</span></div>
+          </div>
         </div>
+      </section>
+      <section class="section two-col">
+        <div>
+          <p class="eyebrow">Platform model</p>
+          <h2>Cloud services you can run, extend, and own.</h2>
+          <p class="section-lede">Maintainerd is not only an app deployer. Core can orchestrate built-in services like Auth, Storage, Messaging, Jobs, and Billing, while runtime providers deploy custom developer apps and third-party container images.</p>
+          <div class="actions"><a class="button dark" href="/services/">Open service catalog</a><a class="button light" href="/services/core/">See Core</a></div>
+        </div>
+        <div class="compact-grid">
+          <article class="capability"><h3>Built-in services</h3><p>Identity, databases, domains, secrets, gateway, storage, messaging, workflow, jobs, observability, billing, project, and support.</p></article>
+          <article class="capability"><h3>External apps</h3><p>Provision user-owned applications from Docker Hub, private registries, or custom images alongside Maintainerd services.</p></article>
+          <article class="capability"><h3>Shared control plane</h3><p>Core connects tenants, services, providers, health, policy, deployment state, and operational workflows.</p></article>
+        </div>
+      </section>
+      <section class="band"><div class="section">
+        <p class="eyebrow">Featured service</p><h2>M9d Auth has its own product space.</h2>
+        <p class="section-lede">Each Maintainerd service can have its own overview, documentation, API reference, and implementation guidance. Auth is the first fully linked example.</p>
+        <div class="doc-grid">
+          <a class="doc-card" href="/services/auth/"><span class="badge building">In development</span><h3>M9d Auth overview</h3><p>Identity and access management across backend APIs, admin console, and public identity flows.</p></a>
+          <a class="doc-card" href="/services/auth/docs/"><span class="badge planned">Documentation</span><h3>Auth docs</h3><p>Service architecture, app surfaces, deployment notes, and integration model.</p></a>
+          <a class="doc-card" href="/services/auth/api/"><span class="badge planned">API reference</span><h3>Auth API</h3><p>Endpoint families for setup, tenants, OAuth, users, clients, roles, policies, MFA, and service auth.</p></a>
+          <a class="doc-card" href="https://github.com/maintainerd/maintainerd-auth-console" target="_blank" rel="noopener noreferrer"><span class="badge live">Source</span><h3>Auth console repository</h3><p>Management console for tenants, clients, users, policies, providers, and security settings.</p></a>
+        </div>
+      </div></section>
+      <section class="section">
+        <p class="eyebrow">Service families</p><h2>A platform-sized roadmap.</h2>
+        <p class="section-lede">Maintainerd services are independent products that can stand alone or join the shared control plane.</p>
+        <div class="service-grid">
+          <a class="service-card" href="/services/core/"><div class="service-kicker"><span class="service-mark">Co</span><span class="badge planned">Planned</span></div><h3>M9d Core</h3><p>Tenant, service, topology, and operations control plane.</p><footer><span class="text-link">Open service</span></footer></a>
+          <a class="service-card" href="/services/auth/"><div class="service-kicker"><span class="service-mark">Au</span><span class="badge building">In development</span></div><h3>M9d Auth</h3><p>Identity, access, OAuth, policies, MFA, and API authorization.</p><footer><span class="text-link">Open service</span></footer></a>
+          <a class="service-card" href="/services/docker/"><div class="service-kicker"><span class="service-mark">Do</span><span class="badge idea">Idea</span></div><h3>M9d Docker</h3><p>Docker runtime provider for built-in services and external images.</p><footer><span class="text-link">Open service</span></footer></a>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="footer-inner">
+        <div>
+          <a class="brand" href="/"><img src="/assets/maintainerd-mark.svg" alt=""><span>Maintainerd</span></a>
+          <p>Open-source cloud services for teams that want platform capability without surrendering ownership.</p>
+        </div>
+        <div><h3>Platform</h3><a href="/services/">Services</a><a href="/services/core/">Core</a><a href="/services/docker/">External apps</a></div>
+        <div><h3>Docs</h3><a href="/services/auth/docs/">Auth docs</a><a href="/services/auth/api/">Auth API</a><a href="/services/auth/">Auth overview</a></div>
+        <div><h3>Community</h3><a href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+      </div>
     </footer>
-
-    <script>
-        // Ecosystem Data grouped by categories. Each product is designed to run
-        // standalone first, then optionally connect to M9d-Core for oversight.
-        const categories = [
-            {
-                id: 'control',
-                title: 'Control Plane',
-                services: [
-                    {
-                        id: 'core-orchestrator',
-                        name: 'M9d Core',
-                        shortDesc: 'Tenant & Service Control',
-                        status: 'Planned',
-                        icon: 'cpu',
-                        cmd: 'docker pull maintainerd/maintainerd-core',
-                        description: 'The central control plane for the Maintainerd ecosystem. Core manages tenants, registered services, health, topology, and high-level operations, but delegates actual provisioning to runtime providers like M9d Docker or M9d Kubernetes.',
-                        features: [
-                            { icon: 'layers', title: 'Tenant Overview', desc: 'Track tenants, environments, services, ownership, and global platform state from one place.' },
-                            { icon: 'activity', title: 'Health & Topology', desc: 'Observe service health, dependencies, runtime status, and incidents across connected services.' },
-                            { icon: 'send', title: 'Delegated Operations', desc: 'Communicate with provider services for deployment, database, and infrastructure operations.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'domains',
-                        name: 'M9d Domains',
-                        shortDesc: 'DNS & Certificates',
-                        status: 'Idea',
-                        icon: 'globe',
-                        cmd: 'docker pull maintainerd/maintainerd-domains',
-                        description: 'A Core-controlled domain and certificate service for provisioned applications and Maintainerd products. It manages domain bindings, DNS provider updates, TLS certificates, renewals, and service-to-domain assignments so teams do not manually wire domains for every deployed service.',
-                        features: [
-                            { icon: 'link', title: 'Service Domain Bindings', desc: 'Assign domains and subdomains to provisioned services, apps, tenants, and environments through Core.' },
-                            { icon: 'globe', title: 'DNS Provider Automation', desc: 'Create and update DNS records through providers such as Cloudflare, Route 53, or other integrations.' },
-                            { icon: 'shield', title: 'Certificate Lifecycle', desc: 'Issue, renew, and attach TLS certificates for public endpoints without manual certificate setup.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'docker',
-                        name: 'M9d Docker',
-                        shortDesc: 'Docker Runtime Provider',
-                        status: 'Idea',
-                        icon: 'box',
-                        cmd: 'docker pull maintainerd/maintainerd-docker',
-                        description: 'A runtime provider that handles Docker-based deployments for services and applications. Core can ask it to deploy, inspect, restart, or report on workloads, but it can also run independently for smaller setups.',
-                        features: [
-                            { icon: 'server', title: 'Container Deployments', desc: 'Run Maintainerd services or customer apps on Docker hosts.' },
-                            { icon: 'refresh-cw', title: 'Lifecycle Actions', desc: 'Start, stop, restart, update, and inspect containers through a controlled provider API.' },
-                            { icon: 'activity', title: 'Runtime Signals', desc: 'Report health, ports, images, and basic runtime metadata back to Core.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'kubernetes',
-                        name: 'M9d Kubernetes',
-                        shortDesc: 'Kubernetes Runtime Provider',
-                        status: 'Idea',
-                        icon: 'server',
-                        cmd: 'docker pull maintainerd/maintainerd-kubernetes',
-                        description: 'A Kubernetes provider for provisioning services, workloads, and platform components into clusters. It lets Maintainerd support production-grade orchestration without making Core responsible for cluster-specific behavior.',
-                        features: [
-                            { icon: 'box', title: 'Cluster Workloads', desc: 'Deploy services as Kubernetes resources while preserving the same product contract.' },
-                            { icon: 'sliders', title: 'Environment Profiles', desc: 'Map tenants and services to namespaces, ingress, secrets, and resource policies.' },
-                            { icon: 'activity', title: 'Cluster Health', desc: 'Expose workload readiness, rollout state, and cluster provider health to Core.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'database',
-                        name: 'M9d Database',
-                        shortDesc: 'Database Provisioning Control',
-                        status: 'Idea',
-                        icon: 'database',
-                        cmd: 'docker pull maintainerd/maintainerd-database',
-                        description: 'A control service for provisioning and managing existing database engines such as PostgreSQL, MySQL, Redis, or MongoDB. Maintainerd does not replace those databases; it standardizes how organizations create, attach, monitor, and back them up.',
-                        features: [
-                            { icon: 'plus-circle', title: 'Provision Existing Engines', desc: 'Create and register Postgres, MySQL, Redis, or MongoDB instances through provider-specific integrations.' },
-                            { icon: 'key', title: 'Credential Handoff', desc: 'Coordinate generated credentials with M9d Secret or external secret managers.' },
-                            { icon: 'archive', title: 'Backup Policy Hooks', desc: 'Define backup and retention policies while delegating execution to the chosen runtime or database provider.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    }
-                ]
-            },
-            {
-                id: 'security',
-                title: 'Identity & Security',
-                services: [
-                    {
-                        id: 'auth',
-                        name: 'M9d Auth',
-                        shortDesc: 'Identity & Access Management',
-                        status: 'In Development',
-                        icon: 'shield',
-                        cmd: 'docker pull maintainerd/maintainerd-auth',
-                        description: 'The IAM product suite for Maintainerd, currently in ongoing development with no public release yet. The first release is planned as v0.1.0, estimated around July 14, 2026. It includes the auth backend, a management console for administrators and developers, and a public identity interface for login, OAuth2, account flows, MFA, consent, and user-facing auth experiences.',
-                        features: [
-                            { icon: 'server', title: 'maintainerd-auth', desc: 'Backend API and identity service for users, tenants, OAuth clients, API keys, roles, permissions, policies, sessions, and MFA.' },
-                            { icon: 'layout', title: 'maintainerd-auth-console', desc: 'Management app for administrators and developers to operate tenants, clients, users, policies, providers, and security settings.' },
-                            { icon: 'user-check', title: 'maintainerd-auth-identity', desc: 'Public-facing identity app for OAuth2 login, account flows, consent, MFA, and regular user authentication.' },
-                            { icon: 'lock', title: 'Global Policies', desc: 'Owns the permissions and policy model used across the broader Maintainerd ecosystem.' }
-                        ],
-                        image: 'assets/m9d-auth-console.png',
-                        repo: 'https://github.com/maintainerd/maintainerd-auth-console',
-                        docs: '#'
-                    },
-                    {
-                        id: 'secret',
-                        name: 'M9d Secret',
-                        shortDesc: 'Internal or External Secrets',
-                        status: 'Idea',
-                        icon: 'key',
-                        cmd: 'docker pull maintainerd/maintainerd-secret',
-                        description: 'A secrets layer that can run as an internal Maintainerd secret store or delegate to external providers such as AWS Secrets Manager, Vault, or cloud KMS products when organizations prefer to keep secrets outside Maintainerd.',
-                        features: [
-                            { icon: 'lock', title: 'Internal Store Option', desc: 'Provide a simple built-in secrets workflow for local, self-hosted, or lower-friction deployments.' },
-                            { icon: 'external-link', title: 'External Provider Option', desc: 'Bridge to trusted external secret managers without changing the service contract.' },
-                            { icon: 'refresh-cw', title: 'Rotation & References', desc: 'Expose consistent secret references, rotation hooks, and audit trails to other services.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'gateway',
-                        name: 'M9d Gateway',
-                        shortDesc: 'API Edge & Routing',
-                        status: 'Idea',
-                        icon: 'shuffle',
-                        cmd: 'docker pull maintainerd/maintainerd-gateway',
-                        description: 'An application edge service for public and private routing, API exposure, rate limits, service-to-service checks, and request policy enforcement. It complements M9d Auth without moving the auth policy model out of Auth.',
-                        features: [
-                            { icon: 'globe', title: 'Public & Private Routes', desc: 'Expose APIs, apps, and service endpoints through a consistent routing layer.' },
-                            { icon: 'shield', title: 'Auth-Aware Edge', desc: 'Validate tokens, API keys, and service policies using M9d Auth as the source of truth.' },
-                            { icon: 'activity', title: 'Traffic Controls', desc: 'Apply rate limits, request logs, health probes, and traffic-level visibility.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    }
-                ]
-            },
-            {
-                id: 'productivity',
-                title: 'Application Products',
-                services: [
-                    {
-                        id: 'storage',
-                        name: 'M9d Storage',
-                        shortDesc: 'Storage APIs & Drive App',
-                        status: 'Planned',
-                        icon: 'hard-drive',
-                        cmd: 'docker pull maintainerd/maintainerd-storage',
-                        description: 'A storage product suite built around common file and object storage needs. The service can expose developer-facing storage controls and a consumer-facing drive app similar to Google Drive.',
-                        features: [
-                            { icon: 'cloud', title: 'Object Storage API', desc: 'Wrap existing S3-compatible providers or local storage behind a consistent service API.' },
-                            { icon: 'layout', title: 'Storage Console', desc: 'Developer and administrator surface for buckets, policies, quotas, and storage providers.' },
-                            { icon: 'folder', title: 'M9d Drive', desc: 'Consumer-facing file manager for end users, teams, uploads, sharing, and folders.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'messaging',
-                        name: 'M9d Messaging',
-                        shortDesc: 'Notifications & Comms',
-                        status: 'Planned',
-                        icon: 'message-square',
-                        cmd: 'docker pull maintainerd/maintainerd-messaging',
-                        description: 'A communication product for common notification and messaging needs. It can send transactional email, SMS, push, and eventually support customer-facing inbox or chat-style experiences.',
-                        features: [
-                            { icon: 'mail', title: 'Templates & Delivery', desc: 'Reusable email, SMS, and push templates with provider routing and delivery logs.' },
-                            { icon: 'layout', title: 'Messaging Console', desc: 'Management surface for templates, channels, provider credentials, and event-triggered sends.' },
-                            { icon: 'message-circle', title: 'Future Inbox Apps', desc: 'Possible consumer-facing inbox, support chat, or notification center experiences.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'cms',
-                        name: 'M9d CMS',
-                        shortDesc: 'Content & Sites',
-                        status: 'Idea',
-                        icon: 'file-text',
-                        cmd: 'docker pull maintainerd/maintainerd-cms',
-                        description: 'A content product for pages, announcements, knowledge bases, marketing sites, and product content that organizations repeatedly build around their applications.',
-                        features: [
-                            { icon: 'edit-3', title: 'Structured Content', desc: 'Manage reusable page blocks, articles, announcements, and app content models.' },
-                            { icon: 'layout', title: 'CMS Console', desc: 'Editorial and developer-facing management interface for content schemas and publishing.' },
-                            { icon: 'globe', title: 'Public Delivery', desc: 'Serve public content through API, static rendering, or product-specific frontends.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    }
-                ]
-            },
-            {
-                id: 'operations',
-                title: 'Operations & Business',
-                services: [
-                    {
-                        id: 'workflow',
-                        name: 'M9d Workflow',
-                        shortDesc: 'Approvals & State Machines',
-                        status: 'Planned',
-                        icon: 'git-merge',
-                        cmd: 'docker pull maintainerd/maintainerd-workflow',
-                        description: 'A workflow product for approval chains, state machines, background business processes, and automations that connect Auth, Storage, Messaging, and future services.',
-                        features: [
-                            { icon: 'check-circle', title: 'Approval Chains', desc: 'Create multi-step manual or automated approval workflows for organizations.' },
-                            { icon: 'zap', title: 'Event Triggers', desc: 'React to internal events, webhooks, or user actions emitted by other Maintainerd services.' },
-                            { icon: 'eye', title: 'Workflow Console', desc: 'Developer and operator interface for designing, observing, and debugging workflows.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'jobs',
-                        name: 'M9d Jobs',
-                        shortDesc: 'Queues & Scheduled Work',
-                        status: 'Idea',
-                        icon: 'clock',
-                        cmd: 'docker pull maintainerd/maintainerd-jobs',
-                        description: 'A jobs product for scheduled tasks, queues, retries, background workers, and recurring maintenance work that nearly every organization eventually builds around its apps.',
-                        features: [
-                            { icon: 'repeat', title: 'Retryable Work', desc: 'Run durable background jobs with retry policies, delays, and dead-letter handling.' },
-                            { icon: 'calendar', title: 'Schedules', desc: 'Create cron-like tasks for reminders, cleanup, billing cycles, and recurring operations.' },
-                            { icon: 'activity', title: 'Worker Visibility', desc: 'Track job state, failures, throughput, and worker health from a management console.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'observability',
-                        name: 'M9d Observability',
-                        shortDesc: 'Logs, Metrics & Health',
-                        status: 'Idea',
-                        icon: 'activity',
-                        cmd: 'docker pull maintainerd/maintainerd-observability',
-                        description: 'An operations product for logs, metrics, traces, alerts, dashboards, and service health. It can integrate with open tools instead of replacing them, while giving Maintainerd services a shared operational view.',
-                        features: [
-                            { icon: 'bar-chart-2', title: 'Metrics & Dashboards', desc: 'Surface service metrics and health summaries for operators and developers.' },
-                            { icon: 'file-text', title: 'Logs & Audit Signals', desc: 'Centralize application logs and connect operational events to Auth and Core context.' },
-                            { icon: 'bell', title: 'Alerts', desc: 'Route incidents and health changes to teams through Messaging, Support, or external tools.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'billing',
-                        name: 'M9d Billing',
-                        shortDesc: 'Subscriptions & Usage',
-                        status: 'Idea',
-                        icon: 'credit-card',
-                        cmd: 'docker pull maintainerd/maintainerd-billing',
-                        description: 'A billing product for plans, subscriptions, usage tracking, invoices, and payment provider integrations. It targets the billing logic organizations repeatedly wire into SaaS products.',
-                        features: [
-                            { icon: 'dollar-sign', title: 'Plans & Subscriptions', desc: 'Model products, plans, trials, invoices, and subscription lifecycle events.' },
-                            { icon: 'bar-chart-2', title: 'Usage Metering', desc: 'Collect billable usage from Maintainerd services or application-specific events.' },
-                            { icon: 'layout', title: 'Billing Console', desc: 'Management surface for pricing, customers, invoices, and provider connections.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'project',
-                        name: 'M9d Project',
-                        shortDesc: 'Issues, Boards & Roadmaps',
-                        status: 'Idea',
-                        icon: 'trello',
-                        cmd: 'docker pull maintainerd/maintainerd-project',
-                        description: 'A first-party project management product for issue tracking, boards, roadmaps, milestones, and software team planning. It is the Maintainerd answer to the work organizations repeatedly manage in tools like Jira or Linear.',
-                        features: [
-                            { icon: 'check-square', title: 'Issues & Tasks', desc: 'Track bugs, features, chores, epics, owners, priorities, labels, and status.' },
-                            { icon: 'columns', title: 'Boards & Roadmaps', desc: 'Plan work through kanban boards, milestones, releases, and product roadmaps.' },
-                            { icon: 'git-pull-request', title: 'Developer Workflow', desc: 'Connect issues to repositories, deployments, support tickets, and workflow automations.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    },
-                    {
-                        id: 'support',
-                        name: 'M9d Support',
-                        shortDesc: 'Tickets & Feedback',
-                        status: 'Idea',
-                        icon: 'life-buoy',
-                        cmd: 'docker pull maintainerd/maintainerd-support',
-                        description: 'A support product for customer tickets, feedback, issue intake, helpdesk workflows, and customer communication. It can link to M9d Project when support work becomes product or engineering work.',
-                        features: [
-                            { icon: 'inbox', title: 'Ticket Intake', desc: 'Capture support requests, feedback, and issues from public or authenticated users.' },
-                            { icon: 'users', title: 'Support Workflows', desc: 'Assign, prioritize, comment, respond, and route customer-facing requests.' },
-                            { icon: 'git-branch', title: 'Project Handoff', desc: 'Escalate tickets into M9d Project issues when they require roadmap or engineering work.' }
-                        ],
-                        image: null,
-                        repo: '#',
-                        docs: '#'
-                    }
-                ]
-            }
-        ];
-
-        let activeServiceId = 'auth';
-
-        function getServiceById(id) {
-            for (let cat of categories) {
-                const service = cat.services.find(s => s.id === id);
-                if (service) return service;
-            }
-            return null;
-        }
-
-        function renderSidebar() {
-            const navEl = document.getElementById('sidebar-nav');
-            navEl.innerHTML = '';
-
-            categories.forEach(category => {
-                // Category Header (Hidden on mobile scroll, visible on desktop)
-                const header = document.createElement('div');
-                header.className = 'hidden lg:block text-xs font-bold text-gray-400 uppercase tracking-wider mt-6 mb-2 px-3';
-                header.innerText = category.title;
-                navEl.appendChild(header);
-
-                category.services.forEach(service => {
-                    const isActive = service.id === activeServiceId;
-                    const btn = document.createElement('button');
-
-                    // TanStack inspired tab styling
-                    btn.className = `flex-shrink-0 lg:w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between transition-all group border lg:border-transparent ${
-                        isActive
-                            ? 'bg-white border-gray-200 lg:border-transparent lg:bg-primary-50 text-primary-700 shadow-sm lg:shadow-none'
-                            : 'border-gray-200 bg-white lg:bg-transparent lg:border-transparent text-gray-600 hover:bg-gray-100 hover:text-dark'
-                    }`;
-
-                    let badgeColor = service.status === 'Active' ? 'bg-green-100 text-green-700' :
-                                     service.status === 'Idea' ? 'bg-purple-100 text-purple-700' :
-                                     'bg-amber-100 text-amber-700';
-
-                    // Simplified badge for mobile, full for desktop
-                    btn.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="${isActive ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-600'}">
-                                <i data-feather="${service.icon}" class="w-4 h-4"></i>
-                            </div>
-                            <span class="font-semibold text-sm">${service.name}</span>
-                        </div>
-                        <span class="hidden lg:inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-md ${badgeColor}">${service.status}</span>
-                    `;
-
-                    btn.onclick = () => {
-                        activeServiceId = service.id;
-                        renderSidebar();
-                        renderProductContent();
-
-                        // Scroll tab into view on mobile
-                        if (window.innerWidth < 1024) {
-                            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                        }
-                    };
-
-                    navEl.appendChild(btn);
-                });
-            });
-            feather.replace();
-        }
-
-        function renderProductContent() {
-            const container = document.getElementById('product-content');
-            const service = getServiceById(activeServiceId);
-
-            if(!service) return;
-
-            let badgeHtml = service.status === 'Active' ? `<span class="inline-flex items-center bg-green-100 text-green-700 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide border border-green-200"><span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>Production Ready</span>` :
-                            service.status === 'Idea' ? `<span class="inline-flex items-center bg-purple-100 text-purple-700 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide border border-purple-200"><i data-feather="lightbulb" class="w-3 h-3 mr-1.5"></i>Exploration Phase</span>` :
-                            `<span class="inline-flex items-center bg-amber-100 text-amber-700 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide border border-amber-200"><i data-feather="tool" class="w-3 h-3 mr-1.5"></i>In Development</span>`;
-
-            let actionButtons = '';
-            if (service.repo !== '#') {
-                actionButtons = `
-                    <div class="flex flex-wrap gap-3 mt-6">
-                        <a href="${service.docs}" class="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm">
-                            Read Documentation
-                        </a>
-                        <a href="${service.repo}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-dark text-sm font-semibold rounded-lg transition-colors shadow-sm flex items-center gap-2">
-                            <i data-feather="github" class="w-4 h-4"></i> GitHub Repo
-                        </a>
-                    </div>
-                `;
-            } else {
-                actionButtons = `
-                    <div class="flex flex-wrap gap-3 mt-6">
-                        <button disabled class="px-5 py-2.5 bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed text-sm font-semibold rounded-lg flex items-center gap-2">
-                            <i data-feather="clock" class="w-4 h-4"></i> Coming Soon
-                        </button>
-                    </div>
-                `;
-            }
-
-            let visualHtml = '';
-            if (service.image) {
-                visualHtml = `
-                    <div class="mt-12 rounded-xl overflow-hidden shadow-xl border border-gray-200 bg-gray-50">
-                        <!-- Mac-style Window Header -->
-                        <div class="h-10 bg-gray-100 flex items-center px-4 gap-2 border-b border-gray-200">
-                            <div class="w-3 h-3 rounded-full bg-red-400"></div>
-                            <div class="w-3 h-3 rounded-full bg-amber-400"></div>
-                            <div class="w-3 h-3 rounded-full bg-green-400"></div>
-                            <div class="ml-4 text-xs font-mono text-gray-400">${service.name} Console</div>
-                        </div>
-                        <img src="${service.image}" alt="${service.name} interface preview" class="w-full h-auto block object-cover border-none">
-                    </div>
-                `;
-            }
-
-            const featuresHtml = service.features.map(f => `
-                <div class="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="w-10 h-10 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600 mb-4 border border-primary-100">
-                        <i data-feather="${f.icon}" class="w-5 h-5"></i>
-                    </div>
-                    <h4 class="font-bold text-dark text-base mb-2">${f.title}</h4>
-                    <p class="text-sm text-gray-600 leading-relaxed">${f.desc}</p>
-                </div>
-            `).join('');
-
-            // TanStack style product header
-            container.innerHTML = `
-                <div class="animate-fade-in">
-                    <div class="flex items-center gap-3 mb-6">
-                        ${badgeHtml}
-                    </div>
-
-                    <h2 class="text-4xl md:text-5xl font-extrabold text-dark tracking-tight mb-4">
-                        ${service.name}
-                    </h2>
-
-                    <p class="text-xl text-gray-600 mb-6 max-w-3xl leading-relaxed">
-                        ${service.description}
-                    </p>
-
-                    <!-- Terminal snippet -->
-                    <div class="flex items-center bg-darker rounded-lg p-1 max-w-max mb-8 border border-gray-800 shadow-sm">
-                        <div class="px-4 py-2 font-mono text-sm text-gray-300 select-all">
-                            <span class="text-primary-400">$</span> ${service.cmd}
-                        </div>
-                        <button class="p-2 hover:bg-gray-800 rounded-md text-gray-400 hover:text-white transition-colors" title="Copy to clipboard" onclick="navigator.clipboard.writeText('${service.cmd}')">
-                            <i data-feather="copy" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-
-                    ${actionButtons}
-
-                    <hr class="my-12 border-gray-100">
-
-                    <h3 class="text-2xl font-bold text-dark mb-6">Key Features</h3>
-                    <div class="grid md:grid-cols-2 gap-5">
-                        ${featuresHtml}
-                    </div>
-
-                    ${visualHtml}
-                </div>
-            `;
-
-            // Re-initialize icons for newly injected HTML
-            feather.replace();
-        }
-
-        // Init
-        document.addEventListener('DOMContentLoaded', () => {
-            renderSidebar();
-            renderProductContent();
-            feather.replace();
-
-            // Add simple fade animation CSS dynamically
-            const style = document.createElement('style');
-            style.innerHTML = `
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(5px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .animate-fade-in {
-                    animation: fadeIn 0.3s ease-out forwards;
-                }
-            `;
-            document.head.appendChild(style);
-        });
-    </script>
+  </div>
+  <script src="assets/site.js"></script>
 </body>
 </html>
