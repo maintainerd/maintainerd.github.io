@@ -1,13 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Maintainerd">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="maintainerd">
   <defs>
-    <linearGradient id="blue" x1="22" y1="18" x2="158" y2="162" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#60a5fa"/>
-      <stop offset="0.45" stop-color="#2563eb"/>
-      <stop offset="1" stop-color="#1d4ed8"/>
-    </linearGradient>
+    <clipPath id="aL"><rect x="36" y="36" width="54" height="108"/></clipPath>
+    <clipPath id="aR"><rect x="90" y="36" width="54" height="108"/></clipPath>
+    <path id="aC" d="M19.35 10.04C18.67 6.59 15.64 4 12 4C9.11 4 6.6 5.64 5.35 8.04C2.34 8.36 0 10.91 0 14C0 17.31 2.69 20 6 20H19C21.76 20 24 17.76 24 15C24 12.36 21.95 10.22 19.35 10.04Z"/>
   </defs>
-  <rect x="16" y="16" width="148" height="148" rx="40" fill="url(#blue)"/>
-  <path d="M90 40 130 57v31c0 28.5-16.3 50.8-40 59-23.7-8.2-40-30.5-40-59V57l40-17Z" fill="#eff6ff" opacity=".22"/>
-  <path d="M58 122V60h18.2L90 99.4 103.8 60H122v62h-16.2V88.8L94.6 122h-9.2L74.2 88.8V122H58Z" fill="#fff"/>
-  <path d="M48 55 90 35l42 20" fill="none" stroke="#dbeafe" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity=".72"/>
+  <rect width="180" height="180" rx="34" fill="#ffffff"/>
+  <g clip-path="url(#aL)"><use href="#aC" transform="translate(36 36) scale(4.5)" fill="#1E40AF"/></g>
+  <g clip-path="url(#aR)"><use href="#aC" transform="translate(36 36) scale(4.5)" fill="#2563EB"/></g>
 </svg>
