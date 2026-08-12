@@ -41,4 +41,19 @@ This section is the bridge from docs to the API reference.
 - OpenAPI JSON.
 - Prometheus metrics.
 
+## gRPC Runtime API
+
+- Authorization decisions.
+- OAuth token introspection.
+- User and profile reads for peer services.
+- Service policy bundle reads.
+- Default tenant reads.
+
+## gRPC Control Plane
+
+- Setup bootstrap.
+- Tenant and tenant-setting provisioning.
+- Service, API, permission, policy, role, client, and workload identity provisioning.
+- Mixed user/profile write methods when control-plane mode is enabled.
+
 For endpoint-level request and response details, use the API reference page.

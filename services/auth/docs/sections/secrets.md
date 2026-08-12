@@ -15,7 +15,7 @@ Auth uses a secret manager abstraction so sensitive values can come from environ
 - `aws_ssm`: reads from AWS SSM Parameter Store.
 - `aws_secrets`: reads from AWS Secrets Manager.
 - `vault`: reads from HashiCorp Vault KV.
-- `azure`: reads from Azure Key Vault.
+- `azure_kv`: reads from Azure Key Vault.
 - `gcp`: reads from GCP Secret Manager.
 
 ## Provider Configuration
@@ -27,6 +27,8 @@ Auth uses a secret manager abstraction so sensitive values can come from environ
 - `VAULT_MOUNT`: defaults to `secret`.
 - `VAULT_SECRET_FIELD`: defaults to `value`.
 - `VAULT_ROLE_ID` and `VAULT_SECRET_ID`: AppRole inputs when used.
+- `GCP_PROJECT_ID`: required for GCP Secret Manager.
+- `AZURE_KEYVAULT_URL`: required for Azure Key Vault.
 
 ## Key Responsibilities
 
@@ -34,3 +36,7 @@ Auth uses a secret manager abstraction so sensitive values can come from environ
 - Application encryption keys protect stored provider secrets and messaging credentials.
 - HMAC secret signs short-lived URLs and links.
 - Retired encryption keys allow old ciphertext to remain readable after rotation.
+
+## Fallback And Strict Mode
+
+When `SECRET_PROVIDER` is not `env`, Auth can fall back to environment variables only when the provider says a secret is absent. Provider outages, permission errors, and malformed responses are startup failures. Set `SECRET_STRICT=true` once every secret has moved into the provider so missing provider values do not fall back to env.

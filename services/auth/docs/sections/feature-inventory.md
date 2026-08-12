@@ -16,6 +16,11 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - Health and readiness aliases: `/health`, `/healthz`, `/ready`, `/readyz`, and `/livez`.
 - Prometheus metrics on the management surface at `/metrics`.
 - gRPC surface for selected control-plane and service-authorization operations.
+- Standalone mode by default, with no gRPC listener bound unless explicitly enabled.
+- Runtime gRPC mode for authorization, token introspection, and peer reads.
+- Core control-plane mode for orchestrated Maintainerd provisioning.
+- System and regular instance roles for ecosystem deployments.
+- Embedded console and identity SPAs in the production image.
 
 ## Setup And Bootstrap
 
@@ -24,6 +29,9 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - Admin bootstrap flow.
 - Profile creation during setup.
 - Control-service registration.
+- gRPC setup bootstrap gated by `SETUP_BOOTSTRAP_TOKEN`.
+- Setup window bounded by `SETUP_WINDOW_TTL`.
+- Control client, resource API, role, and console client ensure operations for Core-managed setup.
 - Console setup pages for tenant and admin creation.
 - Dedicated no-access and service-unavailable console states.
 
@@ -134,6 +142,8 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - OpenID Connect discovery document.
 - OAuth authorization-server metadata.
 - JWKS endpoint.
+- DPoP proof validation for token requests.
+- DPoP server nonce gate for clients that require DPoP.
 - Pushed Authorization Requests.
 - Device authorization flow.
 - Device-code verify and deny endpoints.
@@ -169,6 +179,9 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - Token introspection.
 - `kid` based signing-key selection.
 - Multi-key JWKS publication.
+- DPoP-bound access tokens with `cnf.jkt`.
+- DPoP-bound refresh-token family behavior.
+- Certificate-bound token enforcement for gRPC clients with registered certificate thumbprints.
 
 ## Clients
 
@@ -186,6 +199,9 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - Access-token and refresh-token TTL settings.
 - First-party client guard for cookie-authenticated account-management routes.
 - Management-client audience guard for internal API access.
+- Client DPoP requirement flag.
+- Private-key JWT client authentication through inline JWKS or JWKS URL.
+- Dynamic client registration kept on the internal management surface only.
 
 ## Federation And Identity Providers
 
@@ -320,6 +336,8 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - User settings create, read, and delete.
 - Trusted-device listing and deletion.
 - Self-service data-erasure request.
+- Admin-created data-erasure request.
+- GDPR-style erasure worker for due requests.
 - Federation identity link and unlink.
 
 ## Security Controls
@@ -342,6 +360,10 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - Cookie-authenticated state-changing routes protected by CSRF middleware.
 - First-party client requirement for hosted account-management routes.
 - Management-client requirement for the internal API.
+- gRPC system-instance gate for Core provisioning RPCs.
+- gRPC service-account token requirement.
+- gRPC `on_behalf_of` actor claim for actor-attributed mutations.
+- gRPC refusal of DPoP-bound access tokens.
 - Request size limits.
 - Request timeouts.
 - CORS allow-list middleware.
@@ -387,6 +409,9 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - Webhook delivery replay.
 - HMAC-signed webhook delivery support.
 - Auth-event retention runner.
+- Tenant retention runner.
+- OAuth short-lived row cleanup runner.
+- Auth event partition manager.
 - Trace/request context capture for operational correlation.
 
 ## Branding, Email, And SMS
@@ -430,6 +455,8 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - HashiCorp Vault KV provider.
 - Azure Key Vault provider.
 - GCP Secret Manager provider.
+- Environment fallback for absent provider secrets.
+- Strict provider mode with `SECRET_STRICT=true`.
 - Secret refresh runner.
 - Application encryption key loading through the secret provider.
 - JWT signing key loading through the secret provider.
@@ -457,6 +484,8 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - gRPC reflection.
 - gRPC auth, logging, recovery, and OpenTelemetry interceptors.
 - Protobuf services for setup, tenants, tenant settings, users, profiles, clients, APIs, permissions, policies, roles, services, authorization, OAuth introspection, and workload identity federation.
+- Control-plane gRPC requires mTLS and valid client CA configuration.
+- Runtime-only gRPC with administrative services withheld when the control plane is off.
 
 ## Runtime And Operations
 
@@ -467,11 +496,14 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - Redis-backed token/JTI state where needed.
 - OpenTelemetry tracing initialization.
 - OpenTelemetry metrics initialization.
+- OpenTelemetry log export.
 - PostgreSQL OpenTelemetry instrumentation.
 - Migration runner.
 - Seeder runner.
 - Secret refresh runner.
 - Signing-key rotation runner.
+- Data erasure worker.
+- Event retention and partition workers.
 - Graceful shutdown handling.
 - Multi-stage Dockerfile.
 - Non-root container runtime user.

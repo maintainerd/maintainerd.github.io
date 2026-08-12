@@ -41,3 +41,7 @@ Auth uses structured logging and includes request/security context where availab
 ## Correlation
 
 Use request IDs, trace IDs, span IDs, auth events, and management audit records together when investigating identity or authorization behavior.
+
+## Operational Workers
+
+Auth event retention, tenant retention, OAuth cleanup, data erasure, auth-event partition management, signing-key rotation, secret refresh, and optional gRPC serving all run from the same process lifecycle. Worker errors are emitted through structured logs and, when enabled, OpenTelemetry log export.

@@ -41,7 +41,16 @@ Auth loads non-sensitive configuration from environment variables and sensitive 
 - `GRPC_TLS_KEY_FILE`: server TLS key.
 - `GRPC_CLIENT_CA_FILE`: client CA for mTLS.
 - `GRPC_REQUIRE_MTLS`: defaults to `false`, but is forced on when the control plane is enabled.
-- `INSTANCE_ROLE`: controls the instance role.
+- `INSTANCE_ROLE`: `system` or `regular`; only meaningful when the control plane is enabled.
+
+## Frontend And Surface Variables
+
+- `APP_FRONTEND_IDENTITY_HOSTNAME`: system-tenant identity host.
+- `APP_FRONTEND_CONSOLE_HOSTNAME`: system-tenant console host.
+- `APP_CONSOLE_PORT`: embedded console listener; defaults to `3000`.
+- `APP_IDENTITY_PORT`: embedded identity listener; defaults to `3001`.
+
+The production image injects frontend config at runtime through `/config.js`. Split-host frontend deployments can use `VITE_AUTH_API_BASE_URL`, `VITE_AUTH_PUBLIC_API_BASE_URL`, and `VITE_AUTH_IDENTITY_BASE_URL` in the SPA build/runtime environment.
 
 ## Rotation And Maintenance
 

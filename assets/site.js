@@ -166,6 +166,11 @@ if (markdownTarget && markdownNav) {
     });
   });
 
-  const initial = links.find((link) => link.getAttribute("href") === window.location.hash) || links[0];
+  const findLinkForHash = () => links.find((link) => link.getAttribute("href") === window.location.hash);
+  const initial = findLinkForHash() || links[0];
   loadSection(initial, false);
+
+  window.addEventListener("hashchange", () => {
+    loadSection(findLinkForHash() || links[0], false);
+  });
 }

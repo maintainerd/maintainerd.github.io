@@ -51,3 +51,23 @@ A fresh MFA proof required before sensitive actions.
 ## Workload Identity
 
 Federated service identity for non-browser workloads.
+
+## Standalone Mode
+
+The default Auth runtime. REST, OAuth/OIDC, frontends, workers, probes, and metrics run without exposing the Core provisioning listener.
+
+## Control Plane
+
+The mTLS gRPC machine surface Core uses to provision Auth instances and IAM resources.
+
+## System Instance
+
+The single Auth instance that acts as the Maintainerd ecosystem IAM and can answer Core provisioning RPCs.
+
+## Regular Instance
+
+An application-scoped Auth instance provisioned by Core. It can run Auth for an app but does not answer system provisioning RPCs.
+
+## DPoP
+
+OAuth sender-constrained token mode where the client proves possession of a key on token and HTTP resource requests.
