@@ -29,3 +29,5 @@ The fastest path is to run Auth with PostgreSQL and Redis, then complete the set
 - Keep the internal API and management port controlled.
 - Expose only the public identity surface where browsers and OAuth clients need to reach it.
 - Enable OpenTelemetry and scrape Prometheus metrics before production traffic.
+- Follow the external app setup workflow when connecting a developer-owned application.
+- Follow the protected API workflow when the app also needs Auth-backed authorization.

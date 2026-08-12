@@ -35,6 +35,19 @@ The product name is **Auth**. The repository and Docker image name remain `maint
 - Console setup pages for tenant and admin creation.
 - Dedicated no-access and service-unavailable console states.
 
+## Developer Workflows
+
+- External application setup workflow.
+- Hosted login workflow for browser, SPA, and mobile applications.
+- Per-client federated login workflow.
+- Protected resource API workflow.
+- Social login example workflow.
+- Enterprise SSO example workflow.
+- SPA/mobile PKCE example workflow.
+- Machine-to-machine client example workflow.
+- OIDC discovery and JWKS verification guidance.
+- Logout and post-logout redirect guidance.
+
 ## Admin Console
 
 - Dashboard page for high-level operational state.

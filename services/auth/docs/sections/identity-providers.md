@@ -55,3 +55,7 @@ Identity providers let Auth accept identities from built-in, social, enterprise,
 - OAuth2 callback exchanges an upstream authorization code.
 - SAML ACS receives the upstream SAML response.
 - Account-link flows attach an upstream identity to an existing Auth user.
+
+## Per-Client Login Options
+
+Identity providers are tenant resources, but login options are exposed through a client-aware connections lookup. Attach a provider to the target OAuth client when it should appear for that app's hosted login journey.

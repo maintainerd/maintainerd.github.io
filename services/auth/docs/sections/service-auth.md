@@ -9,6 +9,8 @@ Service authorization is the runtime path for Maintainerd services and external 
 - Use JWT-authenticated service identity.
 - Use gRPC authorization for protected service methods when gRPC is enabled.
 
+For a complete application API onboarding path, use the Protect an API workflow.
+
 ## Policy Bundles
 
 Policy bundles let services cache authorization rules locally. `ETag` and `304 Not Modified` support reduce unnecessary transfers.

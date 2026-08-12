@@ -29,3 +29,7 @@ Clients represent applications that use Auth.
 ## External Versus First-Party
 
 External applications use `client_id` on public OAuth paths. First-party Maintainerd surfaces preserve tenant context and are guarded as system clients where needed.
+
+## Developer Workflow
+
+For a complete application onboarding path, use the External app setup and Hosted login flow sections. For per-client social or enterprise login, create the identity provider first, then attach it to the client so it appears in that client's hosted login choices.
