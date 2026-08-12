@@ -1,6 +1,6 @@
 # Identity Flows
 
-M9d Auth can own credentials directly or broker identity from upstream providers while keeping local user, role, session, and authorization state under the tenant.
+Auth can own credentials directly or broker identity from upstream providers while keeping local user, role, session, and authorization state under the tenant.
 
 ## Built-In Authentication
 
@@ -15,9 +15,9 @@ Users can manage profile and account state through the identity surface. The pub
 
 ## Federation
 
-M9d Auth supports upstream OIDC and OAuth federation. It can exchange upstream identity assertions, provision local users just in time, link identities, extract upstream claims, and use home-realm discovery to select the right provider by email domain.
+Auth supports upstream OIDC and OAuth federation. It can exchange upstream identity assertions, provision local users just in time, link identities, extract upstream claims, and use home-realm discovery to select the right provider by email domain.
 
 ## Local Authorization Remains Local
 
-Even when authentication happens through an external provider, M9d Auth keeps the local authorization model. The user still maps to local roles, permissions, policies, sessions, and tenant security rules.
+Even when authentication happens through an external provider, Auth keeps the local authorization model. The user still maps to local roles, permissions, policies, sessions, and tenant security rules.
 

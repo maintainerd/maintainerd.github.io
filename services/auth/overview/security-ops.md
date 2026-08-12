@@ -1,6 +1,6 @@
 # Security & Ops
 
-M9d Auth is designed for self-hosted operation with explicit runtime boundaries, secret sourcing, key management, observability, and request protection.
+Auth is designed for self-hosted operation with explicit runtime boundaries, secret sourcing, key management, observability, and request protection.
 
 ## Token And Key Security
 

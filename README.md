@@ -9,8 +9,8 @@ Maintainerd is an open-source cloud platform: a self-hostable service catalog wi
 - `/` - platform overview
 - `/services/` - full service catalog
 - `/services/<service>/` - individual service pages
-- `/services/auth/docs/` - M9d Auth documentation example
-- `/services/auth/api/` - M9d Auth API reference shell
+- `/services/auth/docs/` - Auth documentation example
+- `/services/auth/api/` - Auth API reference shell
 
 ## Platform Positioning
 

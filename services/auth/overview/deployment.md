@@ -1,6 +1,6 @@
 # Deployment
 
-The released image is the supported way to run M9d Auth. It embeds the backend, admin console, and identity UI in one container and expects PostgreSQL and Redis.
+The released image is the supported way to run Auth. It embeds the backend, admin console, and identity UI in one container and expects PostgreSQL and Redis.
 
 ```bash
 docker pull maintainerd/maintainerd-auth

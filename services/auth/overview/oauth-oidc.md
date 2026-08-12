@@ -1,6 +1,6 @@
 # OAuth & OIDC
 
-M9d Auth acts as an OAuth 2.0 authorization server and OpenID Connect provider for browser apps, native apps, machine clients, and device flows.
+Auth acts as an OAuth 2.0 authorization server and OpenID Connect provider for browser apps, native apps, machine clients, and device flows.
 
 ## Supported Endpoint Families
 

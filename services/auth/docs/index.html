@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M9d Auth Documentation | Maintainerd</title>
-  <meta name="description" content="Documentation for M9d Auth, the Maintainerd identity and access management service.">
+  <title>Auth Documentation | Maintainerd</title>
+  <meta name="description" content="Documentation for Auth, the Maintainerd identity and access management service.">
   <meta name="theme-color" content="#111827">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://maintainerd.github.io/services/auth/docs/">
@@ -14,8 +14,8 @@
   <link rel="stylesheet" href="/assets/site.css">
   <meta property="og:site_name" content="Maintainerd">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="M9d Auth Documentation | Maintainerd">
-  <meta property="og:description" content="Documentation for M9d Auth, the Maintainerd identity and access management service.">
+  <meta property="og:title" content="Auth Documentation | Maintainerd">
+  <meta property="og:description" content="Documentation for Auth, the Maintainerd identity and access management service.">
   <meta property="og:url" content="https://maintainerd.github.io/services/auth/docs/">
   <meta property="og:image" content="https://maintainerd.github.io/assets/m9d-auth-console.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -27,15 +27,15 @@
         <div class="nav-links" data-nav-links>
           <a class="nav-link" href="/">Platform</a>
           <a class="nav-link" href="/services/">Services</a>
-          <a class="nav-link" href="/services/auth/">M9d Auth</a>
+          <a class="nav-link" href="/services/auth/">Auth</a>
           <a class="nav-link" aria-current="page" href="/services/auth/docs/">Docs</a>
           <a class="nav-link-muted" href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
       </nav>
     </header>
 <main>
-  <section class="page-hero"><div class="section"><div class="breadcrumbs"><a href="/">Maintainerd</a><span>/</span><a href="/services/">Services</a><span>/</span><a href="/services/auth/">M9d Auth</a><span>/</span><span>Docs</span></div><p class="eyebrow">M9d Auth docs</p><h1>Identity infrastructure for Maintainerd services and your applications.</h1><p class="lede">Auth owns users, tenants, clients, OAuth flows, sessions, policies, API keys, MFA, and the identity surfaces needed by both built-in Maintainerd products and externally deployed applications.</p></div></section>
-  <section class="section docs-layout"><aside class="side-nav"><a aria-current="page" href="/services/auth/docs/">Overview</a><a href="/services/auth/api/">API reference</a><a href="/services/auth/">Service page</a><a href="/services/">All services</a></aside><div class="content-flow"><h2>Service surfaces</h2><div class="doc-grid"><article class="doc-card"><h3>maintainerd-auth</h3><p>Backend identity service for setup, tenants, users, OAuth clients, API keys, roles, permissions, policies, sessions, MFA, and service authorization.</p></article><article class="doc-card"><h3>maintainerd-auth-console</h3><p>Management console for administrators and developers to operate tenants, clients, users, policies, identity providers, and security settings.</p></article><article class="doc-card"><h3>maintainerd-auth-identity</h3><p>Public-facing identity experience for login, consent, MFA, account flows, and OAuth user journeys.</p></article><article class="doc-card"><h3>Maintainerd services</h3><p>Built-in services can depend on Auth for global policy checks, service clients, user identity, and tenant-aware access decisions.</p></article></div><h2>Integration model</h2><ul><li>External applications identify through public client flows and can use Auth as their self-hosted identity provider.</li><li>First-party Maintainerd services use service authorization and tenant-aware policy checks.</li><li>Core can register services and surface Auth health, configuration, and operational status.</li></ul><div class="screenshot-frame"><img src="/assets/m9d-auth-console.png" alt="M9d Auth console client detail screen"></div><h2>Deployment sketch</h2><div class="terminal"><div class="terminal-header"><span>Auth stack</span><button class="copy-button" type="button" data-copy="docker pull maintainerd/maintainerd-auth">Copy</button></div><pre>docker pull maintainerd/maintainerd-auth
+  <section class="page-hero"><div class="section"><div class="breadcrumbs"><a href="/">Maintainerd</a><span>/</span><a href="/services/">Services</a><span>/</span><a href="/services/auth/">Auth</a><span>/</span><span>Docs</span></div><p class="eyebrow">Auth docs</p><h1>Identity infrastructure for Maintainerd services and your applications.</h1><p class="lede">Auth owns users, tenants, clients, OAuth flows, sessions, policies, API keys, MFA, and the identity surfaces needed by both built-in Maintainerd products and externally deployed applications.</p></div></section>
+  <section class="section docs-layout"><aside class="side-nav"><a aria-current="page" href="/services/auth/docs/">Overview</a><a href="/services/auth/api/">API reference</a><a href="/services/auth/">Service page</a><a href="/services/">All services</a></aside><div class="content-flow"><h2>Service surfaces</h2><div class="doc-grid"><article class="doc-card"><h3>maintainerd-auth</h3><p>Backend identity service for setup, tenants, users, OAuth clients, API keys, roles, permissions, policies, sessions, MFA, and service authorization.</p></article><article class="doc-card"><h3>maintainerd-auth-console</h3><p>Management console for administrators and developers to operate tenants, clients, users, policies, identity providers, and security settings.</p></article><article class="doc-card"><h3>maintainerd-auth-identity</h3><p>Public-facing identity experience for login, consent, MFA, account flows, and OAuth user journeys.</p></article><article class="doc-card"><h3>Maintainerd services</h3><p>Built-in services can depend on Auth for global policy checks, service clients, user identity, and tenant-aware access decisions.</p></article></div><h2>Integration model</h2><ul><li>External applications identify through public client flows and can use Auth as their self-hosted identity provider.</li><li>First-party Maintainerd services use service authorization and tenant-aware policy checks.</li><li>Core can register services and surface Auth health, configuration, and operational status.</li></ul><div class="screenshot-frame"><img src="/assets/m9d-auth-console.png" alt="Auth console client detail screen"></div><h2>Deployment sketch</h2><div class="terminal"><div class="terminal-header"><span>Auth stack</span><button class="copy-button" type="button" data-copy="docker pull maintainerd/maintainerd-auth">Copy</button></div><pre>docker pull maintainerd/maintainerd-auth
 # pair with maintainerd-auth-console and maintainerd-auth-identity
 # connect to Core when you want shared service discovery and operations</pre></div></div></section>
 </main><footer class="footer">

@@ -1,6 +1,6 @@
 # Events & Audit
 
-M9d Auth records structured authentication and authorization events and exposes management APIs for event review, counts, retention, and configuration.
+Auth records structured authentication and authorization events and exposes management APIs for event review, counts, retention, and configuration.
 
 ## Auth Events
 

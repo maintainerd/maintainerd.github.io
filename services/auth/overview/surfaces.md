@@ -1,6 +1,6 @@
 # Surfaces
 
-M9d Auth separates browser, public API, control API, and management concerns. That separation lets a deployment expose only the pieces that need to be reachable while keeping operator and metrics paths controlled.
+Auth separates browser, public API, control API, and management concerns. That separation lets a deployment expose only the pieces that need to be reachable while keeping operator and metrics paths controlled.
 
 ## Admin Console
 

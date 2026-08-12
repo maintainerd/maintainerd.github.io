@@ -1,6 +1,6 @@
 # Access Control
 
-M9d Auth combines RBAC with IAM-style services, APIs, permissions, and policy documents so users, clients, API keys, and services can be authorized consistently.
+Auth combines RBAC with IAM-style services, APIs, permissions, and policy documents so users, clients, API keys, and services can be authorized consistently.
 
 ## Roles And Permissions
 
