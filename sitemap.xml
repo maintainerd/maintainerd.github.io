@@ -7,7 +7,7 @@
   <url><loc>https://maintainerd.github.io/services/docker/</loc><lastmod>2026-08-09</lastmod></url>
   <url><loc>https://maintainerd.github.io/services/kubernetes/</loc><lastmod>2026-08-09</lastmod></url>
   <url><loc>https://maintainerd.github.io/services/database/</loc><lastmod>2026-08-09</lastmod></url>
-  <url><loc>https://maintainerd.github.io/services/auth/</loc><lastmod>2026-08-09</lastmod><image:image><image:loc>https://maintainerd.github.io/assets/m9d-auth-console.png</image:loc><image:caption>Auth console interface</image:caption></image:image></url>
+  <url><loc>https://maintainerd.github.io/services/auth/</loc><lastmod>2026-08-13</lastmod><image:image><image:loc>https://maintainerd.github.io/assets/auth-console-identity-provider.png</image:loc><image:caption>Auth console identity provider configuration</image:caption></image:image></url>
   <url><loc>https://maintainerd.github.io/services/secret/</loc><lastmod>2026-08-09</lastmod></url>
   <url><loc>https://maintainerd.github.io/services/gateway/</loc><lastmod>2026-08-09</lastmod></url>
   <url><loc>https://maintainerd.github.io/services/storage/</loc><lastmod>2026-08-09</lastmod></url>
@@ -19,6 +19,6 @@
   <url><loc>https://maintainerd.github.io/services/billing/</loc><lastmod>2026-08-09</lastmod></url>
   <url><loc>https://maintainerd.github.io/services/project/</loc><lastmod>2026-08-09</lastmod></url>
   <url><loc>https://maintainerd.github.io/services/support/</loc><lastmod>2026-08-09</lastmod></url>
-  <url><loc>https://maintainerd.github.io/services/auth/docs/</loc><lastmod>2026-08-09</lastmod><image:image><image:loc>https://maintainerd.github.io/assets/m9d-auth-console.png</image:loc><image:caption>Auth console interface</image:caption></image:image></url>
+  <url><loc>https://maintainerd.github.io/services/auth/docs/</loc><lastmod>2026-08-13</lastmod><image:image><image:loc>https://maintainerd.github.io/assets/auth-console-identity-provider.png</image:loc><image:caption>Auth console identity provider configuration</image:caption></image:image></url>
   <url><loc>https://maintainerd.github.io/services/auth/api/</loc><lastmod>2026-08-09</lastmod></url>
 </urlset>
