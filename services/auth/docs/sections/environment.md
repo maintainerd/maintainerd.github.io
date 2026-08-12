@@ -24,7 +24,7 @@ Required variables fail startup when missing or empty. Optional variables either
 
 A standalone Auth instance needs these plain variables:
 
-- `APP_ENV`: runtime environment. Use `development` locally and `production` for deployed environments.
+- `APP_ENV`: optional runtime environment, default `production`. Set `APP_ENV=development` only for local development or test environments that intentionally need relaxed security behavior.
 - `APP_PUBLIC_HOSTNAME`: public API and OAuth issuer origin, for example `https://identity-api.auth.example.com`.
 - `APP_PRIVATE_HOSTNAME`: internal management API origin, for example `https://console-api.auth.example.com`.
 - `APP_FRONTEND_IDENTITY_HOSTNAME`: hosted identity UI origin, for example `https://identity.auth.example.com`.
@@ -98,11 +98,11 @@ Keep these values out of logs, source control, Docker image layers, and frontend
 
 ## Application Identity
 
-- `APP_ENV`: optional, default `development`. Controls production-sensitive behavior such as secret-store transport checks and security headers.
+- `APP_ENV`: optional, default `production`. Controls production-sensitive behavior such as security headers, database/TLS expectations, gRPC hardening, and development-only conveniences. Set `APP_ENV=development` explicitly for local work.
 - `APP_VERSION`: optional. Overrides the build-injected version shown in telemetry and build info. If unset, Auth uses the version baked into the binary; local builds fall back to `dev`.
 - `LOG_LEVEL`: optional, default `info`. Supported values are `debug`, `info`, `warn`, and `error`. `warning` is also accepted as `warn`.
 
-`ENV=production` is still recognized as a compatibility fallback for security middleware, but new deployments should use `APP_ENV=production`.
+`ENV=production` is still recognized as a compatibility fallback for security middleware, but new deployments should use `APP_ENV`. Because Auth is secure by default, an unset `APP_ENV` is treated as `production`.
 
 ## Hostnames And Surfaces
 
@@ -289,7 +289,7 @@ For the maintained local setup, prefer the quickstart files because they generat
 
 Before running Auth in production:
 
-- Set `APP_ENV=production`.
+- Leave `APP_ENV` unset or set `APP_ENV=production` explicitly.
 - Use HTTPS origins for all public, private, console, and identity hostnames.
 - Keep `COOKIE_SECURE=true`.
 - Use an explicit `COOKIE_DOMAIN` only when shared first-party sessions are required and every subdomain is trusted.

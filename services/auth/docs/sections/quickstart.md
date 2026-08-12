@@ -231,7 +231,7 @@ For production:
 
 - Use real DNS and trusted TLS certificates.
 - Keep the internal management API and management port private.
-- Use `APP_ENV=production`.
+- Leave `APP_ENV` unset or set `APP_ENV=production` explicitly. Auth defaults to production mode when `APP_ENV` is not provided.
 - Use `DB_SSLMODE=require` or stricter.
 - Replace sample passwords.
 - Source secrets from a provider such as files, AWS Secrets Manager, AWS SSM, Vault, Azure Key Vault, or GCP Secret Manager.
