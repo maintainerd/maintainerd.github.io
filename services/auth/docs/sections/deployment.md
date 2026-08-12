@@ -200,6 +200,8 @@ The deployed example can terminate TLS at Nginx and forward plain HTTP to the co
 
 Auth does not care whether DNS points at a single VPS, a managed load balancer, an ingress controller, a CDN, or a service mesh gateway. What matters is that the public hostname values resolve to the edge that routes to the correct Auth surface.
 
+The records and commands below are examples, not a required Maintainerd topology. Use them as a reference for the kinds of hostnames and network rules Auth needs, then adapt the exact records, provider commands, certificate automation, and allowlists to your own deployment model. A standalone Auth install on one VPS, an EKS deployment behind an ALB, a private Kubernetes ingress, and a managed container platform can all be valid as long as the same surface boundaries are preserved.
+
 For a single VPS or any deployment with one public edge IP, create A records like this:
 
 ```text
@@ -291,6 +293,8 @@ If you use tenant-specific API hosts later, cover those explicitly as well. Auth
 ## Caddy Edge Example
 
 Caddy is a simple way to run Auth behind automatic HTTPS on a VPS. This is only an example edge; the same routing can be implemented with Nginx, Traefik, Envoy, AWS ALB, GCP Load Balancing, Azure Application Gateway, EKS ingress, or any provider-specific ingress.
+
+Do not copy this as the one blessed production setup. Copy the routing idea: frontend console traffic reaches `:3000`, hosted identity traffic reaches `:3001`, public issuer/API traffic reaches `:8081`, and management/API traffic stays private or explicitly allowlisted.
 
 For exact hostnames only:
 
@@ -390,6 +394,8 @@ Zone:Zone:Read
 Caddy sets `Host`, `X-Forwarded-For`, and `X-Forwarded-Proto` for normal reverse proxy traffic. Auth should still be configured with `TRUSTED_PROXY_CIDRS` for the network range where Caddy or the load balancer reaches the container.
 
 ## Firewall And Allowlist Examples
+
+These commands are provider-shaped examples. They show what to open and what to keep private; they are not the only way to secure Auth. Managed Kubernetes ingress policies, cloud security groups, private load balancers, VPNs, service mesh authorization, and host firewalls can all satisfy the same boundary.
 
 Open only the public edge ports to the internet:
 
