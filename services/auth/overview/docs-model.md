@@ -6,6 +6,8 @@ The Auth documentation should be split by reader intent.
 
 The overview explains what Auth is, what surfaces exist, what major concepts matter, and how the system fits together. This page is for orientation.
 
+The overview also carries the top-level feature inventory so readers can see the full Auth surface before deciding whether they need developer guides or API reference pages.
+
 ## Developer Docs
 
 The docs page should explain features and workflows in detail:
@@ -31,4 +33,3 @@ The API page should behave like Postman-style API documentation:
 - Examples.
 
 The overview should not become the API reference. It should stay high-level and link readers to the right next document.
-

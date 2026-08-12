@@ -16,3 +16,4 @@ It runs as one all-in-one image: the Go backend, the admin console, and the host
 
 M9d Auth is not only a login box. It is the identity boundary and authorization brain for the system. External apps can use it as a self-hosted OAuth/OIDC provider, while Maintainerd services can use it as the central place for service identity and policy decisions.
 
+For the complete overview-level feature map, open the **Features** section in the side navigation. That section captures the shipped Auth capabilities across authentication, OAuth/OIDC, MFA, federation, tenants, IAM, sessions, secrets, security, audit, webhooks, email/SMS, REST, gRPC, architecture, and deployment.
