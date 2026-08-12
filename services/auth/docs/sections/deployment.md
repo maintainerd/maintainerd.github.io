@@ -198,6 +198,69 @@ The deployed example can terminate TLS at Nginx and forward plain HTTP to the co
 
 ## DNS And Certificates
 
+Auth does not care whether DNS points at a single VPS, a managed load balancer, an ingress controller, a CDN, or a service mesh gateway. What matters is that the public hostname values resolve to the edge that routes to the correct Auth surface.
+
+For a single VPS or any deployment with one public edge IP, create A records like this:
+
+```text
+console.auth.example.com        A      203.0.113.10
+identity.auth.example.com       A      203.0.113.10
+identity-api.auth.example.com   A      203.0.113.10
+console-api.auth.example.com    A      203.0.113.10
+*.console.auth.example.com      A      203.0.113.10
+*.identity.auth.example.com     A      203.0.113.10
+```
+
+If your server has IPv6, add matching AAAA records:
+
+```text
+console.auth.example.com        AAAA   2001:db8::10
+identity.auth.example.com       AAAA   2001:db8::10
+identity-api.auth.example.com   AAAA   2001:db8::10
+console-api.auth.example.com    AAAA   2001:db8::10
+*.console.auth.example.com      AAAA   2001:db8::10
+*.identity.auth.example.com     AAAA   2001:db8::10
+```
+
+For a managed load balancer, point names at the load balancer DNS name instead:
+
+```text
+console.auth.example.com        CNAME  auth-edge-123.us-east-1.elb.amazonaws.com
+identity.auth.example.com       CNAME  auth-edge-123.us-east-1.elb.amazonaws.com
+identity-api.auth.example.com   CNAME  auth-edge-123.us-east-1.elb.amazonaws.com
+console-api.auth.example.com    CNAME  auth-edge-123.us-east-1.elb.amazonaws.com
+*.console.auth.example.com      CNAME  auth-edge-123.us-east-1.elb.amazonaws.com
+*.identity.auth.example.com     CNAME  auth-edge-123.us-east-1.elb.amazonaws.com
+```
+
+Some DNS providers do not allow CNAME records at the zone apex. If you deploy Auth on the apex, use the provider's `ALIAS`, `ANAME`, or flattened CNAME feature. For Auth subdomains, ordinary CNAME records are normally fine.
+
+Verify DNS before starting certificate issuance:
+
+```bash
+dig +short console.auth.example.com A
+dig +short identity.auth.example.com A
+dig +short identity-api.auth.example.com A
+dig +short console-api.auth.example.com A
+dig +short acme.console.auth.example.com A
+dig +short acme.identity.auth.example.com A
+```
+
+For a load balancer target, verify CNAME resolution:
+
+```bash
+dig +short console.auth.example.com CNAME
+dig +short identity.auth.example.com CNAME
+dig +short acme.identity.auth.example.com CNAME
+```
+
+The wildcard records are for tenant frontend hosts. If tenant `acme` exists, Auth generates URLs like:
+
+```text
+https://acme.console.auth.example.com
+https://acme.identity.auth.example.com
+```
+
 For system-only deployments, issue certificates for the four system hostnames:
 
 ```text
@@ -214,7 +277,236 @@ For multi-tenant deployments, include wildcard coverage for tenant frontend host
 *.identity.auth.example.com
 ```
 
+Wildcard certificates require an ACME DNS-01 challenge. HTTP-01 can issue certificates for exact names, but it cannot issue `*.console.auth.example.com` or `*.identity.auth.example.com`.
+
+Check the certificate after the edge is live:
+
+```bash
+openssl s_client -connect identity.auth.example.com:443 -servername identity.auth.example.com </dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates
+openssl s_client -connect acme.identity.auth.example.com:443 -servername acme.identity.auth.example.com </dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates
+```
+
 If you use tenant-specific API hosts later, cover those explicitly as well. Auth's tenant frontend URL helper derives tenant console and identity hosts from the system frontend hostnames; DNS and TLS must be ready before those tenant links are sent in email, invites, resets, or account flows.
+
+## Caddy Edge Example
+
+Caddy is a simple way to run Auth behind automatic HTTPS on a VPS. This is only an example edge; the same routing can be implemented with Nginx, Traefik, Envoy, AWS ALB, GCP Load Balancing, Azure Application Gateway, EKS ingress, or any provider-specific ingress.
+
+For exact hostnames only:
+
+```caddyfile
+{
+	email ops@example.com
+}
+
+console.auth.example.com {
+	reverse_proxy auth:3000
+}
+
+identity.auth.example.com {
+	reverse_proxy auth:3001
+}
+
+identity-api.auth.example.com {
+	reverse_proxy auth:8081
+}
+```
+
+Keep the management API private when possible. If you must expose it through the edge, restrict it with network allowlists, VPN, identity-aware proxy, or equivalent controls:
+
+```caddyfile
+console-api.auth.example.com {
+	@allowed remote_ip 198.51.100.0/24 203.0.113.42/32
+	handle @allowed {
+		reverse_proxy auth:8080
+	}
+	respond "forbidden" 403
+}
+```
+
+For tenant wildcard hostnames, use a Caddy build with your DNS provider module and DNS-01 credentials. Cloudflare example:
+
+```caddyfile
+{
+	email ops@example.com
+}
+
+*.console.auth.example.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	reverse_proxy auth:3000
+}
+
+*.identity.auth.example.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	reverse_proxy auth:3001
+}
+```
+
+Build Caddy with the Cloudflare DNS module:
+
+```dockerfile
+FROM caddy:2-builder AS builder
+RUN xcaddy build --with github.com/caddy-dns/cloudflare
+
+FROM caddy:2
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+```
+
+Run Caddy in front of Auth:
+
+```yaml
+services:
+  caddy:
+    image: maintainerd-caddy:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - auth
+
+  auth:
+    image: xreyc/maintainerd-auth:0.1.0
+    env_file:
+      - .env
+```
+
+Give the DNS API token the smallest scope your provider supports. For Cloudflare, use a token scoped to the target zone with DNS edit permission and zone read permission:
+
+```text
+Zone:DNS:Edit
+Zone:Zone:Read
+```
+
+Caddy sets `Host`, `X-Forwarded-For`, and `X-Forwarded-Proto` for normal reverse proxy traffic. Auth should still be configured with `TRUSTED_PROXY_CIDRS` for the network range where Caddy or the load balancer reaches the container.
+
+## Firewall And Allowlist Examples
+
+Open only the public edge ports to the internet:
+
+```text
+80/tcp   public HTTP for ACME redirect or HTTP-01 challenge
+443/tcp  public HTTPS
+```
+
+Keep these private:
+
+```text
+8080/tcp   internal management API
+8082/tcp   management health, metrics, OpenAPI
+50051/tcp  optional gRPC runtime/control plane
+5432/tcp   PostgreSQL
+6379/tcp   Redis
+5671/tcp   RabbitMQ over TLS, if used
+5672/tcp   RabbitMQ plain AMQP, private network only
+```
+
+Ubuntu `ufw` example for a single VPS:
+
+```bash
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow OpenSSH
+ufw allow 80/tcp
+ufw allow 443/tcp
+ufw --force enable
+ufw status verbose
+```
+
+Restrict SSH to your own IP when you know it:
+
+```bash
+ufw delete allow OpenSSH
+ufw allow from 198.51.100.42/32 to any port 22 proto tcp
+ufw reload
+```
+
+Allow an internal management network to reach the management API and management port:
+
+```bash
+ufw allow from 10.20.0.0/16 to any port 8080 proto tcp
+ufw allow from 10.20.0.0/16 to any port 8082 proto tcp
+```
+
+Allow Core or peer services to reach gRPC only from the private network:
+
+```bash
+ufw allow from 10.30.0.0/16 to any port 50051 proto tcp
+```
+
+AWS security group examples:
+
+```bash
+aws ec2 authorize-security-group-ingress \
+  --group-id sg_auth_edge \
+  --ip-permissions 'IpProtocol=tcp,FromPort=80,ToPort=80,IpRanges=[{CidrIp=0.0.0.0/0}]'
+
+aws ec2 authorize-security-group-ingress \
+  --group-id sg_auth_edge \
+  --ip-permissions 'IpProtocol=tcp,FromPort=443,ToPort=443,IpRanges=[{CidrIp=0.0.0.0/0}]'
+
+aws ec2 authorize-security-group-ingress \
+  --group-id sg_auth_private \
+  --ip-permissions 'IpProtocol=tcp,FromPort=8082,ToPort=8082,IpRanges=[{CidrIp=10.20.0.0/16}]'
+```
+
+GCP firewall examples:
+
+```bash
+gcloud compute firewall-rules create auth-edge-https \
+  --allow tcp:80,tcp:443 \
+  --source-ranges 0.0.0.0/0 \
+  --target-tags auth-edge
+
+gcloud compute firewall-rules create auth-management-private \
+  --allow tcp:8080,tcp:8082,tcp:50051 \
+  --source-ranges 10.20.0.0/16 \
+  --target-tags auth-internal
+```
+
+Azure NSG examples:
+
+```bash
+az network nsg rule create \
+  --resource-group rg-auth \
+  --nsg-name nsg-auth-edge \
+  --name allow-https \
+  --priority 100 \
+  --access Allow \
+  --protocol Tcp \
+  --direction Inbound \
+  --source-address-prefixes Internet \
+  --destination-port-ranges 80 443
+
+az network nsg rule create \
+  --resource-group rg-auth \
+  --nsg-name nsg-auth-private \
+  --name allow-management-private \
+  --priority 110 \
+  --access Allow \
+  --protocol Tcp \
+  --direction Inbound \
+  --source-address-prefixes 10.20.0.0/16 \
+  --destination-port-ranges 8080 8082 50051
+```
+
+After applying rules, test from the right network:
+
+```bash
+curl -I https://identity.auth.example.com/
+curl -fsS https://identity-api.auth.example.com/.well-known/openid-configuration
+curl -fsS http://auth-management.internal:8082/readyz
+nc -vz auth-grpc.internal 50051
+```
 
 ## Cookies And Browser Security
 
@@ -873,9 +1165,11 @@ Before sending real traffic to Auth:
 - Pin the `maintainerd-auth` image version.
 - Set `APP_ENV=production`.
 - Set all four hostname variables to HTTPS origins.
-- Configure DNS for system and tenant frontend hosts.
+- Configure A, AAAA, CNAME, ALIAS, or ANAME records for your VPS, load balancer, ingress, or CDN edge.
+- Configure wildcard DNS records for tenant console and identity hosts when multi-tenancy is enabled.
 - Configure TLS certificates for system and wildcard tenant hosts.
 - Preserve `Host`, `X-Forwarded-Proto`, and client IP forwarding headers at the proxy.
+- Open only `80/tcp` and `443/tcp` publicly unless your platform has a stricter private edge model.
 - Set `TRUSTED_PROXY_CIDRS` to your proxy or load-balancer ranges.
 - Keep `:8080`, `:8082`, and `:50051` off the public internet.
 - Use `COOKIE_SECURE=true`.
