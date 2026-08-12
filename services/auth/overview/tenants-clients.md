@@ -1,6 +1,6 @@
 # Tenants & Clients
 
-The tenant is the root ownership boundary. It owns users, members, identity providers, clients, roles, permissions, policies, API keys, registration flows, invites, branding, templates, security settings, notification providers, and webhook configuration.
+The tenant is the root ownership boundary. It owns users, members, identity providers, clients, roles, permissions, policies, services, APIs, workload identity federations, registration flows, invites, branding, templates, security settings, notification providers, and webhook configuration.
 
 ## Tenant Context
 
@@ -26,4 +26,3 @@ External applications use public OAuth clients and identify with `client_id`.
 First-party Maintainerd applications preserve tenant context with `tenant_id` and explicit system clients such as the console and identity app.
 
 That distinction matters because a public external app should not be treated like an internal Maintainerd surface.
-

@@ -6,7 +6,7 @@ The Auth documentation should be split by reader intent.
 
 The overview explains what Auth is, what surfaces exist, what major concepts matter, and how the system fits together. This page is for orientation.
 
-The overview also carries the top-level feature inventory so readers can see the full Auth surface before deciding whether they need developer guides or API reference pages.
+The overview also carries the top-level feature inventory so readers can see the full Auth surface before deciding whether they need developer guides or API reference pages. That inventory is refreshed from the codebase, especially the backend route mounts, `web/console`, `web/identity`, and protobuf service definitions.
 
 ## Developer Docs
 

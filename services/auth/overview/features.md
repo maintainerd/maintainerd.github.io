@@ -1,296 +1,478 @@
 # Features
 
-This section captures the shipped `maintainerd-auth` feature surface at overview level. It focuses on implemented and wired capabilities from the Auth codebase and feature audit; roadmap-only items belong in planning docs, not the public overview.
+This overview is based on the current `maintainerd-auth` codebase. The inventory comes from the mounted backend routes, the `web/console` admin experience, the `web/identity` hosted identity experience, and the current protobuf service definitions.
 
-## Core Authentication
+The product name is **Auth**. The repository and Docker image name remain `maintainerd-auth`.
 
-- Email and password login with bcrypt password hashing.
-- Brute-force protection, rate limiting, and account lockout helpers.
-- Magic-link login with signed, single-use, time-limited links.
-- Email verification OTP for signup and email verification.
-- Forgot-password and reset-password token flow.
-- User registration with registration-flow support and role assignment.
-- Invite-based registration with pre-assigned roles.
-- Internal management login without requiring a public `client_id`.
-- Public identity-surface login with `client_id` and `provider_id`.
-- OAuth revocation endpoint for token revocation.
+## Product Surfaces
+
+- All-in-one service package for the Go backend, admin console, and hosted identity UI.
+- Admin console for operators and tenant administrators.
+- Hosted identity UI for end-user login, OAuth browser journeys, MFA, and account self-service.
+- Internal management REST API under `/api/v1` for the console and control-plane operations.
+- Public identity REST API under `/api/v1` for browser, OAuth, self-service, and public lookup flows.
+- Private management port for probes, metrics, and machine-readable OpenAPI.
+- OpenAPI served at `/openapi.json` on public, internal, and management routers.
+- Health and readiness aliases: `/health`, `/healthz`, `/ready`, `/readyz`, and `/livez`.
+- Prometheus metrics on the management surface at `/metrics`.
+- gRPC surface for selected control-plane and service-authorization operations.
+
+## Setup And Bootstrap
+
+- Setup status endpoint for detecting first-run state.
+- Tenant bootstrap flow.
+- Admin bootstrap flow.
+- Profile creation during setup.
+- Control-service registration.
+- Console setup pages for tenant and admin creation.
+- Dedicated no-access and service-unavailable console states.
+
+## Admin Console
+
+- Dashboard page for high-level operational state.
+- Monitoring and log detail pages.
+- Tenant listing, creation, detail, editing, membership, and settings pages.
+- User-management hub for users, invitations, and roles.
+- User listing, user creation, user detail, user editing, and administrative user actions.
+- Invitation creation and invitation detail pages.
+- Role listing, creation, detail, editing, permission assignment, and permission removal.
+- Authentication hub for identity providers and registration flows.
+- Applications hub for OAuth clients and workload identity federations.
+- APIs and resources hub for services, APIs, permissions, and policies.
+- Service listing, creation, detail, editing, status, and policy assignment workflows.
+- API listing, creation, detail, editing, and status workflows.
+- Permission listing and permission detail operations.
+- Policy listing, creation, detail, editing, status, service attachment, and version history.
+- Identity provider listing, creation, detail, editing, status, and connection test workflows.
+- OAuth client listing, creation, detail, and editing workflows.
+- Registration flow listing, creation, detail, editing, status, and role assignment workflows.
+- Workload identity federation listing, creation, detail, and editing workflows.
+- Events and webhooks hub.
+- Webhook creation, detail, editing, subscriptions, delivery history, and replay workflows.
+- Auth event and management audit-log detail pages.
+- Branding hub for visual branding, login templates, email templates, and SMS templates.
+- Email messaging configuration page.
+- SMS messaging configuration page.
+- Security hub for MFA, password, session, token, lockout, registration, and threat controls.
+- Tenant settings page for tenant-level operational controls.
+- Console account read-only surface for "signed in as" and avatar display.
+- Console step-up flow for sensitive administrative actions.
+- Admin MFA reset for all factors or a selected factor.
+
+## Hosted Identity UI
+
+- Login page.
+- Registration page.
+- Invite-registration page.
+- Email-verification page.
+- Forgot-password page.
+- Reset-password page.
+- Magic-link page.
+- OAuth authorization page.
+- OAuth callback page.
+- Logout page.
+- OAuth consent page.
+- OAuth device-code page.
+- OAuth CIBA page.
+- OAuth grants page.
+- OAuth end-session page.
+- Profile completion after registration.
+- Login-success landing page.
+- MFA hub.
+- TOTP setup page.
+- Passkey setup page.
+- SMS MFA setup page.
+- Email OTP setup page.
+- SMS login page.
+- Backup-code recovery page.
+- Account-locked page.
+- Too-many-requests page.
+- Account-link confirmation page.
+- Account erasure page.
+- Account profile list, create, edit, default-profile, and avatar workflows.
+- Account security hub.
+- Email change page.
+- Username change page.
+- Password change page.
+- Session management page.
+- Trusted-device management page.
+- Account settings page.
+- Account data page.
+- Linked identities page.
+- Phone verification page.
+
+## Authentication
+
+- Email and password login.
+- Refresh-token endpoint for browser/session continuity.
+- Logout endpoint.
+- User registration.
+- Invite-based registration.
+- Registration-context lookup for the hosted UI.
+- Email verification send and verify flows.
+- Forgot-password flow.
+- Reset-password flow.
+- Magic-link send and verify flows.
+- SMS login send and verify flows.
+- Backup-code account recovery.
+- MFA challenge handling during login.
+- Login MFA verification endpoint.
+- Login-time SMS OTP send endpoint.
+- Login-time email OTP send endpoint.
+- Login-time WebAuthn assertion begin endpoint.
+- Account-link confirmation for connecting an upstream identity to an existing account.
+- Public tenant lookup for login context.
+- Public client lookup for resolving `client_id` into identity-context and branding.
 
 ## OAuth 2.0 And OpenID Connect
 
 - Authorization endpoint.
 - Token endpoint.
 - Token revocation endpoint.
-- Token introspection on the management surface.
+- Token introspection on the internal management surface.
 - OpenID Connect UserInfo endpoint.
-- OpenID discovery document.
+- OpenID Connect discovery document.
 - OAuth authorization-server metadata.
 - JWKS endpoint.
-- Pushed Authorization Request support.
-- Device authorization plus user approval and denial endpoints.
-- Dynamic client registration.
-- End-session endpoint.
+- Pushed Authorization Requests.
+- Device authorization flow.
+- Device-code verify and deny endpoints.
+- CIBA initiation.
+- CIBA approve and deny endpoints.
+- End-session endpoint with GET and POST support.
 - Back-channel logout endpoint.
-- CIBA endpoint plus approve and deny endpoints.
 - Consent challenge retrieval.
 - Consent decision submission.
-- Consent grant listing.
+- OAuth consent continuation.
+- Consent grants listing.
 - Per-grant consent revocation.
+- OAuth connections endpoint.
+- OAuth broker resume path.
+- Dynamic client registration on the internal surface.
+- Dynamic client registration read support through the internal OAuth registration handler.
+- Signing-key listing, rotation, retirement, and compromise handling on the internal surface.
 
 ## OAuth Grants And Tokens
 
-- Authorization code grant with PKCE S256.
-- Refresh token grant with rotation, token-family tracking, and reuse detection.
-- Client credentials grant.
-- Device code grant.
-- Token exchange grant.
+- Authorization code flow with PKCE.
+- Refresh-token grant.
+- Client-credentials grant.
+- Device-code grant.
+- Token-exchange grant.
 - CIBA grant.
-- RS256 JWT access tokens.
-- Hashed refresh tokens.
-- Hashed, single-use authorization codes.
-- Refresh token family reuse detection with family-wide revocation.
-- Standard token claims including `sub`, `aud`, `iss`, `iat`, `exp`, `jti`, and `nbf`.
-- `kid` JWT headers and multi-key JWKS.
-- RS256-only validation for normal JWTs.
-- Crypto-secure token, JTI, OTP, and random value generation.
+- JWT access tokens.
+- Refresh-token hashing.
+- Authorization-code hashing.
+- Refresh-token family tracking.
+- Refresh-token reuse detection and family revocation.
+- Token revocation.
+- Token introspection.
+- `kid` based signing-key selection.
+- Multi-key JWKS publication.
 
-## OAuth Client Model
+## Clients
 
+- OAuth client management in the console.
+- Public client lookup for identity pages.
 - Confidential clients.
 - Public clients.
-- Client types for traditional web apps, SPAs, mobile apps, and machine-to-machine clients.
-- `client_secret_basic`, `client_secret_post`, and `none` token endpoint auth methods.
-- Per-client `grant_types`.
-- Per-client `response_types`.
-- Per-client access token and refresh token TTL fields.
-- Per-client consent requirement.
-- Client redirect URIs.
-- Client logout URIs.
-- Client logo, policy, and terms fields.
-
-## Multi-Factor Authentication
-
-- TOTP enrollment.
-- TOTP verification.
-- TOTP disable flow.
-- Backup-code generation.
-- WebAuthn and passkey registration ceremonies.
-- WebAuthn and passkey authentication ceremonies.
-- SMS OTP login support.
-- Step-up challenge endpoints.
-- Step-up verification endpoints.
-- Per-tenant MFA policy storage through security settings.
-- Admin MFA reset endpoint.
-- Trusted-device support.
+- Web, SPA, mobile, and machine-to-machine client types.
+- Configurable grant types.
+- Configurable response types.
+- Configurable redirect URIs.
+- Configurable post-logout redirect URIs.
+- Client logo, policy URI, terms URI, and consent settings.
+- Token endpoint authentication methods.
+- Access-token and refresh-token TTL settings.
+- First-party client guard for cookie-authenticated account-management routes.
+- Management-client audience guard for internal API access.
 
 ## Federation And Identity Providers
 
-- OIDC upstream federation and token exchange.
-- Generic identity provider CRUD.
-- Per-tenant identity provider configuration.
-- Identity linking.
-- Identity unlinking.
-- Just-in-time user provisioning for federated login.
-- Attribute and metadata extraction from upstream claims.
+- Identity provider management.
+- Provider status management.
+- Provider connection testing.
+- OIDC federation.
+- OAuth2 federation callback handling.
+- External token exchange.
+- Multi-issuer token resolution for allowed upstream issuers.
 - Home-realm discovery by email domain.
+- SAML login initiation.
+- SAML ACS endpoint.
+- SAML token exchange.
+- SAML metadata endpoint.
+- SAML logout endpoint.
+- SAML single logout endpoint.
+- Account identity listing.
+- Account identity link start.
+- Account identity link callback.
+- Account identity unlink.
+- Account-link confirmation from the identity surface.
+- Just-in-time provisioning controls.
+- Allowed-audience handling for upstream identity providers.
 
-## Tenants, Organizations, And RBAC
+## Tenants And Membership
 
 - Tenant lifecycle management.
-- Tenant status management.
-- Tenant public flag.
-- Tenant settings.
-- Tenant members with role assignment.
-- Roles.
-- Permissions.
-- Policies.
-- Services and APIs as IAM resources.
-- Service principals linked to OAuth `client_credentials` clients.
-- Service identity claims in access tokens, including `sub_type=service` and `svc`.
-- IAM policy evaluator with default deny behavior.
-- Explicit-deny-wins policy behavior.
-- Wildcard permission matching.
-- Service policy bundle endpoint with `ETag`.
-- `304 Not Modified` support for unchanged service policy bundles.
-- Service-to-service authorization endpoint.
-- IAM policy update invalidation events.
-- Service-policy assignment and removal invalidation events.
-- API keys scoped to APIs and permissions.
-- Registration flows with automatic role assignment.
-- Invite system with pre-assigned roles.
+- Tenant listing, creation, detail, update, delete, and status operations.
+- Public tenant lookup by default tenant or identifier.
+- Tenant settings management.
+- Tenant member management.
+- Tenant owner and member flows surfaced in the console.
+- Tenant-level maintenance controls.
+- Tenant-level rate-limit controls.
+- Tenant-level audit controls.
+- Tenant-level branding controls.
+- Tenant-level security policy controls.
+
+## Users And Invites
+
+- User listing.
+- User creation.
+- User detail and update operations.
+- User status management.
+- User email verification by admin.
+- User phone verification by admin.
+- User password set by admin.
+- Force-password-change support.
+- User unlock support.
+- User role assignment and removal.
+- User identity link and unlink by admin.
+- User session revocation by admin.
+- User trusted-device inspection by admin.
+- User consent inspection by admin.
+- User profile management by admin.
+- User erasure request administration.
+- Invite creation.
+- Invite detail, status, and public invite lookup.
+- Invite registration with pre-assigned roles.
+
+## Roles, Permissions, Policies, Services, And APIs
+
+- Role CRUD.
+- Role status management.
+- Role-permission listing.
+- Role-permission assignment and removal.
+- Permission CRUD.
+- Permission status management.
+- API resource CRUD.
+- API resource status management.
+- Service CRUD.
+- Service status management.
+- Service-policy assignment and removal.
+- Policy CRUD.
+- Policy status management.
+- Policy-service listing.
+- Policy version history.
+- Service policy bundle endpoint at `/services/me/policy-bundle`.
+- `ETag` support for service policy bundles.
+- `304 Not Modified` support for unchanged policy bundles.
+- Service-to-service authorization endpoint at `/authorize/`.
+- JWT-authenticated service authorization requests.
+- Explicit step-up guards on sensitive IAM changes.
 - Permission middleware on management routes.
-- Per-tenant rate-limit settings.
-- Per-tenant audit settings.
-- Per-tenant maintenance mode.
-- Per-tenant branding.
-- Per-tenant security settings for MFA, passwords, sessions, lockout, threat controls, and token configuration.
 
-## Session Management
+## MFA And Step-Up
 
-- Cookie-based token delivery for browser clients.
-- Refresh token family tracking.
-- Refresh token reuse detection.
-- Family-wide refresh token revocation.
-- Active session listing per user.
-- Single session revocation by ID.
-- Revoke-all-sessions endpoint.
-- Session revocation on password reset and password change paths.
-- Session revocation on permission changes.
-- Session revocation on role changes.
-- Concurrent session limit enforcement by evicting the oldest session.
-- Idle session timeout with sliding `last_used_at`.
-- Absolute session lifetime cap.
+- MFA status endpoint.
+- TOTP enrollment.
+- TOTP verification.
+- TOTP disable flow.
+- Backup-code count endpoint.
+- Backup-code regeneration.
+- WebAuthn and passkey registration.
+- WebAuthn and passkey authentication.
+- WebAuthn credential deletion.
+- WebAuthn credential download.
+- SMS MFA enrollment.
+- SMS MFA verification.
+- SMS MFA disable flow.
+- Email OTP MFA enrollment.
+- Email OTP MFA verification.
+- Email OTP MFA disable flow.
+- Self-service MFA reset.
+- Step-up challenge issuance.
+- Step-up SMS send.
+- Step-up email OTP send.
+- Step-up verification.
+- Policy-aware step-up for sensitive account actions.
+- Fresh-step-up requirement for destructive factor changes.
+- Admin MFA reset.
+- Admin single-factor reset.
 
-## Secret Management
+## Account Self-Service
+
+- Account overview endpoint.
+- Email change initiation and verification.
+- Phone verification send and verify.
+- Username change.
+- Password change.
+- Account deletion.
+- Account data export.
+- Session listing.
+- Revoke all sessions.
+- Revoke other sessions.
+- Revoke one session.
+- Consent recording.
+- Default profile read, create/update, and delete.
+- Multi-profile listing, creation, detail, update, default selection, and deletion.
+- Profile picture upload, delete, and authenticated fetch.
+- User settings create, read, and delete.
+- Trusted-device listing and deletion.
+- Self-service data-erasure request.
+- Federation identity link and unlink.
+
+## Security Controls
+
+- Security settings API.
+- MFA configuration.
+- Password policy configuration.
+- Session-management configuration.
+- Token configuration.
+- Lockout configuration.
+- Registration configuration.
+- Threat-control configuration.
+- IP restriction rules.
+- Tenant request rate limiting.
+- Public global IP rate limiting.
+- Tighter public credential-endpoint rate limiting.
+- Tenant maintenance gate for authentication and runtime routes.
+- Tenant status gate for authentication, OAuth, and account routes.
+- Tenant IP restriction enforcement before credential flows.
+- Cookie-authenticated state-changing routes protected by CSRF middleware.
+- First-party client requirement for hosted account-management routes.
+- Management-client requirement for the internal API.
+- Request size limits.
+- Request timeouts.
+- CORS allow-list middleware.
+- JSON content-type enforcement.
+- Security headers middleware.
+- Structured access logging.
+- Panic recovery middleware.
+
+## Passwords, Sessions, And Credentials
+
+- Password hashing for stored passwords.
+- Password-policy validation.
+- Password-history support.
+- Password reuse prevention.
+- Password expiration fields.
+- Login-time password-expiry checks.
+- Lockout after repeated failures.
+- Brute-force protection helpers.
+- Session listing and revocation.
+- Idle session timeout support.
+- Absolute session lifetime support.
+- Concurrent session limit behavior.
+- Session revocation after sensitive account changes.
+- Token TTL configuration.
+- Refresh-token rotation behavior.
+- Secure cookie helpers for browser token delivery.
+
+## Events, Audit, And Webhooks
+
+- Structured auth event model.
+- Auth event listing.
+- Auth event detail page.
+- Management audit log.
+- Management audit-log detail page.
+- Event configuration routes.
+- Event type listing.
+- Tenant event type listing.
+- Event route configuration.
+- Webhook endpoint CRUD.
+- Webhook endpoint status management.
+- Webhook subscription listing, add, and remove operations.
+- Webhook delivery history.
+- Webhook delivery replay.
+- HMAC-signed webhook delivery support.
+- Auth-event retention runner.
+- Trace/request context capture for operational correlation.
+
+## Branding, Email, And SMS
+
+- Branding template management.
+- Public branding lookup.
+- Public logo route.
+- Login and identity-surface branding controls.
+- Email template management.
+- SMS template management.
+- Email provider configuration.
+- Email provider test operation.
+- SMS provider configuration.
+- SMS provider test operation.
+- SMTP email support.
+- AWS SES email support.
+- SendGrid email support.
+- Postmark email support.
+- Mailgun email support.
+- Resend email support.
+- Twilio SMS support.
+- AWS SNS SMS support.
+- Vonage SMS support.
+
+## Workload Identity
+
+- Workload identity federation management.
+- Workload identity listing, creation, detail, update, and delete flows.
+- Workload identity provider configuration.
+- Console pages for workload identity federations.
+- gRPC `WorkloadIdentityFederationService` definition.
+
+## Secrets, Crypto, And Keys
 
 - Pluggable secret manager abstraction.
+- `SECRET_PROVIDER` startup selection.
 - Environment variable secret provider.
-- Local file and Docker secrets provider.
+- Local file and Docker secret provider.
 - AWS SSM Parameter Store provider.
 - AWS Secrets Manager provider.
 - HashiCorp Vault KV provider.
 - Azure Key Vault provider.
 - GCP Secret Manager provider.
-- Provider selection through `SECRET_PROVIDER`.
-- Secret prefixing through `SECRET_PREFIX` where supported.
+- Secret refresh runner.
+- Application encryption key loading through the secret provider.
+- JWT signing key loading through the secret provider.
+- HMAC signing secret loading through the secret provider.
+- RSA signing key validation.
+- Signing-key lifecycle management.
+- JWKS publication.
+- Crypto-secure random generation for tokens, OTPs, identifiers, and nonces.
 
-## Password And Credential Policy
+## APIs And Developer Integration
 
-- Minimum password length default.
-- Maximum password length default.
-- Uppercase requirement by default.
-- Lowercase requirement by default.
-- Digit requirement by default.
-- Special-character requirement by default.
-- Common weak-password pattern blocklist.
-- Configurable per-tenant password policy.
-- Password history storage.
-- Password reuse prevention.
-- Password expiration policy fields.
-- Login-time password expiry checks.
-
-## Security Hardening
-
-- Brute-force protection on login.
-- Account lockout after repeated failures.
-- Timing-safe login failure path with dummy bcrypt comparison.
-- Timing-safe comparisons for secrets and tokens where implemented.
-- CSRF protection on cookie-authenticated public state-changing routes.
-- IP-based rate limiting on public and credential endpoints.
-- Redis-backed global public rate limiting.
-- CORS allow-list middleware.
-- Rejection of unsafe wildcard credential CORS configuration.
-- HSTS header support.
-- Secure HTTP-only auth cookie helpers.
-- Security headers for content type, frame policy, referrer policy, CSP, and permissions policy.
-- DTO validation at HTTP boundaries.
-- Redirect URI dangerous-scheme rejection.
-- Request size limits on all routers.
-- Stricter request limits on auth endpoints.
-
-## Cryptography And Key Management
-
-- RSA-2048 minimum signing-key validation at startup.
-- RS256 signing.
-- RS256 validation.
-- JWT `kid` headers.
-- Multi-key JWKS with active and retiring keys.
-- Automatic key rotation runner.
-- PKCE S256 validation.
-- SHA-256 hashing for refresh tokens.
-- SHA-256 hashing for authorization codes.
-- Crypto-secure random generation for tokens, OTPs, JTIs, and IDs.
-
-## Audit Logging
-
-- Structured auth event model.
-- Auth event REST API.
-- Login success events.
-- Login failure events.
-- Token issuance events.
-- Token revocation events.
-- Token introspection events.
-- Consent grant events.
-- Consent revocation events.
-- Selected privileged admin action events.
-- Retention runner for old auth events.
-- Append-only auth event migration.
-- Trace ID capture on auth events when available.
-
-## Webhooks
-
-- Configurable webhook endpoints per tenant.
-- Event-type subscription model on webhook endpoints.
-- HMAC-SHA256 signature helper for delivery payloads.
-
-## Email, SMS, And Templates
-
-- Email provider abstraction.
-- SMTP provider.
-- AWS SES provider.
-- SendGrid provider.
-- Postmark provider.
-- Mailgun provider.
-- Resend provider.
-- SMS provider abstraction.
-- Twilio provider.
-- AWS SNS provider.
-- Vonage provider.
-- Per-tenant email provider configuration.
-- Per-tenant SMS provider configuration.
-- Customizable email templates.
-- Customizable SMS templates.
-- Customizable login templates.
-
-## REST API
-
-- Management REST surface.
-- Public identity REST surface.
-- Versioned `/api/v1` REST routes.
-- Consistent JSON success envelope.
-- RFC-style OAuth error responses.
-- OpenAPI spec served at `/openapi.json` on the management surface.
-- Pagination helpers.
-- Pagination on list endpoints.
-
-## gRPC
-
+- Versioned REST routes under `/api/v1`.
+- OAuth/OIDC browser integration for external applications.
+- Hosted login through the identity UI.
+- Public discovery metadata for OIDC clients.
+- Public JWKS for JWT verification.
+- UserInfo endpoint for OIDC profile claims.
+- Public tenant and client lookup for tenant-aware login screens.
+- Service policy bundle endpoint for resource services.
+- Service authorization endpoint for runtime access decisions.
+- Token introspection for internal management callers.
+- OpenAPI reference served by the running service.
 - gRPC server on `:50051`.
-- OpenTelemetry gRPC stats handler.
-- Setup gRPC service.
-- Tenant management gRPC service.
+- gRPC health service.
 - gRPC reflection.
-- Auth interceptor.
-- Logging interceptor.
-- Recovery interceptor.
-- `grpc.health.v1` health check service.
-- Service-to-service gRPC authorization path for protected methods.
+- gRPC auth, logging, recovery, and OpenTelemetry interceptors.
+- Protobuf services for setup, tenants, tenant settings, users, profiles, clients, APIs, permissions, policies, roles, services, authorization, OAuth introspection, and workload identity federation.
 
-## Architecture And Runtime
+## Runtime And Operations
 
-- Thin `cmd/server` executable entrypoint.
-- Application composition root.
-- Domain-grouped packages under `internal/`.
-- Cross-cutting infrastructure under `internal/platform/`.
-- Domain-owned models and repositories.
-- Dual-port REST server.
-- PostgreSQL with GORM.
-- PostgreSQL OpenTelemetry instrumentation.
-- Redis-backed cache primitives.
-- Redis-backed rate-limit primitives.
-- Redis-backed JTI primitives.
+- Thin server entrypoint.
+- Domain-grouped internal packages.
+- PostgreSQL persistence through GORM.
+- Redis-backed cache and rate-limit primitives.
+- Redis-backed token/JTI state where needed.
 - OpenTelemetry tracing initialization.
 - OpenTelemetry metrics initialization.
-- Background runners for migrations.
-- Background runners for seeding.
-- Background runners for secret refresh.
-- Background runners for key rotation.
-
-## Deployment And Operations
-
+- PostgreSQL OpenTelemetry instrumentation.
+- Migration runner.
+- Seeder runner.
+- Secret refresh runner.
+- Signing-key rotation runner.
+- Graceful shutdown handling.
 - Multi-stage Dockerfile.
-- Non-root runtime user.
+- Non-root container runtime user.
 - Container health check.
-- `/health` liveness endpoint.
-- `/ready` readiness endpoint checking DB and Redis.
-- Graceful shutdown on `SIGTERM`.
-- Prometheus `/metrics` endpoint on the management surface.

@@ -1,6 +1,6 @@
 # What It Is
 
-Auth is Maintainerd's self-hostable identity and access platform. It gives teams a single service for authentication, federation, OAuth 2.0, OpenID Connect, users, tenants, clients, policies, API keys, MFA, sessions, service authorization, audit events, and operational controls.
+Auth is Maintainerd's self-hostable identity and access platform. It gives teams a single service for authentication, federation, OAuth 2.0, OpenID Connect, users, tenants, clients, policies, MFA, sessions, service authorization, audit events, and operational controls.
 
 It runs as one all-in-one image: the Go backend, the admin console, and the hosted identity UI are compiled into the same service. You bring PostgreSQL and Redis, then decide which surfaces are public and which stay controlled.
 
@@ -16,4 +16,4 @@ It runs as one all-in-one image: the Go backend, the admin console, and the host
 
 Auth is not only a login box. It is the identity boundary and authorization brain for the system. External apps can use it as a self-hosted OAuth/OIDC provider, while Maintainerd services can use it as the central place for service identity and policy decisions.
 
-For the complete overview-level feature map, open the **Features** section in the side navigation. That section captures the shipped Auth capabilities across authentication, OAuth/OIDC, MFA, federation, tenants, IAM, sessions, secrets, security, audit, webhooks, email/SMS, REST, gRPC, architecture, and deployment.
+For the complete overview-level feature map, open the **Features** section in the side navigation. That section is based on the current backend route mounts, the admin console, the hosted identity UI, and the protobuf service surface.

@@ -4,7 +4,7 @@ Auth separates browser, public API, control API, and management concerns. That s
 
 ## Admin Console
 
-The admin console is the operator UI. It manages tenants, users, members, OAuth clients, identity providers, roles, permissions, policies, API keys, security settings, branding, templates, webhooks, and operational configuration.
+The admin console is the operator UI. It manages tenants, users, members, OAuth clients, identity providers, roles, permissions, policies, services, APIs, workload identity federations, security settings, branding, templates, webhooks, and operational configuration.
 
 ## Hosted Identity UI
 
@@ -17,4 +17,3 @@ The public API is the data plane. It serves OAuth/OIDC, discovery, JWKS, public 
 ## Control And Management APIs
 
 The control plane manages tenants, users, clients, providers, IAM resources, events, templates, and settings. The management port exposes health checks and Prometheus metrics for operators.
-
