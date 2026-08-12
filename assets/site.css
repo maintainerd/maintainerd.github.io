@@ -126,6 +126,19 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 .content-flow > * + * { margin-top: 22px; }
 .content-flow ul, .content-flow ol { padding-left: 20px; color: var(--muted); }
 .content-flow li + li { margin-top: 6px; }
+.markdown-panel { min-height: 520px; }
+.markdown-content > * + * { margin-top: 18px; }
+.markdown-content h1 { font-size: clamp(2rem, 3vw, 2.7rem); }
+.markdown-content h2 { margin-top: 34px; }
+.markdown-content h2:first-child { margin-top: 0; }
+.markdown-content h3 { margin-top: 24px; }
+.markdown-content p, .markdown-content li { color: var(--muted); }
+.markdown-content a { color: var(--blue); font-weight: 500; }
+.markdown-content code { padding: 2px 5px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--ink); font: 500 .88em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.markdown-content pre { overflow: auto; margin: 0; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--navy); color: #e8edf6; }
+.markdown-content pre code { padding: 0; border: 0; background: transparent; color: inherit; }
+.markdown-content img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.loading-text { color: var(--muted); }
 
 /* Terminal / code / api */
 .split-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
