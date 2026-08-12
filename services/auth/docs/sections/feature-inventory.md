@@ -1,6 +1,6 @@
 # Features
 
-This overview is based on the current `maintainerd-auth` codebase. The inventory comes from the mounted backend routes, the `web/console` admin experience, the `web/identity` hosted identity experience, and the current protobuf service definitions.
+This inventory is based on the current `maintainerd-auth` codebase. It comes from the mounted backend routes, the `web/console` admin experience, the `web/identity` hosted identity experience, and the current protobuf service definitions.
 
 The product name is **Auth**. The repository and Docker image name remain `maintainerd-auth`.
 
