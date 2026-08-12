@@ -20,6 +20,63 @@ Secret-backed values are used for credentials and key material, such as database
 
 Required variables fail startup when missing or empty. Optional variables either have a documented default or disable the feature when unset.
 
+## Value Types And Examples
+
+Use these patterns when reading the rest of this page:
+
+- String: a plain value such as `DB_USER=maintainerd`.
+- Origin URL: a full URL with scheme and host, such as `APP_PUBLIC_HOSTNAME=https://identity-api.auth.example.com`.
+- Host and port: a network address such as `REDIS_ADDR=redis.internal:6379`.
+- Boolean: `true` or `false`, such as `REDIS_TLS=true`.
+- Integer seconds or milliseconds: numeric values such as `DB_CONN_MAX_LIFETIME_SEC=300` or `DB_STATEMENT_TIMEOUT_MS=30000`.
+- Go duration: values such as `SETUP_WINDOW_TTL=30m`, `10m`, or `1h`.
+- Comma-separated list: values such as `CORS_ALLOWED_ORIGINS=https://app.example.com,https://admin.example.com`.
+- Secret-backed value: store the logical key in the configured secret provider, such as AWS Secrets Manager secret `maintainerd/prod/auth/db-password` for `DB_PASSWORD`.
+
+Example production environment using AWS Secrets Manager:
+
+```env
+APP_ENV=production
+APP_PUBLIC_HOSTNAME=https://identity-api.auth.example.com
+APP_PRIVATE_HOSTNAME=https://console-api.auth.example.com
+APP_FRONTEND_IDENTITY_HOSTNAME=https://identity.auth.example.com
+APP_FRONTEND_CONSOLE_HOSTNAME=https://console.auth.example.com
+
+DB_HOST=auth-prod.cluster-example.us-east-1.rds.amazonaws.com
+DB_PORT=5432
+DB_USER=maintainerd_auth
+DB_NAME=maintainerd_auth
+DB_SSLMODE=require
+
+REDIS_ADDR=auth-prod-cache.example.use1.cache.amazonaws.com:6379
+REDIS_TLS=true
+
+SECRET_PROVIDER=aws_secrets
+SECRET_PREFIX=maintainerd/prod/auth
+SECRET_STRICT=true
+AWS_REGION=us-east-1
+
+COOKIE_SECURE=true
+COOKIE_SAMESITE=lax
+COOKIE_DOMAIN=auth.example.com
+WEBAUTHN_RP_ID=auth.example.com
+
+OTEL_ENABLED=true
+OTEL_SERVICE_NAME=maintainerd-auth
+OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector.observability.svc:4317
+```
+
+With that configuration, secret-backed values are stored under names such as:
+
+```text
+maintainerd/prod/auth/db-password
+maintainerd/prod/auth/redis-password
+maintainerd/prod/auth/jwt-private-key
+maintainerd/prod/auth/jwt-public-key
+maintainerd/prod/auth/app-encryption-key
+maintainerd/prod/auth/hmac-secret-key
+```
+
 ## Minimal Standalone Configuration
 
 A standalone Auth instance needs these plain variables:
@@ -131,6 +188,26 @@ Use full HTTPS origins for hostnames in deployed environments. The frontend host
 
 The database stores tenants, users, OAuth clients, identity providers, roles, policies, MFA state, sessions, event outbox rows, webhook deliveries, audit logs, branding, messaging configuration, and setup state.
 
+Example PostgreSQL values:
+
+```env
+DB_HOST=auth-prod.cluster-example.us-east-1.rds.amazonaws.com
+DB_PORT=5432
+DB_USER=maintainerd_auth
+DB_NAME=maintainerd_auth
+DB_SSLMODE=require
+DB_MAX_OPEN_CONNS=25
+DB_MAX_IDLE_CONNS=10
+DB_CONN_MAX_LIFETIME_SEC=300
+DB_STATEMENT_TIMEOUT_MS=30000
+```
+
+If `SECRET_PROVIDER=aws_secrets` and `SECRET_PREFIX=maintainerd/prod/auth`, store `DB_PASSWORD` as:
+
+```text
+maintainerd/prod/auth/db-password
+```
+
 ## Redis
 
 - `REDIS_ADDR`: optional, default `redis-db:6379`. Redis address used for cache-backed runtime state.
@@ -138,6 +215,19 @@ The database stores tenants, users, OAuth clients, identity providers, roles, po
 - `REDIS_TLS`: optional, default `false`. Enables TLS for Redis. TLS is also enabled automatically when `REDIS_ADDR` starts with `rediss://`.
 
 Auth connects to Redis during startup and readiness depends on Redis being reachable.
+
+Example Redis values:
+
+```env
+REDIS_ADDR=auth-prod-cache.example.use1.cache.amazonaws.com:6379
+REDIS_TLS=true
+```
+
+If Redis AUTH is enabled and `SECRET_PROVIDER=aws_secrets`, store `REDIS_PASSWORD` as:
+
+```text
+maintainerd/prod/auth/redis-password
+```
 
 ## Cookies And Browser Sessions
 

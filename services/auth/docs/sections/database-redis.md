@@ -49,6 +49,43 @@ Optional PostgreSQL variables:
 
 Auth builds a PostgreSQL keyword/value DSN from these values and passes `statement_timeout` through the connection `options` parameter. The timeout applies at the database session level so long-running queries are bounded even when a handler forgets to add a narrower context timeout.
 
+Example local PostgreSQL values:
+
+```env
+APP_ENV=development
+DB_HOST=postgres
+DB_PORT=5432
+DB_USER=maintainerd
+DB_PASSWORD=change-me
+DB_NAME=maintainerd
+DB_SSLMODE=disable
+DB_MAX_OPEN_CONNS=25
+DB_MAX_IDLE_CONNS=10
+DB_CONN_MAX_LIFETIME_SEC=300
+DB_STATEMENT_TIMEOUT_MS=30000
+```
+
+Example production PostgreSQL values:
+
+```env
+APP_ENV=production
+DB_HOST=auth-prod.cluster-example.us-east-1.rds.amazonaws.com
+DB_PORT=5432
+DB_USER=maintainerd_auth
+DB_NAME=maintainerd_auth
+DB_SSLMODE=require
+DB_MAX_OPEN_CONNS=50
+DB_MAX_IDLE_CONNS=10
+DB_CONN_MAX_LIFETIME_SEC=300
+DB_STATEMENT_TIMEOUT_MS=30000
+```
+
+With `SECRET_PROVIDER=aws_secrets` and `SECRET_PREFIX=maintainerd/prod/auth`, put the database password in AWS Secrets Manager as:
+
+```text
+maintainerd/prod/auth/db-password
+```
+
 ## PostgreSQL TLS
 
 Auth defaults to `APP_ENV=production` when `APP_ENV` is unset. In production mode, startup rejects `DB_SSLMODE=disable`.
@@ -92,6 +129,26 @@ Redis variables:
 - `REDIS_TLS`: optional, default `false`. Enables TLS for Redis.
 
 Redis TLS is also enabled automatically when `REDIS_ADDR` starts with `rediss://`. When TLS is enabled, Auth uses TLS 1.2 or newer.
+
+Example local Redis values:
+
+```env
+REDIS_ADDR=redis:6379
+REDIS_TLS=false
+```
+
+Example production Redis values:
+
+```env
+REDIS_ADDR=auth-prod-cache.example.use1.cache.amazonaws.com:6379
+REDIS_TLS=true
+```
+
+If Redis AUTH is enabled with AWS Secrets Manager:
+
+```text
+maintainerd/prod/auth/redis-password
+```
 
 ## Redis Startup
 

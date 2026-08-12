@@ -16,6 +16,20 @@ Auth needs these secrets before it can serve traffic:
 
 These values must never be committed to source control, baked into frontend bundles, logged, sent to browsers, or copied into issue trackers.
 
+## Secret Value Examples
+
+These examples show valid shapes only. Generate your own values for every environment.
+
+```env
+DB_PASSWORD='replace-with-a-long-random-database-password'
+APP_ENCRYPTION_KEY=base64:gynBDhdZQkEO+JBOdiryYBPo5WB/wtU4BzoilY4y1M0=
+HMAC_SECRET_KEY=base64:ZD4f9tVsRNMYwasQq+32KRxP3GwH6kM8ZpA/XUjD1lY=
+JWT_PRIVATE_KEY='-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----'
+JWT_PUBLIC_KEY='-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----'
+```
+
+`APP_ENCRYPTION_KEY` must decode to exactly 32 bytes. `HMAC_SECRET_KEY` must be non-empty and should be generated with strong randomness. JWT keys must be a matching RSA private/public PEM pair.
+
 ## Optional Secrets
 
 - `REDIS_PASSWORD`: Redis AUTH password. Leave unset when Redis does not require authentication.
@@ -67,6 +81,29 @@ For `aws_secrets`, names use `SECRET_PREFIX` plus a hyphenated key:
 ```text
 maintainerd/auth/jwt-private-key
 maintainerd/auth/app-encryption-key
+```
+
+Example AWS Secrets Manager values for a production prefix:
+
+```text
+maintainerd/prod/auth/db-password          -> replace-with-a-long-random-database-password
+maintainerd/prod/auth/redis-password       -> replace-with-a-long-random-redis-password
+maintainerd/prod/auth/app-encryption-key   -> base64:gynBDhdZQkEO+JBOdiryYBPo5WB/wtU4BzoilY4y1M0=
+maintainerd/prod/auth/hmac-secret-key      -> base64:ZD4f9tVsRNMYwasQq+32KRxP3GwH6kM8ZpA/XUjD1lY=
+maintainerd/prod/auth/jwt-private-key      -> -----BEGIN RSA PRIVATE KEY-----...
+maintainerd/prod/auth/jwt-public-key       -> -----BEGIN PUBLIC KEY-----...
+```
+
+Example AWS CLI commands:
+
+```bash
+aws secretsmanager create-secret \
+  --name maintainerd/prod/auth/app-encryption-key \
+  --secret-string 'base64:gynBDhdZQkEO+JBOdiryYBPo5WB/wtU4BzoilY4y1M0='
+
+aws secretsmanager create-secret \
+  --name maintainerd/prod/auth/db-password \
+  --secret-string 'replace-with-a-long-random-database-password'
 ```
 
 For `aws_ssm`, parameter paths use `SECRET_PREFIX` with a leading slash:
@@ -213,6 +250,16 @@ It generates:
 The helper stores binary random values with the `base64:` prefix so Auth decodes them before use.
 
 For manual generation, the Auth repository also includes `scripts/generate-jwt-keys.sh`.
+
+Manual shape for a local `.env`:
+
+```env
+SECRET_PROVIDER=env
+APP_ENCRYPTION_KEY=base64:gynBDhdZQkEO+JBOdiryYBPo5WB/wtU4BzoilY4y1M0=
+HMAC_SECRET_KEY=base64:ZD4f9tVsRNMYwasQq+32KRxP3GwH6kM8ZpA/XUjD1lY=
+JWT_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
+JWT_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----"
+```
 
 ## Production Practices
 
