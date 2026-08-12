@@ -120,9 +120,11 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 
 /* Docs / service layout */
 .service-layout, .docs-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: start; }
-.side-nav { position: sticky; top: 88px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.side-nav { position: sticky; top: 88px; max-height: calc(100vh - 112px); overflow: auto; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
 .side-nav a { display: block; padding: 8px 10px; border-radius: 6px; color: var(--muted); font-size: .9rem; font-weight: 500; }
 .side-nav a:hover, .side-nav a[aria-current="page"] { background: var(--panel); color: var(--ink); }
+.side-nav-label { display: block; margin: 16px 10px 6px; color: var(--faint); font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.side-nav-label:first-child { margin-top: 4px; }
 .content-flow > * + * { margin-top: 22px; }
 .content-flow ul, .content-flow ol { padding-left: 20px; color: var(--muted); }
 .content-flow li + li { margin-top: 6px; }

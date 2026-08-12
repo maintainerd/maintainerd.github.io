@@ -34,10 +34,50 @@
       </nav>
     </header>
 <main>
-  <section class="page-hero"><div class="section"><div class="breadcrumbs"><a href="/">Maintainerd</a><span>/</span><a href="/services/">Services</a><span>/</span><a href="/services/auth/">Auth</a><span>/</span><span>Docs</span></div><p class="eyebrow">Auth docs</p><h1>Identity infrastructure for Maintainerd services and your applications.</h1><p class="lede">Auth owns users, tenants, clients, OAuth flows, sessions, policies, API keys, MFA, and the identity surfaces needed by both built-in Maintainerd products and externally deployed applications.</p></div></section>
-  <section class="section docs-layout"><aside class="side-nav"><a aria-current="page" href="/services/auth/docs/">Overview</a><a href="/services/auth/api/">API reference</a><a href="/services/auth/">Service page</a><a href="/services/">All services</a></aside><div class="content-flow"><h2>Service surfaces</h2><div class="doc-grid"><article class="doc-card"><h3>maintainerd-auth</h3><p>Backend identity service for setup, tenants, users, OAuth clients, API keys, roles, permissions, policies, sessions, MFA, and service authorization.</p></article><article class="doc-card"><h3>maintainerd-auth-console</h3><p>Management console for administrators and developers to operate tenants, clients, users, policies, identity providers, and security settings.</p></article><article class="doc-card"><h3>maintainerd-auth-identity</h3><p>Public-facing identity experience for login, consent, MFA, account flows, and OAuth user journeys.</p></article><article class="doc-card"><h3>Maintainerd services</h3><p>Built-in services can depend on Auth for global policy checks, service clients, user identity, and tenant-aware access decisions.</p></article></div><h2>Integration model</h2><ul><li>External applications identify through public client flows and can use Auth as their self-hosted identity provider.</li><li>First-party Maintainerd services use service authorization and tenant-aware policy checks.</li><li>Core can register services and surface Auth health, configuration, and operational status.</li></ul><div class="screenshot-frame"><img src="/assets/m9d-auth-console.png" alt="Auth console client detail screen"></div><h2>Deployment sketch</h2><div class="terminal"><div class="terminal-header"><span>Auth stack</span><button class="copy-button" type="button" data-copy="docker pull maintainerd/maintainerd-auth">Copy</button></div><pre>docker pull maintainerd/maintainerd-auth
-# pair with maintainerd-auth-console and maintainerd-auth-identity
-# connect to Core when you want shared service discovery and operations</pre></div></div></section>
+  <section class="page-hero"><div class="section"><div class="breadcrumbs"><a href="/">Maintainerd</a><span>/</span><a href="/services/">Services</a><span>/</span><a href="/services/auth/">Auth</a><span>/</span><span>Docs</span></div><p class="eyebrow">Auth docs</p><h1>Identity infrastructure for Maintainerd services and your applications.</h1><p class="lede">Auth owns users, tenants, clients, OAuth flows, sessions, policies, MFA, federation, messaging, service authorization, audit events, and operational controls.</p></div></section>
+  <section class="section docs-layout"><aside class="side-nav docs-nav" aria-label="Auth documentation" data-md-nav>
+    <span class="side-nav-label">Start</span>
+    <a aria-current="page" href="#overview" data-md-src="/services/auth/docs/sections/overview.md">Overview</a>
+    <a href="#quickstart" data-md-src="/services/auth/docs/sections/quickstart.md">Quickstart</a>
+    <a href="#setup" data-md-src="/services/auth/docs/sections/setup.md">Setup</a>
+    <a href="#architecture" data-md-src="/services/auth/docs/sections/architecture.md">Architecture</a>
+    <span class="side-nav-label">Configuration</span>
+    <a href="#environment" data-md-src="/services/auth/docs/sections/environment.md">Environment variables</a>
+    <a href="#secrets" data-md-src="/services/auth/docs/sections/secrets.md">Secrets & keys</a>
+    <a href="#database-redis" data-md-src="/services/auth/docs/sections/database-redis.md">Database & Redis</a>
+    <a href="#deployment" data-md-src="/services/auth/docs/sections/deployment.md">Deployment</a>
+    <span class="side-nav-label">Identity</span>
+    <a href="#identity-types" data-md-src="/services/auth/docs/sections/identity-types.md">Identity types</a>
+    <a href="#tenants-members" data-md-src="/services/auth/docs/sections/tenants-members.md">Tenants & members</a>
+    <a href="#users-invites" data-md-src="/services/auth/docs/sections/users-invites.md">Users & invites</a>
+    <a href="#identity-providers" data-md-src="/services/auth/docs/sections/identity-providers.md">Identity providers</a>
+    <a href="#registration-flows" data-md-src="/services/auth/docs/sections/registration-flows.md">Registration flows</a>
+    <a href="#login-registration" data-md-src="/services/auth/docs/sections/login-registration.md">Login & registration</a>
+    <a href="#account" data-md-src="/services/auth/docs/sections/account.md">Account self-service</a>
+    <span class="side-nav-label">OAuth</span>
+    <a href="#oauth-oidc" data-md-src="/services/auth/docs/sections/oauth-oidc.md">OAuth & OIDC</a>
+    <a href="#clients" data-md-src="/services/auth/docs/sections/clients.md">Applications & clients</a>
+    <a href="#tokens-sessions" data-md-src="/services/auth/docs/sections/tokens-sessions.md">Tokens & sessions</a>
+    <a href="#mfa" data-md-src="/services/auth/docs/sections/mfa.md">MFA & step-up</a>
+    <span class="side-nav-label">Authorization</span>
+    <a href="#authorization-model" data-md-src="/services/auth/docs/sections/authorization-model.md">Authorization model</a>
+    <a href="#resources" data-md-src="/services/auth/docs/sections/resources.md">Services, APIs & permissions</a>
+    <a href="#policies" data-md-src="/services/auth/docs/sections/policies.md">Policies</a>
+    <a href="#service-auth" data-md-src="/services/auth/docs/sections/service-auth.md">Service auth</a>
+    <a href="#workload-identity" data-md-src="/services/auth/docs/sections/workload-identity.md">Workload identity</a>
+    <span class="side-nav-label">Operations</span>
+    <a href="#messaging" data-md-src="/services/auth/docs/sections/messaging.md">Messaging</a>
+    <a href="#branding" data-md-src="/services/auth/docs/sections/branding.md">Branding & templates</a>
+    <a href="#events-webhooks" data-md-src="/services/auth/docs/sections/events-webhooks.md">Events & webhooks</a>
+    <a href="#audit" data-md-src="/services/auth/docs/sections/audit.md">Audit events</a>
+    <a href="#security" data-md-src="/services/auth/docs/sections/security.md">Security controls</a>
+    <a href="#observability" data-md-src="/services/auth/docs/sections/observability.md">Observability</a>
+    <a href="#grpc" data-md-src="/services/auth/docs/sections/grpc.md">gRPC</a>
+    <a href="#troubleshooting" data-md-src="/services/auth/docs/sections/troubleshooting.md">Troubleshooting</a>
+    <span class="side-nav-label">Reference</span>
+    <a href="#api-map" data-md-src="/services/auth/docs/sections/api-map.md">API map</a>
+    <a href="#glossary" data-md-src="/services/auth/docs/sections/glossary.md">Glossary</a>
+  </aside><article class="content-flow markdown-panel" data-md-target aria-live="polite"><noscript><h2>JavaScript required for section loading</h2><p>This documentation stores each section as Markdown. Enable JavaScript to switch sections from the side navigation, or open the Markdown files under <code>/services/auth/docs/sections/</code>.</p></noscript></article></section>
 </main><footer class="footer">
       <div class="footer-inner">
         <div>
