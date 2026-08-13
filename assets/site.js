@@ -35,14 +35,32 @@ const inlineMarkdown = (value) => {
   return html;
 };
 
+const tableCells = (line) => {
+  const trimmed = line.trim();
+  if (!trimmed.startsWith("|") || !trimmed.endsWith("|")) return null;
+  return trimmed.slice(1, -1).split("|").map((cell) => cell.trim());
+};
+
+const isTableSeparator = (cells) => (
+  Array.isArray(cells) &&
+  cells.length > 0 &&
+  cells.every((cell) => /^:?-{3,}:?$/.test(cell))
+);
+
 const renderMarkdown = (source) => {
   const lines = source.replace(/\r\n/g, "\n").split("\n");
   const html = [];
   let paragraph = [];
   let listType = null;
   let code = null;
+  let table = null;
+  let pendingTableHeader = null;
 
   const closeParagraph = () => {
+    if (pendingTableHeader) {
+      paragraph.push(`| ${pendingTableHeader.join(" | ")} |`);
+      pendingTableHeader = null;
+    }
     if (!paragraph.length) return;
     html.push(`<p>${inlineMarkdown(paragraph.join(" "))}</p>`);
     paragraph = [];
@@ -52,6 +70,21 @@ const renderMarkdown = (source) => {
     if (!listType) return;
     html.push(`</${listType}>`);
     listType = null;
+  };
+
+  const closeTable = () => {
+    if (!table) return;
+    const head = table.header
+      .map((cell) => `<th>${inlineMarkdown(cell)}</th>`)
+      .join("");
+    const rows = table.rows
+      .map((row) => {
+        const cells = table.header.map((_, index) => `<td>${inlineMarkdown(row[index] || "")}</td>`).join("");
+        return `<tr>${cells}</tr>`;
+      })
+      .join("");
+    html.push(`<div class="table-scroll"><table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`);
+    table = null;
   };
 
   const closeCode = () => {
@@ -65,6 +98,7 @@ const renderMarkdown = (source) => {
       if (code === null) {
         closeParagraph();
         closeList();
+        closeTable();
         code = [];
       } else {
         closeCode();
@@ -81,6 +115,32 @@ const renderMarkdown = (source) => {
     if (!trimmed) {
       closeParagraph();
       closeList();
+      closeTable();
+      return;
+    }
+
+    const cells = tableCells(trimmed);
+    if (table && cells && !isTableSeparator(cells)) {
+      table.rows.push(cells);
+      return;
+    }
+    if (table) {
+      closeTable();
+    }
+    if (pendingTableHeader) {
+      if (isTableSeparator(cells)) {
+        closeList();
+        table = { header: pendingTableHeader, rows: [] };
+        pendingTableHeader = null;
+        return;
+      }
+      paragraph.push(`| ${pendingTableHeader.join(" | ")} |`);
+      pendingTableHeader = null;
+    }
+    if (cells) {
+      closeParagraph();
+      closeList();
+      pendingTableHeader = cells;
       return;
     }
 
@@ -88,6 +148,7 @@ const renderMarkdown = (source) => {
     if (heading) {
       closeParagraph();
       closeList();
+      closeTable();
       const level = heading[1].length;
       html.push(`<h${level}>${inlineMarkdown(heading[2])}</h${level}>`);
       return;
@@ -124,6 +185,7 @@ const renderMarkdown = (source) => {
   closeCode();
   closeParagraph();
   closeList();
+  closeTable();
   return html.join("\n");
 };
 
