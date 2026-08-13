@@ -1,4 +1,4 @@
-# Quickstart
+# Released Image Quickstart
 
 This quickstart runs the released `maintainerd-auth` image locally with PostgreSQL, Redis, and an nginx HTTPS edge. It is the fastest way to try Auth with clean browser URLs, hosted login, OIDC discovery, and the admin console without building from source.
 

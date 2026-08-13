@@ -138,7 +138,7 @@ app-encryption-key
 
 - `SECRET_FILE_PATH`: optional, default `/run/secrets`. Used by the `file` provider.
 - `AWS_REGION`: optional, default `us-east-1`. Used by `aws_secrets` and `aws_ssm`.
-- `VAULT_ADDR`: optional, default `http://localhost:8200`. Use HTTPS for released-image deployments.
+- `VAULT_ADDR`: optional Vault address. Use HTTPS for released-image deployments.
 - `VAULT_TOKEN`: optional. Static Vault token. If unset, Auth uses AppRole.
 - `VAULT_MOUNT`: optional, default `secret`. Vault KV v2 mount.
 - `VAULT_SECRET_FIELD`: optional, default `value`. Field read from each Vault secret.

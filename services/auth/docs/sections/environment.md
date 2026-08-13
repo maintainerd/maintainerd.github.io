@@ -63,7 +63,7 @@ WEBAUTHN_RP_ID=auth.example.com
 
 OTEL_ENABLED=true
 OTEL_SERVICE_NAME=maintainerd-auth
-OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector.observability.svc:4317
+OTEL_EXPORTER_OTLP_ENDPOINT=https://otel-collector.observability.svc:4317
 ```
 
 With that configuration, secret-backed values are stored under names such as:
@@ -128,7 +128,7 @@ Secret values are normalized consistently across providers:
 - `SECRET_STRICT`: optional, default `false`. When `false`, a missing secret in a non-env provider may fall back to the same key in the process environment. When `true`, the configured provider is authoritative and missing secrets fail startup.
 - `SECRET_FILE_PATH`: optional, default `/run/secrets`. Directory used by the `file` provider. Secret filenames are lowercase with underscores converted to hyphens, so `JWT_PRIVATE_KEY` becomes `jwt-private-key`.
 - `AWS_REGION`: optional, default `us-east-1`. Region used by `aws_secrets` and `aws_ssm`.
-- `VAULT_ADDR`: optional for Vault, default `http://localhost:8200`. Use HTTPS for released-image deployments.
+- `VAULT_ADDR`: optional Vault address. Use HTTPS for released-image deployments.
 - `VAULT_TOKEN`: optional Vault token. If unset, Auth uses Vault AppRole.
 - `VAULT_MOUNT`: optional, default `secret`. Vault KV v2 mount.
 - `VAULT_SECRET_FIELD`: optional, default `value`. Field read from each Vault secret.
@@ -250,7 +250,7 @@ Client IP resolution affects rate limits, IP restriction rules, security events,
 
 This variable is for operational exceptions and static allowlists. It is not the normal way to onboard external applications. External applications should be registered as clients; their configured origins and redirect URIs become part of the tenant/client trust model and can be checked dynamically.
 
-## Runtime Modes And gRPC
+## gRPC And Control Plane
 
 - `CONTROL_PLANE_ENABLED`: optional, default `false`. Enables control-plane mode for a Maintainerd ecosystem deployment managed by Core. Enabling this also enables gRPC and forces mTLS.
 - `GRPC_ENABLED`: optional, default `false`. Enables the gRPC listener without enabling full control-plane mode.
@@ -306,7 +306,7 @@ Email providers, SMS providers, templates, branding, and tenant messaging behavi
 
 - `OTEL_ENABLED`: optional, default `false`. Enables OTLP export for traces and logs when set to `true`.
 - `OTEL_SERVICE_NAME`: optional, default `maintainerd-auth`. Service name attached to OpenTelemetry resources and the slog-to-OTel bridge.
-- `OTEL_EXPORTER_OTLP_ENDPOINT`: optional. Standard OpenTelemetry endpoint for OTLP/gRPC export, commonly `http://otel-collector:4317`.
+- `OTEL_EXPORTER_OTLP_ENDPOINT`: optional. Standard OpenTelemetry endpoint for OTLP/gRPC export, commonly an HTTPS collector endpoint.
 
 Auth uses the standard OpenTelemetry SDK, so standard `OTEL_*` variables for headers, TLS, protocol-specific endpoints, and exporter behavior are also respected by the SDK.
 

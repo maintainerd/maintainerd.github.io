@@ -8,15 +8,15 @@ Setup commands, environment examples, DNS examples, reverse-proxy examples, and 
 
 ## How To Use These Docs
 
-Read the docs in the same order you would set up Auth:
+Read the docs in the same order you would set up the released image:
 
 1. Understand the product areas.
 2. Run or open Auth.
 3. Complete setup.
-4. Configure runtime, hostnames, secrets, database, and deployment.
-5. Create tenants.
-6. Add users or invites.
-7. Configure identity providers.
+4. Configure HTTPS hostnames, secrets, database, Redis, and deployment.
+5. Create tenants and understand system-vs-tenant URLs.
+6. Create application clients.
+7. Configure identity providers, brokered login, and federation.
 8. Configure registration, login, and account self-service.
 
 When a page mentions a screen, treat the navigation path as the starting point. The field explanations tell you what you are looking at and what each choice changes. The workflow sections tell you the normal order of operations.
@@ -32,7 +32,7 @@ Auth also has service surfaces used by applications and Maintainerd services:
 
 - Public identity surface: the browser and application-facing identity layer.
 - Internal management surface: the private administrator and automation layer.
-- Optional gRPC surface: the service-to-service control-plane layer.
+- Optional private service surface: service-to-service traffic when your production platform enables it.
 
 Beginners should start in the console. Developers integrating an app should also understand the hosted identity UI because that is where users complete sign-in and account flows.
 
@@ -41,17 +41,17 @@ Beginners should start in the console. Developers integrating an app should also
 Use this map to know where a feature normally lives:
 
 - Setup: open the setup wizard before the first tenant and admin user exist.
-- Runtime modes: choose how Auth runs in your environment.
 - Architecture: understand the boundaries before integrating services.
 - Environment variables: configure process-level runtime values.
 - Secrets and keys: configure signing, encryption, bootstrap, and provider secrets.
 - Database and Redis: configure persistence, migrations, cache, sessions, and background state.
-- Surfaces and hostnames: configure console, identity, API, and tenant hostnames.
+- Hostnames and tenant URLs: configure console, identity, API, and tenant hostnames.
 - Deployment: prepare production runtime, reverse proxy, TLS, workers, and probes.
-- Identity types: learn what tenant, user, member, provider, client, and session mean.
 - Tenants and members: manage tenant settings and administrator access.
 - Users and invites: manage human accounts and onboarding invitations.
+- Applications and clients: register production applications, redirects, logout URLs, CORS origins, grants, and provider connections.
 - Identity providers: configure password, social login, OIDC, SAML, and provider mapping.
+- OAuth and OIDC: understand the protocol behavior your clients use.
 - Registration flows: choose who can create accounts and what happens during onboarding.
 - Login and registration: understand the hosted user journey.
 - Account self-service: understand what signed-in users can manage themselves.
@@ -117,13 +117,13 @@ For a new deployment:
 1. Read Setup.
 2. Run the quickstart or open your deployed setup wizard.
 3. Create the first tenant and administrator.
-4. Review runtime mode.
-5. Configure hostnames.
+4. Configure HTTPS hostnames.
 6. Configure secrets, database, and Redis.
 7. Create an application client.
-8. Configure login and registration.
-9. Add users or invites.
-10. Test the hosted identity UI and account self-service.
+8. Configure identity providers and connect them to the client.
+9. Configure login and registration.
+10. Add users or invites.
+11. Test the hosted identity UI and account self-service.
 
 ## Common Beginner Mistakes
 

@@ -87,6 +87,54 @@ Common fields:
 
 Client secrets must stay server-side. Do not expose them in browser configuration or docs pages.
 
+## Brokered Login
+
+Brokered login means Auth sits between your application and an upstream identity provider.
+
+The application talks to Auth. Auth talks to the upstream provider. After the upstream provider proves the user, Auth maps that proof into an Auth user, applies tenant policy, applies client policy, completes MFA or registration when required, and then issues Auth-owned tokens back to the application.
+
+This is important because your application should not need separate login integrations for Google, Microsoft, GitHub, SAML, and every customer IdP. The app integrates with Auth once. Auth brokers the provider-specific details.
+
+Brokered login flow:
+
+1. The application sends the user to Auth.
+2. Auth resolves tenant and client context.
+3. Auth shows the providers connected to that client.
+4. The user chooses a provider.
+5. Auth sends the user to the upstream provider.
+6. The upstream provider returns the user to Auth.
+7. Auth validates issuer, signature, audience, state, nonce, time, and provider-specific requirements.
+8. Auth maps the upstream subject and claims.
+9. Auth links or creates the Auth user only when policy allows it.
+10. Auth completes MFA, consent, or registration steps when required.
+11. Auth redirects the user back to the application.
+
+The application receives Auth tokens, not raw upstream provider tokens.
+
+## Federation
+
+Federation is the trust relationship between Auth and another identity system.
+
+Use federation when:
+
+- A tenant wants users to sign in with a company identity provider.
+- A customer has an existing OIDC or SAML provider.
+- A product wants social login without building each provider directly into every app.
+- A service needs Auth to normalize identities from multiple upstream systems.
+
+Federation does not mean every upstream account automatically becomes a valid Auth user. Tenant policy still decides whether JIT provisioning is enabled, whether invites are required, whether email domains are allowed, whether MFA is required, and which client can use the provider.
+
+Federated identity fields to understand:
+
+- Provider subject: the stable upstream identifier for the user.
+- Issuer or entity ID: the upstream system that made the assertion.
+- Email claim: useful for display and matching, but not enough by itself for safe linking.
+- Verification claim: whether the upstream provider says the email was verified.
+- Groups or roles: optional upstream authorization hints that must be mapped deliberately.
+- Auth user: the tenant-scoped user record created or linked after validation.
+
+Auth should be the policy point. The upstream provider proves identity; Auth decides how that proof applies inside the tenant.
+
 ## SAML Providers
 
 SAML providers support enterprise SSO where the upstream identity system sends signed assertions.

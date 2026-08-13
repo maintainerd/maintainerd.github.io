@@ -795,13 +795,7 @@ OTEL_SERVICE_NAME=maintainerd-auth
 OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector.example.internal:4317
 ```
 
-Auth also registers Prometheus metrics and exposes them on the management port:
-
-```text
-GET http://auth-management.internal/metrics
-```
-
-Scrape only the private management surface. Metrics include build information plus HTTP and auth-domain counters such as authentication events, security denials, and audit-write failures.
+Auth also registers Prometheus metrics and exposes them on the private management surface. Scrape that surface only through private networking or a trusted HTTPS management route. Metrics include build information plus HTTP and auth-domain counters such as authentication events, security denials, and audit-write failures.
 
 Useful deployment signals:
 
