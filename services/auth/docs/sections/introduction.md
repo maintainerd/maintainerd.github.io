@@ -58,17 +58,17 @@ Use this map to know where a feature normally lives:
 
 ## Important Concepts
 
-A tenant is the security boundary. Tenant settings decide which users, providers, clients, policies, branding, events, and data lifecycle rules apply.
+A tenant is the security boundary. Tenant settings decide which users, providers, clients, policies, branding, events, and data lifecycle rules apply. The full tenant and member model is in [Tenants & members](#tenants-members).
 
-A user is a human account inside one tenant. A user can have profiles, sessions, devices, MFA factors, consents, linked identities, and roles.
+A user is a human account inside one tenant. A user can have profiles, sessions, devices, MFA factors, consents, linked identities, and roles. See [Users & invites](#users-invites) for administration and onboarding.
 
 A tenant member is an administrator relationship. Members are people allowed to manage tenant settings in the console. Tenant membership is separate from application roles.
 
-A client is an application that uses Auth for login. Clients define redirect behavior, logout behavior, allowed login methods, provider connections, and OAuth/OIDC behavior.
+A client is an application that uses Auth for login. Clients define redirect behavior, logout behavior, allowed login methods, provider connections, and OAuth/OIDC behavior. See [Applications & clients](#clients) for setup fields.
 
-An identity provider is a way to prove identity. Auth can use built-in email/password, passwordless methods, OIDC/OAuth2 providers, SAML providers, and other configured provider types.
+An identity provider is a way to prove identity. Auth can use built-in email/password, passwordless methods, OIDC/OAuth2 providers, SAML providers, and other configured provider types. See [Identity providers](#identity-providers) for brokered login and federation.
 
-A registration flow decides how accounts are created. It controls open signup, invite-only signup, provider-driven signup, profile completion, verification, and default access.
+A registration flow decides how accounts are created. It controls open signup, invite-only signup, provider-driven signup, profile completion, verification, and default access. See [Registration flows](#registration-flows) for onboarding choices.
 
 ## Permissions Model
 

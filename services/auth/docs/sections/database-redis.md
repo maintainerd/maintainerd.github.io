@@ -47,6 +47,8 @@ Optional PostgreSQL variables:
 - `DB_CONN_MAX_LIFETIME_SEC`: optional, default `300`. Maximum lifetime for a pooled connection.
 - `DB_STATEMENT_TIMEOUT_MS`: optional, default `30000`. PostgreSQL statement timeout in milliseconds.
 
+For the complete environment-variable reference, including secret-provider selection and non-database settings, see [Environment variables](#environment).
+
 Auth builds a PostgreSQL keyword/value DSN from these values and passes `statement_timeout` through the connection `options` parameter. The timeout applies at the database session level so long-running queries are bounded even when a handler forgets to add a narrower context timeout.
 
 Example PostgreSQL values for the quickstart:
@@ -128,6 +130,8 @@ Redis variables:
 - `REDIS_TLS`: optional, default `false`. Enables TLS for Redis.
 
 Redis TLS is also enabled automatically when `REDIS_ADDR` starts with `rediss://`. When TLS is enabled, Auth uses TLS 1.2 or newer.
+
+For provider-specific secret names for `DB_PASSWORD` and `REDIS_PASSWORD`, see [Secrets & keys](#secrets).
 
 Example local Redis values:
 

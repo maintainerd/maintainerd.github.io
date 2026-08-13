@@ -191,21 +191,7 @@ The URL helper normalizes frontend hosts to HTTPS. Production DNS and TLS certif
 
 ## Frontend Runtime Configuration
 
-The embedded image serves `/config.js` dynamically. The SPAs read `window.__ENV__` first, then fall back to build-time `VITE_*` values.
-
-Console runtime variables:
-
-- `VITE_AUTH_API_BASE_URL`: management API base URL. Default in embedded/same-origin mode: `/api/v1`.
-- `VITE_AUTH_PUBLIC_API_BASE_URL`: public identity API base URL. Default in embedded/same-origin mode: `/public-api/api/v1`.
-- `VITE_AUTH_IDENTITY_BASE_URL`: fallback hosted identity UI origin. Usually set from `APP_FRONTEND_IDENTITY_HOSTNAME`.
-
-Identity runtime variables:
-
-- `VITE_AUTH_API_BASE_URL`: public identity API base URL. Default in embedded/same-origin mode: `/api/v1`.
-
-For split frontend deployments, point the console to the private management API origin and the public identity API origin, then point identity UI configuration at the public identity API origin. Prefer same-origin API mounts for browser sessions when using the embedded image.
-
-Use absolute `VITE_*` values only when your platform intentionally serves the SPA and API from different origins.
+The embedded frontends get runtime configuration from `/config.js` and `window.__ENV__`. This page explains which host owns each browser surface and why same-origin API mounts are preferred for browser sessions. For the actual `VITE_*` variable list and defaults, see [Environment variables](#environment).
 
 ## External Application Domains
 
@@ -237,7 +223,7 @@ Post logout URI:    https://app.customer.example/logout/callback
 
 For browser OAuth clients, redirect URI matching is exact. Wildcards, prefix matching, and arbitrary subdomain matching are not accepted. Use HTTPS redirect URIs for browser applications. Mobile clients may use reverse-domain private schemes such as `com.example.app:/oauth`.
 
-Register external app domains, redirect URIs, logout URIs, and CORS origins on the client record. Do not change `APP_PUBLIC_HOSTNAME` or frontend hostnames to onboard an external application.
+Register external app domains, redirect URIs, logout URIs, and CORS origins on the client record. Do not change `APP_PUBLIC_HOSTNAME` or frontend hostnames to onboard an external application. For client fields and workflows, see [Applications & clients](#clients).
 
 ## CORS And Origins
 

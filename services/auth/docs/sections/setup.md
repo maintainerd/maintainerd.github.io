@@ -2,7 +2,7 @@
 
 Setup is the one-time bootstrap that turns an empty Auth database into a usable identity system. It creates the system tenant, seeds the tenant baseline, creates the first administrator, and then locks the bootstrap surface so the instance can serve normal login, console, OAuth, and management traffic.
 
-This page focuses on what setup does and how to run it. Use Quickstart for the local Docker runbook, Runtime modes for deployment topology, and Environment variables for the complete configuration list.
+This page focuses on what setup does and how to run it. Use [Quickstart](#quickstart) for the local Docker runbook, [Deployment](#deployment) for production runtime shape, [Environment variables](#environment) for the complete configuration list, and [Secrets & keys](#secrets) for secret-provider details.
 
 ## What Setup Creates
 
@@ -129,6 +129,8 @@ For orchestrated setup:
 `CONTROL_PLANE_ENABLED=true` implies `GRPC_ENABLED=true` and forces mTLS. The process refuses to start a control plane without server certificate, server key, and client CA configuration.
 
 If `SETUP_BOOTSTRAP_TOKEN` is empty, gRPC setup is disabled. That is expected for standalone installs, which bootstrap through the REST wizard.
+
+For the full gRPC/control-plane deployment model, see [Architecture](#architecture), [Deployment](#deployment), and [Environment variables](#environment). This setup page only describes the bootstrap sequence and the settings that directly affect setup safety.
 
 ## Locking And Safety
 

@@ -127,7 +127,7 @@ JWT_PUBLIC_KEY="-----BEGIN RSA PUBLIC KEY-----..."
 
 `APP_ENV` defaults to `production`. Production deployments should leave it unset or set it to `production` explicitly so stricter behavior such as HSTS, database SSL enforcement, gRPC TLS requirements, and strict secret-store transport checks remain active.
 
-Use the Environment Variables, Secrets & Keys, Database & Redis, and Surfaces & Hostnames sections for the full reference. This page focuses on the deployment decisions and the minimum set that must come together.
+Use [Environment variables](#environment), [Secrets & keys](#secrets), [Database & Redis](#database-redis), and [Hostnames & tenant URLs](#surfaces-hostnames) for the full reference. This page focuses on deployment decisions and the minimum set that must come together.
 
 ## Hostname Plan
 
@@ -142,24 +142,11 @@ APP_PUBLIC_HOSTNAME=https://identity-api.auth.example.com
 
 Use full origins. Do not include `/api/v1` in these values.
 
-These hostnames have different jobs:
-
-- `APP_PUBLIC_HOSTNAME` is the OAuth/OIDC issuer and public identity API base. Discovery, JWKS, authorize, token, device, CIBA, PAR, token exchange, revocation, and public identity API behavior anchor here.
-- `APP_PRIVATE_HOSTNAME` represents the internal management API. Keep it on a private network because it serves tenant, user, client, role, policy, identity provider, webhook, event, audit, branding, and settings management.
-- `APP_FRONTEND_IDENTITY_HOSTNAME` is the hosted login and account-management app.
-- `APP_FRONTEND_CONSOLE_HOSTNAME` is the admin console app.
-
-Tenant hostnames are derived from the system frontend hostnames by prepending the tenant DNS slug:
-
-```text
-https://identity.auth.example.com        system identity host
-https://acme.identity.auth.example.com   acme tenant identity host
-
-https://console.auth.example.com         system console host
-https://acme.console.auth.example.com    acme tenant console host
-```
+These hostnames have different jobs: public issuer/API, private management API, hosted identity UI, and admin console UI. Tenant frontend hosts are derived by prepending the tenant DNS slug to the system frontend hostnames.
 
 Because tenant routing depends on the incoming `Host` header, configure your reverse proxy to preserve the original host.
+
+For the full system-vs-tenant URL model and field meanings, see [Hostnames & tenant URLs](#surfaces-hostnames).
 
 ## Reverse Proxy
 
@@ -289,6 +276,8 @@ openssl s_client -connect acme.identity.auth.example.com:443 -servername acme.id
 ```
 
 If you use tenant-specific API hosts later, cover those explicitly as well. Auth's tenant frontend URL helper derives tenant console and identity hosts from the system frontend hostnames; DNS and TLS must be ready before those tenant links are sent in email, invites, resets, or account flows.
+
+For tenant host resolution rules, see [Hostnames & tenant URLs](#surfaces-hostnames). This deployment page keeps the DNS and certificate commands here because they are part of the operator runbook.
 
 ## Caddy Edge Example
 
@@ -567,17 +556,6 @@ SECRET_STRICT=true
 AWS_REGION=us-east-1
 ```
 
-Store these secret names in AWS:
-
-```text
-maintainerd/prod/auth/app-encryption-key
-maintainerd/prod/auth/hmac-secret-key
-maintainerd/prod/auth/db-password
-maintainerd/prod/auth/redis-password
-maintainerd/prod/auth/jwt-private-key
-maintainerd/prod/auth/jwt-public-key
-```
-
 Example with file-backed secrets, useful for Docker or Kubernetes-mounted secrets:
 
 ```env
@@ -586,18 +564,9 @@ SECRET_FILE_PATH=/run/secrets
 SECRET_STRICT=true
 ```
 
-Mount files like:
-
-```text
-/run/secrets/app-encryption-key
-/run/secrets/hmac-secret-key
-/run/secrets/db-password
-/run/secrets/redis-password
-/run/secrets/jwt-private-key
-/run/secrets/jwt-public-key
-```
-
 When using a managed provider, leave `SECRET_STRICT=false` during migration if some secrets still come from env vars. Set `SECRET_STRICT=true` once every required secret is in the provider.
+
+For exact provider naming, cloud secret examples, file naming rules, fallback behavior, and rotation guidance, see [Secrets & keys](#secrets).
 
 ## Signing Keys
 
@@ -609,9 +578,7 @@ JWT_PUBLIC_KEY="-----BEGIN RSA PUBLIC KEY-----..."
 JWT_KEY_ID=maintainerd-auth-key-1
 ```
 
-Use RSA key material compatible with the configured JWT algorithm. Rotation is done by updating the secret values and redeploying all replicas. Rotate carefully because relying parties cache JWKS and existing tokens remain valid until they expire.
-
-For multi-replica deployments, every replica must receive the same active key pair and `JWT_KEY_ID` during a rollout. Do not let different replicas sign with different private keys under the same issuer.
+Use RSA key material compatible with the configured JWT algorithm. For rotation behavior and multi-replica key safety, see [Secrets & keys](#secrets).
 
 ## PostgreSQL
 
@@ -638,7 +605,7 @@ Production mode refuses `DB_SSLMODE=disable`. Prefer `verify-full` when your Pos
 DB_SSLMODE=verify-full
 ```
 
-The process runs migrations in-process at startup. Migrations use a PostgreSQL advisory lock, so rolling multiple replicas against the same database is safe: one replica applies pending migrations while the others wait and then observe the completed versions.
+The process runs migrations in-process at startup. Migrations use a PostgreSQL advisory lock, so rolling multiple replicas against the same database is safe.
 
 Operational expectations:
 
@@ -647,6 +614,8 @@ Operational expectations:
 - Size `DB_MAX_OPEN_CONNS` across all replicas so the total does not exceed the database server limit.
 - Monitor readiness because `/readyz` pings PostgreSQL.
 - Treat PostgreSQL as critical state. Losing it loses tenants, clients, users, policies, sessions, audit history, event state, webhook state, and MFA state.
+
+For PostgreSQL startup, migrations, TLS modes, readiness behavior, and data ownership, see [Database & Redis](#database-redis).
 
 ## Redis
 
@@ -667,16 +636,9 @@ REDIS_ADDR=rediss://redis.example.internal:6379
 REDIS_TLS=false
 ```
 
-Redis supports:
-
-- Public and tenant-scoped rate limits.
-- Session and token revocation fast paths.
-- OAuth/OIDC transient state.
-- OTP throttling and anti-abuse controls.
-- Runtime caches.
-- Multi-replica coordination for several security-sensitive flows.
-
 Deploy Redis as a shared dependency for every Auth replica in the same environment. Do not give each replica its own isolated Redis instance.
+
+For Redis runtime usage, startup behavior, and production practices, see [Database & Redis](#database-redis).
 
 ## External Application Readiness
 
@@ -707,7 +669,7 @@ Static CORS origins are configured with:
 CORS_ALLOWED_ORIGINS=https://ops.example.com,https://admin.example.com
 ```
 
-Tenant/client application origins should usually be stored as client `cors_origin_uri` entries instead. Those are scoped to the request tenant, which avoids accidentally allowing one tenant's browser application on another tenant's surface.
+Tenant/client application origins should usually be stored as client `cors_origin_uri` entries instead. Those are scoped to the request tenant, which avoids accidentally allowing one tenant's browser application on another tenant's surface. For the client-side setup fields, see [Applications & clients](#clients); for origin and hostname boundaries, see [Hostnames & tenant URLs](#surfaces-hostnames).
 
 Client IP resolution affects rate limits, audit events, IP restriction rules, and abuse detection. Use explicit trusted proxy CIDRs in production:
 

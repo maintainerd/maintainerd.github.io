@@ -96,21 +96,7 @@ CORS origin:             https://app.example.com
 
 For a tenant-specific app hosted at `https://portal.customer.example`, configure that exact origin and callback. Do not use wildcard redirects for browser clients.
 
-For Auth itself, system tenant URLs normally look like:
-
-```text
-Console:       https://console.auth.example.com
-Identity UI:   https://identity.auth.example.com
-Public API:    https://identity-api.auth.example.com
-Private API:   https://console-api.auth.example.com
-```
-
-For a regular tenant named `acme`, tenant frontend URLs normally look like:
-
-```text
-Tenant console:     https://acme.console.auth.example.com
-Tenant identity UI: https://acme.identity.auth.example.com
-```
+Auth system and tenant URL patterns are explained in [Hostnames & tenant URLs](#surfaces-hostnames). Keep those deployment hostnames separate from the external application URLs configured on the client.
 
 Applications should redirect users to Auth. They should not collect Auth passwords directly.
 
@@ -122,7 +108,7 @@ This matters because a tenant can have many providers, but each application may 
 
 To connect a provider:
 
-1. Create or enable the provider in Identity providers.
+1. Create or enable the provider in [Identity providers](#identity-providers).
 2. Open the client.
 3. Open provider connections or login methods.
 4. Select the provider.

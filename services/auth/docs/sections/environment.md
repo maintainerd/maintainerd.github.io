@@ -77,6 +77,8 @@ maintainerd/prod/auth/app-encryption-key
 maintainerd/prod/auth/hmac-secret-key
 ```
 
+For provider-specific naming rules, rotation guidance, and cloud secret examples, see [Secrets & keys](#secrets).
+
 ## Minimal Standalone Configuration
 
 A standalone Auth instance needs these plain variables:
@@ -120,6 +122,8 @@ Secret values are normalized consistently across providers:
 - Leading and trailing whitespace is trimmed.
 - Values prefixed with `base64:` are base64-decoded before use.
 - Empty required secrets fail startup.
+
+This page lists the environment variables that select and configure the provider. The full secret-provider behavior, naming conventions, fallback rules, and rotation process are documented in [Secrets & keys](#secrets).
 
 ## Secret Provider Variables
 
@@ -186,7 +190,7 @@ Use full HTTPS origins for hostnames in deployed environments. The frontend host
 - `DB_CONN_MAX_LIFETIME_SEC`: optional, default `300`. Maximum connection lifetime in seconds.
 - `DB_STATEMENT_TIMEOUT_MS`: optional, default `30000`. Per-statement timeout applied to database work in milliseconds.
 
-The database stores tenants, users, OAuth clients, identity providers, roles, policies, MFA state, sessions, event outbox rows, webhook deliveries, audit logs, branding, messaging configuration, and setup state.
+For what Auth stores in PostgreSQL, how startup and migrations work, and how Redis is used at runtime, see [Database & Redis](#database-redis).
 
 Example PostgreSQL values:
 
@@ -214,7 +218,7 @@ maintainerd/prod/auth/db-password
 - `REDIS_PASSWORD`: optional secret. Password for Redis AUTH.
 - `REDIS_TLS`: optional, default `false`. Enables TLS for Redis. TLS is also enabled automatically when `REDIS_ADDR` starts with `rediss://`.
 
-Auth connects to Redis during startup and readiness depends on Redis being reachable.
+Auth connects to Redis during startup and readiness depends on Redis being reachable. Runtime Redis usage and readiness behavior are covered in [Database & Redis](#database-redis).
 
 Example Redis values:
 
@@ -262,7 +266,7 @@ This variable is for operational exceptions and static allowlists. It is not the
 - `GRPC_CLIENT_CA_FILE`: optional unless mTLS is required. Path to the client CA bundle used to verify gRPC clients.
 - `GRPC_REQUIRE_MTLS`: optional, default `false`. Requires client certificates for gRPC when manually enabling gRPC. It is forced to true when `CONTROL_PLANE_ENABLED=true`.
 
-Standalone Auth uses the REST setup wizard and normally leaves `CONTROL_PLANE_ENABLED`, `GRPC_ENABLED`, and `SETUP_BOOTSTRAP_TOKEN` unset. Maintainerd ecosystem deployments controlled by Core enable the control plane and provide mTLS material plus a bootstrap token.
+Standalone Auth uses the REST setup wizard and normally leaves `CONTROL_PLANE_ENABLED`, `GRPC_ENABLED`, and `SETUP_BOOTSTRAP_TOKEN` unset. Maintainerd ecosystem deployments controlled by Core enable the control plane and provide mTLS material plus a bootstrap token. For the setup sequence, see [Setup](#setup); for runtime topology, see [Architecture](#architecture).
 
 ## JWT And Key Rotation
 
@@ -327,7 +331,7 @@ When unset or unavailable, Auth continues without GeoIP enrichment.
 
 ## Frontend Runtime Variables
 
-The container can inject SPA configuration at startup through `/config.js` and `window.__ENV__`. Build-time `VITE_*` values remain as fallbacks for split frontend deployments.
+The container can inject SPA configuration at startup through `/config.js` and `window.__ENV__`. Build-time `VITE_*` values remain as fallbacks for split frontend deployments. For same-origin routing and tenant host behavior, see [Hostnames & tenant URLs](#surfaces-hostnames).
 
 Console variables:
 

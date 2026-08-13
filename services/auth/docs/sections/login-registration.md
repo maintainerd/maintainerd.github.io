@@ -14,7 +14,7 @@ Users enter the hosted identity UI when:
 - They complete MFA.
 - They approve consent for an application.
 
-Administrators configure the experience through tenants, clients, identity providers, registration flows, security settings, branding, messaging, and account self-service settings.
+Administrators configure the experience through tenants, clients, identity providers, registration flows, security settings, branding, messaging, and account self-service settings. This page explains the user journey; the detailed configuration pages are [Applications & clients](#clients), [Identity providers](#identity-providers), [Registration flows](#registration-flows), [Messaging](#messaging), and [Security controls](#security).
 
 ## What The Login Screen Shows
 
@@ -78,7 +78,7 @@ Registration can appear as:
 - Email or phone verification.
 - First password setup.
 
-Registration follows the active registration flow for the tenant and client.
+Registration follows the active registration flow for the tenant and client. The available onboarding models and field meanings are documented in [Registration flows](#registration-flows).
 
 ## Fields Users Enter
 
