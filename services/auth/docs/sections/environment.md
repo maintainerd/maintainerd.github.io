@@ -81,7 +81,7 @@ maintainerd/prod/auth/hmac-secret-key
 
 A standalone Auth instance needs these plain variables:
 
-- `APP_ENV`: optional runtime environment, default `production`. Released-image documentation assumes production behavior; leave this unset or set it to `production` explicitly.
+- `APP_ENV`: optional runtime environment, default `production`. These docs assume production behavior; leave this unset or set it to `production` explicitly.
 - `APP_PUBLIC_HOSTNAME`: public API and OAuth issuer origin, for example `https://identity-api.auth.example.com`.
 - `APP_PRIVATE_HOSTNAME`: internal management API origin, for example `https://console-api.auth.example.com`.
 - `APP_FRONTEND_IDENTITY_HOSTNAME`: hosted identity UI origin, for example `https://identity.auth.example.com`.
@@ -105,7 +105,7 @@ For local quickstart, `examples/quickstart/setup.sh` generates the required key 
 
 `SECRET_PROVIDER` selects where Auth reads secret-backed values. Supported values:
 
-- `env`: read secret values directly from environment variables. This is the default and is simplest for the released-image quickstart.
+- `env`: read secret values directly from environment variables. This is the default and is simplest for the quickstart.
 - `file`: read secret files from `SECRET_FILE_PATH`, default `/run/secrets`.
 - `aws_secrets`: read from AWS Secrets Manager.
 - `aws_ssm`: read from AWS SSM Parameter Store.
@@ -128,7 +128,7 @@ Secret values are normalized consistently across providers:
 - `SECRET_STRICT`: optional, default `false`. When `false`, a missing secret in a non-env provider may fall back to the same key in the process environment. When `true`, the configured provider is authoritative and missing secrets fail startup.
 - `SECRET_FILE_PATH`: optional, default `/run/secrets`. Directory used by the `file` provider. Secret filenames are lowercase with underscores converted to hyphens, so `JWT_PRIVATE_KEY` becomes `jwt-private-key`.
 - `AWS_REGION`: optional, default `us-east-1`. Region used by `aws_secrets` and `aws_ssm`.
-- `VAULT_ADDR`: optional Vault address. Use HTTPS for released-image deployments.
+- `VAULT_ADDR`: optional Vault address. Use HTTPS for production deployments.
 - `VAULT_TOKEN`: optional Vault token. If unset, Auth uses Vault AppRole.
 - `VAULT_MOUNT`: optional, default `secret`. Vault KV v2 mount.
 - `VAULT_SECRET_FIELD`: optional, default `value`. Field read from each Vault secret.
@@ -156,7 +156,7 @@ Keep these values out of logs, source control, Docker image layers, and frontend
 ## Application Identity
 
 - `APP_ENV`: optional, default `production`. Controls production-sensitive behavior such as security headers, database/TLS expectations, gRPC hardening, and secret-store transport checks.
-- `APP_VERSION`: optional. Overrides the build-injected version shown in telemetry and build info. If unset, Auth uses the version baked into the released image.
+- `APP_VERSION`: optional. Overrides the build-injected version shown in telemetry and build info. If unset, Auth uses the version baked into the container image.
 - `LOG_LEVEL`: optional, default `info`. Supported values are `debug`, `info`, `warn`, and `error`. `warning` is also accepted as `warn`.
 
 `ENV=production` is still recognized as a compatibility fallback for security middleware, but new deployments should use `APP_ENV`. Because Auth is secure by default, an unset `APP_ENV` is treated as `production`.
@@ -167,8 +167,8 @@ Keep these values out of logs, source control, Docker image layers, and frontend
 - `APP_PRIVATE_HOSTNAME`: required. Internal management API origin used by the console and operator/admin workflows.
 - `APP_FRONTEND_IDENTITY_HOSTNAME`: required. System-tenant hosted identity UI origin.
 - `APP_FRONTEND_CONSOLE_HOSTNAME`: required. System-tenant admin console UI origin.
-- `APP_CONSOLE_PORT`: optional, default `3000`. Embedded console SPA listener inside the released image.
-- `APP_IDENTITY_PORT`: optional, default `3001`. Embedded identity SPA listener inside the released image.
+- `APP_CONSOLE_PORT`: optional, default `3000`. Embedded console SPA listener.
+- `APP_IDENTITY_PORT`: optional, default `3001`. Embedded identity SPA listener.
 - `MANAGEMENT_PORT`: optional, default `8082`. Operational listener for health, readiness, OpenAPI JSON, and Prometheus metrics.
 
 Use full HTTPS origins for hostnames in deployed environments. The frontend hostname variables describe the system tenant host; tenant-specific identity and console hosts are derived from tenant DNS slugs.
@@ -231,7 +231,7 @@ maintainerd/prod/auth/redis-password
 
 ## Cookies And Browser Sessions
 
-- `COOKIE_SECURE`: optional, default `true`. When true, session cookies require HTTPS. Released-image docs assume HTTPS and keep this enabled.
+- `COOKIE_SECURE`: optional, default `true`. When true, session cookies require HTTPS. These docs assume HTTPS and keep this enabled.
 - `COOKIE_SAMESITE`: optional, default `lax`. Controls browser SameSite behavior. `lax` is the practical default for federated login redirects.
 - `COOKIE_DOMAIN`: optional. When unset, cookies are host-only. When set, Auth scopes cookies to a shared parent domain so first-party surfaces under that domain can share a session.
 
@@ -327,7 +327,7 @@ When unset or unavailable, Auth continues without GeoIP enrichment.
 
 ## Frontend Runtime Variables
 
-The released image can inject SPA configuration at container start through `/config.js` and `window.__ENV__`. Build-time `VITE_*` values remain as fallbacks for local or split frontend deployments.
+The container can inject SPA configuration at startup through `/config.js` and `window.__ENV__`. Build-time `VITE_*` values remain as fallbacks for split frontend deployments.
 
 Console variables:
 
@@ -339,7 +339,7 @@ Identity variables:
 
 - `VITE_AUTH_API_BASE_URL`: public API base URL for the hosted identity app. In production it defaults to `/api/v1` when same-origin proxying is used.
 
-## Example Released-Image Environment
+## Example Environment
 
 ```env
 APP_ENV=production

@@ -2,7 +2,7 @@
 
 Auth requires both PostgreSQL and Redis at startup. PostgreSQL is the durable system of record. Redis is the fast runtime store used for caches, rate limits, revocation checks, replay windows, and short-lived ceremony/session data.
 
-The released `maintainerd-auth` image connects to both dependencies before it starts serving traffic. Readiness stays tied to both dependencies, so operators can safely keep an instance out of rotation when either dependency is unhealthy.
+Auth connects to both dependencies before it starts serving traffic. Readiness stays tied to both dependencies, so operators can safely keep an instance out of rotation when either dependency is unhealthy.
 
 ## Dependency Roles
 
@@ -49,7 +49,7 @@ Optional PostgreSQL variables:
 
 Auth builds a PostgreSQL keyword/value DSN from these values and passes `statement_timeout` through the connection `options` parameter. The timeout applies at the database session level so long-running queries are bounded even when a handler forgets to add a narrower context timeout.
 
-Example PostgreSQL values for the released-image quickstart:
+Example PostgreSQL values for the quickstart:
 
 ```env
 DB_HOST=postgres
@@ -89,7 +89,7 @@ maintainerd/prod/auth/db-password
 
 Auth defaults to `APP_ENV=production` when `APP_ENV` is unset. In production mode, startup rejects `DB_SSLMODE=disable`.
 
-Use `DB_SSLMODE=require` or stricter for released-image deployments. Use `verify-ca` or `verify-full` when your PostgreSQL platform provides a CA chain and stable host identity.
+Use `DB_SSLMODE=require` or stricter for production deployments. Use `verify-ca` or `verify-full` when your PostgreSQL platform provides a CA chain and stable host identity.
 
 ## Connection Startup
 
@@ -193,7 +193,7 @@ When gRPC is enabled, its health status uses the same core dependency checks: Po
 
 ## Quickstart Values
 
-The released-image quickstart compose stack uses service names for internal networking:
+The quickstart compose stack uses service names for internal networking:
 
 ```env
 DB_HOST=postgres

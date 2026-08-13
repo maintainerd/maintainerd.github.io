@@ -2,7 +2,7 @@
 
 Auth separates ordinary configuration from credential material. Hostnames, ports, runtime mode, pool sizes, and feature toggles are normal environment variables. Passwords, signing keys, encryption keys, and bootstrap credentials are loaded through the secret provider selected by `SECRET_PROVIDER`.
 
-For the released-image quickstart, `SECRET_PROVIDER=env` is usually enough. For production deployments, move the same secret names into a secret manager and let Auth read them from that provider.
+For the quickstart, `SECRET_PROVIDER=env` is usually enough. For production deployments, move the same secret names into a secret manager and let Auth read them from that provider.
 
 ## Required Secrets
 
@@ -138,7 +138,7 @@ app-encryption-key
 
 - `SECRET_FILE_PATH`: optional, default `/run/secrets`. Used by the `file` provider.
 - `AWS_REGION`: optional, default `us-east-1`. Used by `aws_secrets` and `aws_ssm`.
-- `VAULT_ADDR`: optional Vault address. Use HTTPS for released-image deployments.
+- `VAULT_ADDR`: optional Vault address. Use HTTPS for production deployments.
 - `VAULT_TOKEN`: optional. Static Vault token. If unset, Auth uses AppRole.
 - `VAULT_MOUNT`: optional, default `secret`. Vault KV v2 mount.
 - `VAULT_SECRET_FIELD`: optional, default `value`. Field read from each Vault secret.

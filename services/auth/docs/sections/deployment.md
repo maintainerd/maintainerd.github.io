@@ -18,7 +18,7 @@ A healthy Auth deployment should give you:
 
 ## Runtime Shape
 
-The released image contains the backend and both browser apps. In production you normally deploy one container image and put a TLS reverse proxy or ingress in front of it.
+The container image contains the backend and both browser apps. In production you normally deploy one image and put a TLS reverse proxy or ingress in front of it.
 
 The process listens on these HTTP ports:
 
@@ -125,7 +125,7 @@ JWT_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----..."
 JWT_PUBLIC_KEY="-----BEGIN RSA PUBLIC KEY-----..."
 ```
 
-`APP_ENV` defaults to `production`. Released-image deployments should leave it unset or set it to `production` explicitly so stricter behavior such as HSTS, database SSL enforcement, gRPC TLS requirements, and strict secret-store transport checks remain active.
+`APP_ENV` defaults to `production`. Production deployments should leave it unset or set it to `production` explicitly so stricter behavior such as HSTS, database SSL enforcement, gRPC TLS requirements, and strict secret-store transport checks remain active.
 
 Use the Environment Variables, Secrets & Keys, Database & Redis, and Surfaces & Hostnames sections for the full reference. This page focuses on the deployment decisions and the minimum set that must come together.
 
@@ -1089,7 +1089,7 @@ volumes:
   pgdata:
 ```
 
-The quickstart in the Auth repository expands this with local `.maintainerd.local` DNS, self-signed TLS certificates, and released-image routing.
+The quickstart in the Auth repository expands this with local `.maintainerd.local` DNS, self-signed TLS certificates, and container routing.
 
 ## Scaling And Rollouts
 

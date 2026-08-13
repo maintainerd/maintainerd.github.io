@@ -1,6 +1,6 @@
 # Architecture
 
-Auth is a single deployable identity system with multiple runtime surfaces around one domain core. It is not a collection of separate microservices inside the container. The released `maintainerd-auth` image runs one Go binary that serves the APIs, the embedded admin console, the hosted identity app, background workers, telemetry, and the optional gRPC listener.
+Auth is a single deployable identity system with multiple runtime surfaces around one domain core. It is not a collection of separate microservices inside the container. The `maintainerd-auth` container runs one Go binary that serves the APIs, the embedded admin console, the hosted identity app, background workers, telemetry, and the optional gRPC listener.
 
 The main architectural idea is separation by surface and responsibility: browsers use the public identity surface, operators use the console and internal management surface, probes and metrics use the management surface, peer services use runtime gRPC when enabled, and Core uses the control-plane gRPC surface only when explicitly configured.
 
@@ -70,7 +70,7 @@ Auth has separate HTTP surfaces so browser-facing identity flows, operator admin
 
 ### Internal Management API
 
-The internal management API runs on `:8080` in the released image.
+The internal management API runs on `:8080`.
 
 It serves `/api/v1` management routes for:
 
@@ -97,7 +97,7 @@ The internal API applies a management-client audience guard. A token issued to a
 
 ### Public Identity API
 
-The public identity API runs on `:8081` in the released image.
+The public identity API runs on `:8081`.
 
 It serves the OAuth/OIDC issuer and browser-facing identity routes:
 
@@ -130,7 +130,7 @@ Keep this port private. Readiness checks database reachability, Redis reachabili
 
 ### Embedded Console And Identity Apps
 
-In the release image, the console and identity SPAs are built into the Go binary with the `embedassets` build tag.
+The console and identity SPAs are built into the Go binary with embedded assets.
 
 The console app runs on `:3000`. Its management API is mounted same-origin at `/api`, and its public identity API is mounted same-origin at `/public-api`.
 

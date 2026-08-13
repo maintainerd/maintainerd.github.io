@@ -8,7 +8,7 @@ Setup commands, environment examples, DNS examples, reverse-proxy examples, and 
 
 ## How To Use These Docs
 
-Read the docs in the same order you would set up the released image:
+Read the docs in the same order you would set up Auth:
 
 1. Understand the product areas.
 2. Run or open Auth.

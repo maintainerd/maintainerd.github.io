@@ -1,6 +1,6 @@
-# Released Image Quickstart
+# Quickstart
 
-This quickstart runs the released `maintainerd-auth` image locally with PostgreSQL, Redis, and an nginx HTTPS edge. It is the fastest way to try Auth with clean browser URLs, hosted login, OIDC discovery, and the admin console without building from source.
+This quickstart runs `maintainerd-auth` with PostgreSQL, Redis, and an nginx HTTPS edge. It is the fastest way to try Auth with clean browser URLs, hosted login, OIDC discovery, and the admin console.
 
 Use this for local evaluation. For production, keep the same surface model, but replace the local certificate, local hostnames, sample passwords, and env-backed secrets with your own infrastructure.
 
@@ -198,7 +198,7 @@ The quickstart sets `WEBAUTHN_RP_ID=auth.maintainerd.local` so passkeys can work
 
 ### Email Or SMS Codes Do Not Arrive
 
-The quickstart does not configure a real email or SMS provider. Configure providers in the console before testing those flows so the released image behaves like the environment users will actually run.
+The quickstart does not configure a real email or SMS provider. Configure providers in the console before testing those flows so Auth behaves like the environment users will actually run.
 
 ## Stop Or Reset
 

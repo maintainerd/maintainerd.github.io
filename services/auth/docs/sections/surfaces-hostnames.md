@@ -24,8 +24,8 @@ Default listeners:
 - `:8080`: internal management API. Keep this private.
 - `:8081`: public identity API and OAuth/OIDC issuer.
 - `:8082`: management port for probes, `/openapi.json`, and `/metrics`.
-- `:3000`: embedded admin console when the release image is built with embedded assets.
-- `:3001`: embedded hosted identity UI when the release image is built with embedded assets.
+- `:3000`: embedded admin console.
+- `:3001`: embedded hosted identity UI.
 
 Configurable listener variables:
 
@@ -91,7 +91,7 @@ https://console.auth.example.com/clients
 
 ## Embedded Frontends
 
-The release image can serve the console and identity SPAs from the Go process itself.
+Auth can serve the console and identity SPAs from the same process.
 
 The console listener serves:
 
