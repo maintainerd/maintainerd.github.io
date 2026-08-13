@@ -193,11 +193,28 @@ Redirect URI: https://app.example.com/auth/callback
 Scopes:       openid email profile
 ```
 
-Example browser redirect:
+Example browser redirect using the production hostname shape:
 
 ```text
-{authorization_endpoint}?response_type=code&client_id=app-web-client&redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback&scope=openid%20email%20profile&state=K8f3n2v9sL0pQ4x7&nonce=n-0S6_WzA2Mj&code_challenge=Q1n4x9p8h7r6s5t4u3v2w1y0zA-B-C-D-E-F-G&code_challenge_method=S256&prompt=login&login_hint=alex%40example.com
+https://identity-api.auth.example.com/api/v1/oauth/authorize?response_type=code&client_id=app-web-client&redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback&scope=openid%20email%20profile&state=K8f3n2v9sL0pQ4x7&nonce=n-0S6_WzA2Mj&code_challenge=Q1n4x9p8h7r6s5t4u3v2w1y0zA-B-C-D-E-F-G&code_challenge_method=S256&prompt=login&login_hint=alex%40example.com
 ```
+
+Example local quickstart configuration:
+
+```text
+Issuer:       https://identity-api.auth.maintainerd.local
+Client ID:    quickstart-web
+Redirect URI: https://app.auth.maintainerd.local/auth/callback
+Scopes:       openid email profile
+```
+
+Example local quickstart browser redirect:
+
+```text
+https://identity-api.auth.maintainerd.local/api/v1/oauth/authorize?response_type=code&client_id=quickstart-web&redirect_uri=https%3A%2F%2Fapp.auth.maintainerd.local%2Fauth%2Fcallback&scope=openid%20email%20profile&state=local-K8f3n2v9sL0pQ4x7&nonce=local-n-0S6_WzA2Mj&code_challenge=local-Q1n4x9p8h7r6s5t4u3v2w1y0zA-B-C-D-E-F-G&code_challenge_method=S256&prompt=login&login_hint=admin%40example.com
+```
+
+The local quickstart hostnames come from [Quickstart](#quickstart). If you use the local sample application hostname above, add it to your hosts file and register the same redirect URI on the client record before testing the redirect.
 
 The application should build this URL, store the `state`, `nonce`, and PKCE verifier in its own short-lived server session or secure client-side transaction storage, and then send the browser to the URL.
 
