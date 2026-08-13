@@ -4,6 +4,8 @@ Tenants are the ownership and isolation boundary for Auth. A tenant owns its use
 
 Members connect users to a tenant with a tenant-level administrative relationship. The user is the account that signs in. The member record answers what that user can do as an operator inside the tenant, such as acting as an `owner`, `admin`, or regular `member`.
 
+This page explains what tenant and membership features do. Exact management endpoints, request bodies, response schemas, status codes, and generated-client examples belong in the API reference.
+
 ## Mental Model
 
 Think of Auth as a tenant-aware identity system.
@@ -16,7 +18,7 @@ Think of Auth as a tenant-aware identity system.
 - Identity providers decide how users authenticate.
 - Tenant settings decide operational behavior for one tenant.
 
-This split matters because tenant membership is not the same as product authorization. A user can be a tenant `member` and still receive application roles such as `billing-reader`, `project-admin`, or `support-agent` through Auth's IAM model.
+Tenant membership is not the same as product authorization. A user can be a tenant `member` and still receive product roles such as `billing-reader`, `project-admin`, or `support-agent` through IAM.
 
 ## Common Lifecycle
 
@@ -32,110 +34,54 @@ Most installations follow this flow:
 
 Standalone deployments often run one tenant and treat it as the identity boundary for the application. Maintainerd-managed deployments can run a system tenant plus regular tenants provisioned by the control plane.
 
-## Tenant Shape
+## Tenant Fields And Options
 
-A tenant usually contains DNS-safe routing fields, display metadata, lifecycle state, and optional metadata used by operator tooling.
+A tenant usually has:
 
-Example tenant record:
+- Stable tenant ID: the opaque identifier stored on tenant-scoped records and carried in tokens.
+- DNS-safe name or slug: the value used for tenant-aware host routing.
+- Display name: the human-readable name shown in console and hosted identity screens.
+- Description: operator-facing context for support and administration.
+- Status: lifecycle state such as pending, active, suspended, or inactive.
+- System flag: whether the tenant is the system tenant created during setup.
+- Metadata: optional operator or automation data such as timezone, locale, or internal tags.
+- Timestamps: creation and update history for audit and review.
 
-```json
-{
-  "tenant_id": "6a6eb931-3f50-4f60-81c1-15b3be0c9f4a",
-  "name": "acme",
-  "display_name": "Acme",
-  "description": "Acme identity tenant",
-  "status": "active",
-  "metadata": {
-    "language": "en",
-    "timezone": "UTC",
-    "date_format": "YYYY-MM-DD",
-    "time_format": "24h"
-  },
-  "created_at": "2026-08-13T00:00:00Z",
-  "updated_at": "2026-08-13T00:00:00Z"
-}
-```
+Tenant names should be DNS-safe: lowercase letters, numbers, and hyphens, starting and ending with a letter or number. This matters because tenant names become subdomain labels in tenant-aware host routing.
 
-Tenant names are used as DNS labels for tenant-aware console and identity hosts. Use lowercase letters, numbers, and hyphens. Start and end with a letter or number.
+Do not store secrets in tenant metadata. Use the secret and settings systems for credentials, provider secrets, SMTP passwords, webhook signing secrets, and tokens.
 
 ## Tenant Operations
 
-Tenant administrators and platform operators commonly need to:
+Tenant administrators and platform operators commonly need to list tenants, create tenants, view tenant detail, update tenant metadata, change tenant status, configure tenant settings, manage tenant members, delete tenants when allowed, and read public tenant context for login screens.
 
-- List tenants.
-- Create a tenant.
-- View tenant detail.
-- Update tenant metadata.
-- Change tenant status.
-- Configure tenant settings.
-- Manage tenant members.
-- Delete tenants when allowed.
-- Read public tenant context for login screens.
-
-The console is the normal interface for humans. The REST management API and control-plane gRPC services support automation and provisioning.
+The console is the normal interface for humans. The management API and control-plane gRPC services support automation and provisioning. The API reference owns exact operations and wire contracts.
 
 ## What Tenant Operations Do
 
 Listing tenants is an operator discovery action. The console uses it to show which tenants exist, what state each tenant is in, and which tenant an operator can manage. A list response can include tenant IDs, names, display names, status, and timestamps. It should not include provider credentials, email passwords, SMS tokens, webhook signing secrets, OAuth client secrets, or other sensitive values.
 
-Creating a tenant establishes a new isolation boundary. Auth is not only saving a company name. It is creating the namespace where users, clients, identity providers, roles, permissions, policies, templates, events, webhooks, and settings will live. In production, tenant creation should also run baseline seeders so the tenant starts with required Auth resources and safe defaults.
+Creating a tenant establishes a new isolation boundary. Auth is not only saving a company name. It is creating the namespace where users, clients, identity providers, roles, permissions, policies, templates, events, webhooks, and settings live. In production, tenant creation should also run baseline seeders so the tenant starts with required Auth resources and safe defaults.
 
-Viewing tenant detail powers the tenant overview screen in the console. It should explain who the tenant is, whether it is usable, when it was created, and what high-level configuration exists. Detailed child resources such as members, clients, providers, policies, and messaging settings can be loaded from their own endpoints so each area can apply stricter permission checks.
+Viewing tenant detail powers the tenant overview screen in the console. It should explain who the tenant is, whether it is usable, when it was created, and what high-level configuration exists. Detailed child resources such as members, clients, providers, policies, and messaging settings can be loaded from their own feature areas so each area can apply stricter permission checks.
 
-Updating tenant metadata changes human-facing or operator-facing fields such as `display_name`, `description`, timezone, language, date format, and internal metadata used by automation. Metadata is useful for display and organization, but it should not become an authorization source unless the backend validates and enforces that exact field.
+Updating tenant metadata changes human-facing or operator-facing fields such as display name, description, timezone, language, date format, and internal metadata used by automation. Metadata is useful for display and organization, but it should not become an authorization source unless the backend validates and enforces that exact field.
 
 Changing tenant status changes runtime availability. This is a security and operations action, not a cosmetic edit. If a tenant is suspended or inactive, login, registration, OAuth, account self-service, and credential routes should stop before accepting secrets from the user.
 
-Configuring tenant settings changes Auth behavior for one tenant. These settings can affect login availability, rate limits, messaging delivery, security requirements, branding, audit records, webhook delivery, and data retention. Update them through the console or management API so validation, cache invalidation, events, and audit logs happen consistently.
+Configuring tenant settings changes Auth behavior for one tenant. These settings can affect login availability, rate limits, messaging delivery, security requirements, branding, audit records, webhook delivery, and data retention. Update them through validated management flows so permission checks, cache invalidation, events, and audit logs happen consistently.
 
 Managing tenant members changes who can administer the tenant. Membership changes should be treated as sensitive because the right member role can unlock access to users, clients, providers, policies, and settings.
 
 Deleting a tenant is a destructive lifecycle action. A safe implementation checks whether deletion is allowed, prevents protected tenants from being deleted, handles sessions and tokens, and preserves audit records according to retention policy. Many production systems prefer suspension or soft deletion before permanent removal.
 
-Reading public tenant context supports pre-login screens. The hosted identity UI may need to know that `acme` exists, that its display name is `Acme`, which branding to show, and which login methods are available. Public tenant lookup must never return internal settings, member lists, credentials, secrets, or administrative metadata.
-
-## Creating A Tenant
-
-During first-time setup, the console uses the setup tenant endpoint:
-
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/setup/create_tenant \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "name": "acme",
-    "display_name": "Acme",
-    "description": "Acme identity tenant",
-    "metadata": {
-      "language": "en",
-      "timezone": "UTC",
-      "date_format": "YYYY-MM-DD",
-      "time_format": "24h"
-    }
-  }'
-```
-
-After setup is complete, create additional tenants through the console, the tenant management API, or the control-plane `TenantService` when that mode is enabled.
-
-Representative management API pattern:
-
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/tenants \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "name": "northwind",
-    "display_name": "Northwind Traders",
-    "description": "Tenant for Northwind customer applications"
-  }'
-```
-
-Use the generated OpenAPI reference from the management port for exact request and response schemas in your deployed version.
+Reading public tenant context supports pre-login screens. The hosted identity UI may need to know that a tenant exists, what display name and branding to show, and which login methods are available. Public tenant lookup must never return internal settings, member lists, credentials, secrets, or administrative metadata.
 
 ## Tenant Status
 
 Tenant status is part of the runtime security boundary. Auth checks tenant lifecycle before credential, OAuth, and account routes proceed.
 
-Common meanings:
+Common statuses:
 
 - `pending`: the tenant exists but is not ready for normal sign-in.
 - `active`: users can authenticate and clients can run normal OAuth flows.
@@ -144,7 +90,7 @@ Common meanings:
 
 Use `pending` while bootstrap or provisioning is still running. A pending tenant may have a database record but may not have seeded clients, roles, settings, identity providers, or admin membership yet. Runtime flows should treat it as unavailable.
 
-Use `active` for normal production traffic. Active tenants can serve hosted login, OAuth authorization, token exchange, registration, account self-service, and service authorization as long as the client, provider, user, and policy checks also pass.
+Use `active` for normal production traffic. Active tenants can serve hosted login, OAuth authorization, token exchange, registration, account self-service, and service authorization as long as client, provider, user, and policy checks also pass.
 
 Use `suspended` when access should stop temporarily. Suspension is useful for abuse investigation, customer-requested access freeze, non-payment, legal review, or incident response. Authorized operators should still be able to inspect and repair the tenant from management surfaces.
 
@@ -152,49 +98,28 @@ Use `inactive` when the tenant is retired or should no longer receive runtime tr
 
 Status changes are operational actions. Treat them like production changes: audit them, require the right operator permission, and communicate the effect to application teams.
 
-Example suspension pattern:
-
-```bash
-curl -fsS -X PATCH https://console-api.auth.example.com/api/v1/tenants/6a6eb931-3f50-4f60-81c1-15b3be0c9f4a/status \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "status": "suspended",
-    "reason": "Customer requested temporary access freeze"
-  }'
-```
-
 ## Tenant Host Resolution
 
 Browser flows use the incoming host to resolve tenant context. Auth does not trust a caller-provided tenant ID to decide which tenant a login request belongs to.
 
-Example system hosts:
+The system identity and console hosts represent the system tenant. Regular tenant hosts are derived by prepending the tenant slug before the configured system host. For example, an `acme` tenant can have tenant-specific identity and console hosts under the configured identity and console domains.
 
-```text
-https://identity.auth.example.com
-https://console.auth.example.com
-```
-
-Example tenant hosts:
-
-```text
-https://acme.identity.auth.example.com
-https://acme.console.auth.example.com
-```
-
-If a user opens the Acme identity host, Auth resolves `acme` as the tenant slug before login, registration, MFA, consent, and account self-service continue.
+If a user opens a tenant identity host, Auth resolves the tenant slug before login, registration, MFA, consent, and account self-service continue. This prevents a caller from choosing a tenant by manually submitting a tenant ID.
 
 ## Public Tenant Lookup
 
-Hosted login screens and external applications sometimes need public tenant context before authentication. Public lookup should return only information safe to show before sign-in, such as display name, branding hints, enabled login methods, or tenant availability.
+Hosted login screens and external applications sometimes need public tenant context before authentication. Public lookup should return only information safe to show before sign-in.
 
-Example pattern:
+Safe public tenant information may include:
 
-```bash
-curl -fsS "https://identity.auth.example.com/api/v1/public/tenants/acme"
-```
+- Tenant display name.
+- Public branding hints.
+- Public logo route.
+- Enabled login methods.
+- Whether the tenant is available for sign-in.
+- Support URL or help text intended for unauthenticated users.
 
-Do not expose internal tenant settings, member lists, audit configuration, secrets, SMTP credentials, OAuth client secrets, policy documents, or administrative metadata through public lookup.
+Public lookup must not expose internal tenant settings, member lists, audit configuration, secrets, SMTP credentials, SMS tokens, OAuth client secrets, policy documents, webhook settings, or administrative metadata.
 
 ## Tenant Settings
 
@@ -210,63 +135,20 @@ Tenant settings are per-tenant controls that change Auth behavior without changi
 
 Some settings are configured directly on the tenant. Other settings can inherit from the system tenant or deployment defaults. Inheritance is useful when most tenants should share safe platform defaults but one tenant needs custom branding, a custom email sender, stricter security, or a temporary maintenance window.
 
-Example settings shape:
-
-```json
-{
-  "tenant_id": "6a6eb931-3f50-4f60-81c1-15b3be0c9f4a",
-  "maintenance": {
-    "enabled": false,
-    "message": null,
-    "reason": null
-  },
-  "rate_limits": {
-    "enabled": true,
-    "requests_per_minute": 600,
-    "login_per_minute": 20,
-    "password_reset_per_hour": 5,
-    "mfa_challenge_per_hour": 10,
-    "sms_per_day": 25
-  },
-  "messaging": {
-    "email_config_source": "tenant",
-    "sms_config_source": "system",
-    "email_status": "active",
-    "sms_status": "inherited"
-  },
-  "security": {
-    "require_mfa_for_admins": true,
-    "allow_password_login": true,
-    "allow_magic_link_login": true,
-    "session_idle_timeout_minutes": 60,
-    "step_up_max_age_minutes": 10
-  },
-  "audit": {
-    "enabled": true,
-    "retention_days": 365
-  },
-  "events": {
-    "enabled": true,
-    "webhooks_enabled": true
-  }
-}
-```
-
 Settings should be changed through the console or management API so validation, permission checks, cache invalidation, events, and audit logs stay consistent.
 
 ## Maintenance Setting
 
-The maintenance setting tells Auth whether the tenant is temporarily unavailable for normal user-facing runtime traffic. When maintenance is enabled, Auth should stop login, registration, OAuth, MFA, and account self-service flows early and return a controlled maintenance response. The important part is that Auth should not accept passwords, OTPs, or other credentials while the tenant is known to be unavailable.
+The maintenance setting tells Auth whether the tenant is temporarily unavailable for normal user-facing runtime traffic. When maintenance is enabled, Auth should stop login, registration, OAuth, MFA, and account self-service flows early and return a controlled maintenance response. Auth should not accept passwords, OTPs, or other credentials while the tenant is known to be unavailable.
 
 Use maintenance for planned work such as tenant migration, provider rotation, incident response, or data repair. Do not use it as a long-term substitute for `suspended` or `inactive` status. Tenant status describes lifecycle. Maintenance describes a temporary operating window.
 
-Important fields:
+Important options:
 
-- `enabled`: turns maintenance behavior on or off.
-- `message`: optional text the hosted identity UI can show users.
-- `reason`: internal operator reason for audit logs and support review.
-- `starts_at`: optional scheduled start time if the implementation supports scheduled windows.
-- `ends_at`: optional scheduled end time if the implementation supports scheduled windows.
+- Enabled flag: turns maintenance behavior on or off.
+- User-facing message: optional text the hosted identity UI can show users.
+- Internal reason: operator reason for audit logs and support review.
+- Scheduled start and end: optional planned window if scheduling is supported.
 
 Developer behavior:
 
@@ -275,60 +157,24 @@ Developer behavior:
 - Avoid revealing whether a submitted username or password would have been valid.
 - Emit audit events when maintenance is enabled, changed, or disabled.
 
-Before enabling maintenance mode:
-
-- Confirm which tenant is affected.
-- Confirm whether login, OAuth, and account routes will be unavailable.
-- Make sure at least one operator still has a working path to disable maintenance.
-- Record a reason for audit logs.
-
-Example pattern:
-
-```bash
-curl -fsS -X PATCH https://console-api.auth.example.com/api/v1/tenants/6a6eb931-3f50-4f60-81c1-15b3be0c9f4a/settings \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "maintenance": {
-      "enabled": true,
-      "message": "Acme sign-in is temporarily unavailable during scheduled maintenance."
-    }
-  }'
-```
-
 ## Rate Limit Settings
 
 Rate limit settings control how much traffic one tenant can send to sensitive Auth routes during a time window. They protect the service from brute-force login attempts, password reset spam, SMS cost attacks, noisy clients, and accidental retry loops.
 
 Tenant-wide limits apply across a tenant. Credential-specific limits apply to risky routes such as login, password reset, magic link, MFA challenge, SMS verification, and token exchange. Credential limits should usually be stricter than normal API limits because these routes can reveal timing signals, send messages, or spend money.
 
-Example rate-limit settings:
+Important options:
 
-```json
-{
-  "rate_limits": {
-    "enabled": true,
-    "requests_per_minute": 600,
-    "login_per_minute": 20,
-    "password_reset_per_hour": 5,
-    "mfa_challenge_per_hour": 10,
-    "sms_per_day": 25
-  }
-}
-```
-
-What each field does:
-
-- `enabled`: turns tenant rate-limit enforcement on or off.
-- `requests_per_minute`: caps broad tenant traffic across protected routes.
-- `login_per_minute`: limits credential login attempts for the tenant.
-- `password_reset_per_hour`: limits password reset emails for the tenant.
-- `mfa_challenge_per_hour`: limits repeated MFA challenge creation.
-- `sms_per_day`: limits SMS delivery to protect cost and reduce abuse.
+- Enabled flag: turns tenant rate-limit enforcement on or off.
+- Broad request limit: caps protected tenant traffic across route families.
+- Login limit: limits credential login attempts.
+- Password reset limit: limits password reset emails.
+- MFA challenge limit: limits repeated challenge creation.
+- SMS limit: limits text-message delivery to protect cost and reduce abuse.
 
 Developer behavior:
 
-- Return a `429 Too Many Requests` style response when a limit is exceeded.
+- Return a rate-limited response when a limit is exceeded.
 - Do not reveal whether a username exists in rate-limit responses.
 - Include tenant ID, route family, client ID, IP address, or user identifier in rate-limit keys depending on the route.
 - Make limits configurable because tenants have different legitimate traffic patterns.
@@ -339,25 +185,12 @@ Audit settings control what Auth records for administrative, security, and lifec
 
 Examples of actions that should be audited include tenant creation, tenant suspension, settings changes, member promotion, member removal, provider changes, client secret rotation, redirect URI changes, role changes, policy changes, user disablement, session revocation, and denied admin attempts.
 
-Example audit settings:
+Important options:
 
-```json
-{
-  "audit": {
-    "enabled": true,
-    "log_successful_admin_actions": true,
-    "log_denied_admin_actions": true,
-    "retention_days": 365
-  }
-}
-```
-
-What each field does:
-
-- `enabled`: controls whether audit logging is active for tenant management actions.
-- `log_successful_admin_actions`: records successful changes so operators can reconstruct history.
-- `log_denied_admin_actions`: records denied attempts, which helps detect probing or misconfigured permissions.
-- `retention_days`: controls how long audit records are kept before retention cleanup can remove them.
+- Enabled flag: controls whether audit logging is active for tenant management actions.
+- Successful-action logging: records completed changes so operators can reconstruct history.
+- Denied-action logging: records denied attempts, which helps detect probing or misconfigured permissions.
+- Retention window: controls how long audit records are kept before cleanup can remove them.
 
 Developer behavior:
 
@@ -372,35 +205,16 @@ Email settings decide how Auth sends email for one tenant. Email is used for ver
 
 A tenant can use its own SMTP configuration or inherit the system tenant's email configuration. Tenant-specific email is useful when a customer needs its own sender domain, brand identity, compliance setup, or delivery monitoring. System fallback is useful for simple deployments where one operator controls all messaging.
 
-Example email settings:
+Important options:
 
-```json
-{
-  "messaging": {
-    "email_config_source": "tenant",
-    "email": {
-      "provider": "smtp",
-      "host": "smtp.example.com",
-      "port": 587,
-      "username": "mailer@example.com",
-      "from_address": "no-reply@acme.example.com",
-      "from_name": "Acme Identity",
-      "status": "active"
-    }
-  }
-}
-```
-
-What each field does:
-
-- `email_config_source`: selects tenant email settings or inherited system settings.
-- `provider`: identifies the delivery method. Current runtime delivery uses SMTP-compatible providers.
-- `host` and `port`: tell Auth where to connect for SMTP delivery.
-- `username`: identifies the SMTP account.
-- `password`: authenticates to the SMTP provider. It should be write-only and never returned in plaintext.
-- `from_address`: the sender email address users see.
-- `from_name`: the sender display name users see.
-- `status`: controls whether this email configuration can be used.
+- Configuration source: selects tenant email settings or inherited system settings.
+- Provider: identifies the delivery method. Current runtime delivery uses SMTP-compatible providers.
+- Host and port: tell Auth where to connect for SMTP delivery.
+- Username: identifies the SMTP account.
+- Password or token: authenticates to the SMTP provider and must be stored as a secret.
+- From address: the sender email address users see.
+- From name: the sender display name users see.
+- Status: controls whether this email configuration can be used.
 
 Developer behavior:
 
@@ -420,34 +234,18 @@ Supported provider families in these docs are:
 - `sns`: AWS SNS delivery.
 - `vonage`: Vonage delivery.
 
-Example SMS settings:
+Important options:
 
-```json
-{
-  "messaging": {
-    "sms_config_source": "tenant",
-    "sms": {
-      "provider": "twilio",
-      "account_id": "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      "from_number": "+15551234567",
-      "status": "active"
-    }
-  }
-}
-```
-
-What each field does:
-
-- `sms_config_source`: selects tenant SMS settings or inherited system settings.
-- `provider`: selects the SMS delivery integration.
-- `account_id`: identifies the provider account, such as a Twilio Account SID.
-- `auth_token`: authenticates to the provider. It should be write-only and stored as a secret.
-- `from_number`: the sender number used for outbound SMS when the provider requires one.
-- `status`: controls whether this SMS configuration can be used.
+- Configuration source: selects tenant SMS settings or inherited system settings.
+- Provider: selects the SMS delivery integration.
+- Account ID: identifies the provider account.
+- Auth token: authenticates to the provider and must be stored as a secret.
+- From number: sender number used for outbound SMS when the provider requires one.
+- Status: controls whether this SMS configuration can be used.
 
 Developer behavior:
 
-- Never return `auth_token` in API responses.
+- Never return SMS auth tokens in API responses.
 - Use the `log` provider only for local development or controlled tests.
 - Mask phone numbers in logs when a full number is not required.
 - Apply tenant and route-specific rate limits to SMS flows.
@@ -458,27 +256,13 @@ Branding settings control what users see on hosted identity screens. This includ
 
 Branding exists because the same Auth deployment may serve many tenants. A user signing into Acme should see Acme's tenant name, visual identity, support link, and templates rather than another tenant's identity.
 
-Example branding settings:
+Important options:
 
-```json
-{
-  "branding": {
-    "display_name": "Acme",
-    "logo_url": "https://cdn.example.com/acme/logo.svg",
-    "primary_color": "#2563eb",
-    "support_url": "https://support.acme.example.com",
-    "template_source": "tenant"
-  }
-}
-```
-
-What each field does:
-
-- `display_name`: the human-readable tenant name shown in hosted identity screens.
-- `logo_url`: the logo used by public branding routes and the hosted identity UI.
-- `primary_color`: the main accent color for tenant-specific screens.
-- `support_url`: where users can go when they need help.
-- `template_source`: selects tenant templates or inherited default templates.
+- Display name: the human-readable tenant name shown in hosted identity screens.
+- Logo: the logo used by public branding routes and the hosted identity UI.
+- Primary color: the main accent color for tenant-specific screens.
+- Support URL: where users can go when they need help.
+- Template source: selects tenant templates or inherited default templates.
 
 Developer behavior:
 
@@ -490,29 +274,14 @@ Developer behavior:
 
 Security default settings define the baseline security posture for a tenant. They let one tenant require stricter controls than another without forking the application.
 
-Example security settings:
+Important options:
 
-```json
-{
-  "security": {
-    "require_mfa_for_admins": true,
-    "allow_password_login": true,
-    "allow_magic_link_login": true,
-    "password_min_length": 12,
-    "session_idle_timeout_minutes": 60,
-    "step_up_max_age_minutes": 10
-  }
-}
-```
-
-What each field does:
-
-- `require_mfa_for_admins`: requires admins or owners to complete MFA before sensitive console actions.
-- `allow_password_login`: controls whether local password login is available.
-- `allow_magic_link_login`: controls whether passwordless email links can be used.
-- `password_min_length`: sets the minimum length for tenant-local passwords.
-- `session_idle_timeout_minutes`: controls how long an idle browser session can remain valid.
-- `step_up_max_age_minutes`: controls how fresh MFA proof must be before sensitive actions.
+- Require MFA for admins: requires admins or owners to complete MFA before sensitive console actions.
+- Allow password login: controls whether local password login is available.
+- Allow magic-link login: controls whether passwordless email links can be used.
+- Password policy: defines minimum strength, length, reuse, and rotation expectations.
+- Session idle timeout: controls how long an idle browser session can remain valid.
+- Step-up max age: controls how fresh MFA proof must be before sensitive actions.
 
 Developer behavior:
 
@@ -524,31 +293,12 @@ Developer behavior:
 
 IP restriction settings allow a tenant to limit access to specific source networks. This is commonly used for admin console access, internal workforces, partner integrations, or high-risk account actions.
 
-Example IP restriction settings:
+Important options:
 
-```json
-{
-  "ip_restrictions": {
-    "enabled": true,
-    "mode": "allowlist",
-    "cidrs": [
-      "203.0.113.0/24",
-      "2001:db8:1234::/48"
-    ],
-    "applies_to": [
-      "console",
-      "management_api"
-    ]
-  }
-}
-```
-
-What each field does:
-
-- `enabled`: turns IP enforcement on or off.
-- `mode`: describes whether listed ranges are allowed or denied.
-- `cidrs`: contains the IPv4 or IPv6 network ranges.
-- `applies_to`: describes which route families are protected.
+- Enabled flag: turns IP enforcement on or off.
+- Mode: describes whether listed ranges are allowed or denied.
+- CIDR ranges: IPv4 or IPv6 network ranges.
+- Route families: which surfaces or workflows are protected.
 
 Developer behavior:
 
@@ -563,25 +313,12 @@ Event and webhook settings decide which tenant events Auth emits and where those
 
 Examples of tenant events include user registration, login success, login failure, password reset request, MFA enrollment, OAuth client creation, tenant member promotion, role changes, and policy changes.
 
-Example event settings:
+Important options:
 
-```json
-{
-  "events": {
-    "enabled": true,
-    "disabled_event_types": [
-      "auth.debug.sample"
-    ],
-    "webhooks_enabled": true
-  }
-}
-```
-
-What each field does:
-
-- `enabled`: controls whether tenant integration events can be emitted.
-- `disabled_event_types`: disables specific event types for the tenant.
-- `webhooks_enabled`: controls whether active webhook endpoints can receive tenant events.
+- Enabled flag: controls whether tenant integration events can be emitted.
+- Disabled event types: turns off specific event types for the tenant.
+- Webhook delivery flag: controls whether active webhook endpoints can receive tenant events.
+- Listener configuration: determines which destinations receive which events.
 
 Developer behavior:
 
@@ -594,27 +331,13 @@ Developer behavior:
 
 Data retention settings control how long Auth keeps tenant-owned operational data. This can include events, webhook delivery attempts, expired sessions, revoked tokens, device records, export requests, erasure requests, and audit logs.
 
-Example retention settings:
+Important options:
 
-```json
-{
-  "retention": {
-    "audit_log_days": 365,
-    "event_days": 90,
-    "webhook_delivery_days": 30,
-    "expired_session_days": 14,
-    "revoked_token_days": 30
-  }
-}
-```
-
-What each field does:
-
-- `audit_log_days`: how long administrative audit records are preserved.
-- `event_days`: how long tenant event records are preserved.
-- `webhook_delivery_days`: how long webhook attempt history is preserved.
-- `expired_session_days`: how long expired browser session records remain available for review.
-- `revoked_token_days`: how long revoked token identifiers remain available for enforcement or investigation.
+- Audit log retention: how long administrative audit records are preserved.
+- Event retention: how long tenant event records are preserved.
+- Webhook delivery retention: how long webhook attempt history is preserved.
+- Expired session retention: how long expired browser session records remain available for review.
+- Revoked token retention: how long revoked token identifiers remain available for enforcement or investigation.
 
 Developer behavior:
 
@@ -633,33 +356,15 @@ Built-in member roles:
 - `admin`: can administer tenant resources according to assigned permissions.
 - `member`: belongs to the tenant but does not automatically receive broad administration rights.
 
-Example member record:
-
-```json
-{
-  "tenant_member_id": "8458334e-a94a-4bf7-8ea3-51bec0bbca26",
-  "tenant_id": "6a6eb931-3f50-4f60-81c1-15b3be0c9f4a",
-  "user_id": "b8a759a4-d32c-47c1-8362-3eaa02e25a54",
-  "role": "admin",
-  "created_at": "2026-08-13T00:00:00Z",
-  "updated_at": "2026-08-13T00:00:00Z"
-}
-```
+Member records usually include a member ID, tenant ID, user ID, role, timestamps, and audit metadata. Keep password state, MFA secrets, provider tokens, and unrelated profile data out of member responses.
 
 ## Member Operations
 
-Common member operations include:
-
-- List tenant members.
-- Add a user as a tenant member.
-- Change a member role.
-- Remove a tenant member.
-- Transfer ownership.
-- Prevent the last owner from being removed or downgraded.
+Common member operations include listing tenant members, adding a user as a tenant member, changing a member role, removing a tenant member, transferring ownership, and preventing the last owner from being removed or downgraded.
 
 Every member mutation should be audit logged because it changes who can administer the tenant.
 
-Listing tenant members shows who can administer a tenant. A useful member list includes the member ID, user ID, email or display name, member role, user status, creation time, and update time. It should not include password hashes, MFA secrets, provider tokens, session secrets, recovery codes, or unrelated profile data.
+Listing tenant members shows who can administer a tenant. A useful member list includes the member ID, user ID, email or display name, member role, user status, creation time, and update time. It should not include password hashes, MFA secrets, provider tokens, session secrets, recovery codes, or unrelated personal data.
 
 Adding a member gives a user tenant-level administrative presence. This is different from giving someone product access. Add a member when the user needs console access or tenant administration. If the user only needs to use an application, assign IAM roles or product permissions instead.
 
@@ -671,59 +376,23 @@ Transferring ownership is a controlled sequence. Promote or add the new owner fi
 
 Preventing last-owner removal is a safety rule. Auth should reject any member update that would leave the tenant with zero owners. This check belongs in the backend, not only in the console UI.
 
-## Adding A Member
+## Permissions
 
-Create or invite the user first, then add tenant membership if they need tenant-level access.
+Tenant and member actions should be protected by tenant-scoped management permissions.
 
-Representative API pattern:
+Typical permission areas:
 
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/tenants/6a6eb931-3f50-4f60-81c1-15b3be0c9f4a/members \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "user_id": "b8a759a4-d32c-47c1-8362-3eaa02e25a54",
-    "role": "admin"
-  }'
-```
+- Tenant read: list and view tenant records.
+- Tenant create: create new tenant boundaries.
+- Tenant update: edit tenant metadata and settings.
+- Tenant status update: suspend, reactivate, or retire tenants.
+- Tenant delete: perform destructive tenant lifecycle actions.
+- Member read: list and inspect tenant members.
+- Member write: add members or update member roles.
+- Member delete: remove members from tenant administration.
+- Owner transfer: promote, demote, or remove owners.
 
-If the person only needs access inside an application, assign IAM roles or application-specific permissions instead of making them a tenant admin.
-
-## Changing Member Roles
-
-Role changes should be explicit. A good console flow shows the current role, the requested role, and the effect of the change.
-
-Example pattern:
-
-```bash
-curl -fsS -X PATCH https://console-api.auth.example.com/api/v1/tenants/6a6eb931-3f50-4f60-81c1-15b3be0c9f4a/members/8458334e-a94a-4bf7-8ea3-51bec0bbca26 \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "role": "owner",
-    "reason": "Promoting primary customer administrator"
-  }'
-```
-
-Guardrails to preserve:
-
-- Do not allow a tenant to have zero owners.
-- Require strong authorization for owner promotion, owner demotion, and owner removal.
-- Prefer step-up MFA for sensitive ownership changes.
-- Emit audit events for who changed what and why.
-
-## Removing A Member
-
-Removing a member removes tenant administration access. It should not necessarily delete the user account, revoke application roles, or erase audit history.
-
-Example pattern:
-
-```bash
-curl -fsS -X DELETE https://console-api.auth.example.com/api/v1/tenants/6a6eb931-3f50-4f60-81c1-15b3be0c9f4a/members/8458334e-a94a-4bf7-8ea3-51bec0bbca26 \
-  -H "Authorization: Bearer $ACCESS_TOKEN"
-```
-
-After removing a member, decide separately whether to revoke sessions, remove IAM roles, disable the user, or start an erasure workflow.
+Sensitive actions such as owner promotion, owner removal, tenant deletion, maintenance enablement, security-setting changes, and secret-bearing messaging changes should require strong authorization and may require step-up MFA.
 
 ## Tenant Members Vs IAM Roles
 
@@ -743,22 +412,22 @@ Choose IAM roles when:
 - A product team wants fine-grained authorization.
 - A downstream API needs policy decisions.
 
-Example: An accountant may need `billing-reader` permission in an app but should not be a tenant `admin`. A platform lead may be a tenant `owner` and also hold IAM roles for Maintainerd administration.
+An accountant may need billing read permission in an application but should not automatically be a tenant admin. A platform lead may be a tenant owner and also hold IAM roles for Maintainerd administration.
 
 ## Beginner Workflow
 
 For a new application team, start with this sequence:
 
 1. Create or select the tenant.
-2. Confirm the tenant is `active`.
+2. Confirm the tenant is active.
 3. Configure identity providers for how users sign in.
 4. Create OAuth clients for the applications that will use Auth.
 5. Configure registration flows or invite-only onboarding.
 6. Add tenant members only for administrators.
 7. Create IAM roles and permissions for application behavior.
 8. Test login from the tenant identity host.
-9. Inspect the issued token and confirm the `tenant_id` claim.
-10. Protect the application API by checking token issuer, audience, subject, tenant, and permissions.
+9. Inspect issued tokens conceptually and confirm tenant context is present.
+10. Protect the application API by checking issuer, audience, subject, tenant, and permissions.
 
 ## Developer Checklist
 
@@ -767,12 +436,13 @@ Before shipping tenant-aware integration, verify:
 - The app uses the correct tenant hostname or tenant lookup flow.
 - OAuth redirect URIs are registered on the correct tenant client.
 - CORS origins are registered on the correct tenant client.
-- Tokens contain the expected `tenant_id`.
+- Tokens contain the expected tenant context.
 - Admin screens use member roles only for tenant administration.
 - Product permissions use IAM roles and policies.
 - Suspended, inactive, and maintenance tenants are blocked from runtime flows.
 - Public lookup does not leak administrative data.
 - Member and tenant setting mutations create audit events.
+- API request and response details are documented in the API reference, not duplicated in this conceptual page.
 
 ## Troubleshooting
 

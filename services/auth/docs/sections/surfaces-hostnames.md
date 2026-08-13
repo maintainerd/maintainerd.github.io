@@ -67,22 +67,11 @@ Use full HTTPS origins in production. Do not include `/api/v1` in these values; 
 
 `APP_PUBLIC_HOSTNAME` is the authorization-server origin. It is used for OAuth/OIDC discovery, JWKS, token issuer behavior, public identity API calls, and external application authentication.
 
-Example public API URLs:
-
-```text
-https://identity-api.auth.example.com/.well-known/openid-configuration
-https://identity-api.auth.example.com/.well-known/jwks.json
-https://identity-api.auth.example.com/api/v1/oauth/authorize
-https://identity-api.auth.example.com/api/v1/oauth/token
-```
+The exact discovery, JWKS, OAuth, and token paths belong in the API reference. This page only defines which origin owns that public identity traffic.
 
 `APP_PRIVATE_HOSTNAME` is the internal management API origin used by the console and operator/admin workflows. Keep it on private networking or behind operator-only access controls.
 
-Example private API URL:
-
-```text
-https://console-api.auth.example.com/api/v1/clients
-```
+The exact management paths belong in the API reference. This page only defines which origin should be private and operator-facing.
 
 `APP_FRONTEND_IDENTITY_HOSTNAME` is the system-tenant hosted identity UI. It is where users see login, registration, MFA, consent, password reset, invite registration, and account self-service screens.
 
@@ -120,19 +109,7 @@ The identity listener serves:
 
 This same-origin design is intentional. Browser sessions use secure host-bound cookies, so the browser should call the API on the same origin as the SPA whenever possible.
 
-Example embedded console browser calls:
-
-```text
-https://console.auth.example.com/api/v1/clients
-https://console.auth.example.com/public-api/api/v1/client?client_id=...
-```
-
-Example embedded identity browser calls:
-
-```text
-https://identity.auth.example.com/api/v1/login
-https://identity.auth.example.com/.well-known/openid-configuration
-```
+In embedded mode, console browser calls stay on the console origin and identity browser calls stay on the identity origin. The mounted API paths are implementation details covered by the API reference and frontend runtime configuration.
 
 ## Reverse Proxy Shape
 
@@ -226,15 +203,9 @@ Identity runtime variables:
 
 - `VITE_AUTH_API_BASE_URL`: public identity API base URL. Default in embedded/same-origin mode: `/api/v1`.
 
-Example split frontend deployment:
+For split frontend deployments, point the console to the private management API origin and the public identity API origin, then point identity UI configuration at the public identity API origin. Prefer same-origin API mounts for browser sessions when using the embedded image.
 
-```env
-VITE_AUTH_API_BASE_URL=https://console-api.auth.example.com/api/v1
-VITE_AUTH_PUBLIC_API_BASE_URL=https://identity-api.auth.example.com/api/v1
-VITE_AUTH_IDENTITY_BASE_URL=https://identity.auth.example.com
-```
-
-Prefer same-origin API mounts for browser sessions when using the embedded image. Use absolute `VITE_*` values only when your platform intentionally serves the SPA and API from different origins.
+Use absolute `VITE_*` values only when your platform intentionally serves the SPA and API from different origins.
 
 ## External Application Domains
 

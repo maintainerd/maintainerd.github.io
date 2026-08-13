@@ -2,7 +2,7 @@
 
 Users are human accounts inside a tenant. Invites are controlled onboarding paths that let an administrator bring a person into a tenant with a known registration context.
 
-Use this section when you are building admin screens, onboarding flows, support tools, account recovery, invite registration, or API integrations that need to understand user lifecycle.
+Use this section when you are building admin screens, onboarding flows, support tools, account recovery, invite registration, or API integrations that need to understand user lifecycle. Exact endpoints, request bodies, response schemas, and generated-client examples belong in the API reference.
 
 ## Mental Model
 
@@ -21,31 +21,25 @@ Auth separates user lifecycle into a few related objects:
 
 The user is the center of the account. Profiles, identities, sessions, devices, consents, and roles attach to that user. Invites create or connect users through a controlled registration path.
 
-## User Shape
+## User Fields And Options
 
 A user record stores account state, not just display information.
 
-Example user:
+Common user fields and meanings:
 
-```json
-{
-  "user_id": "1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598",
-  "tenant_id": "6a6eb931-3f50-4f60-81c1-15b3be0c9f4a",
-  "email": "mira@example.com",
-  "username": "mira",
-  "phone_number": "+15551234567",
-  "status": "active",
-  "is_email_verified": true,
-  "is_phone_verified": false,
-  "is_totp_enabled": true,
-  "is_webauthn_enabled": false,
-  "must_change_password": false,
-  "failed_login_count": 0,
-  "locked_until": null,
-  "created_at": "2026-08-13T00:00:00Z",
-  "updated_at": "2026-08-13T00:00:00Z"
-}
-```
+- User ID: stable tenant-local account identifier.
+- Tenant ID: the tenant boundary that owns the user.
+- Email: contact and login identifier when email login or recovery is enabled.
+- Username: optional login or display identifier depending on tenant policy.
+- Phone number: contact method for SMS login, phone verification, or SMS MFA.
+- Status: lifecycle state such as pending, active, disabled, locked, or erased.
+- Email verification flag: whether the user has proven control of the email address.
+- Phone verification flag: whether the user has proven control of the phone number.
+- MFA flags: summary of enrolled factors such as TOTP, WebAuthn, SMS, or email OTP.
+- Password lifecycle flags: whether a password exists, was reset by admin, or must be changed.
+- Lockout fields: failed login counters and temporary lockout expiry.
+- Metadata: tenant-local operator or application context.
+- Timestamps: creation and update history for support and audit review.
 
 Important rules:
 
@@ -114,13 +108,13 @@ Editing a user changes account fields such as email, username, phone number, met
 
 Setting user status controls whether the user can authenticate. Disabling a user should block new login, token refresh, and account self-service actions. Unlocking should clear lockout state without silently weakening password or MFA policy.
 
-Setting a password creates or replaces the local Auth credential. Password writes must hash the password server-side and must never return the plaintext password. Admin password set should usually set `must_change_password` so the user rotates it on next login.
+Setting a password creates or replaces the local Auth credential. Password writes must hash the password server-side and must never return the plaintext password. Admin password set should usually set a must-change-password flag so the user rotates it on next login.
 
 Forcing password change marks the account so the next successful login must complete a password update before normal use. This is useful after admin-created passwords, suspected compromise, password policy migration, or support recovery.
 
 Verifying email or phone marks that contact method as confirmed. Admin verification should be used carefully because it bypasses user proof. Prefer normal verification links or OTPs unless an operator has strong evidence.
 
-Unlocking an account clears temporary lockout state such as `locked_until` and failed attempt counters. It should not disable MFA or reset the password unless an explicit recovery flow does that separately.
+Unlocking an account clears temporary lockout state and failed attempt counters. It should not disable MFA or reset the password unless an explicit recovery flow does that separately.
 
 Assigning roles grants application or API permissions through Auth's IAM model. This is different from tenant membership. A user can have product roles without being a tenant admin.
 
@@ -136,22 +130,15 @@ Starting erasure creates a controlled account anonymization workflow. Erasure sh
 
 Use direct user creation when an operator or provisioning system needs to create an account without a human invite acceptance step. This is common for bootstrap admins, directory sync, or controlled migrations.
 
-Representative management API pattern:
+Important creation options:
 
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/users \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "tenant_id": "6a6eb931-3f50-4f60-81c1-15b3be0c9f4a",
-    "email": "mira@example.com",
-    "username": "mira",
-    "status": "pending",
-    "send_verification_email": true
-  }'
-```
-
-Use your generated OpenAPI reference for the exact fields supported by your deployed version.
+- Tenant context: determines which tenant owns the user.
+- Email and username: identify the account inside that tenant.
+- Initial status: controls whether the account starts pending, active, or disabled.
+- Verification behavior: controls whether Auth sends verification email or marks a contact method as already verified.
+- Password behavior: controls whether the user starts passwordless, receives an admin-set password, or must set a password later.
+- Profile behavior: controls whether a default profile is created during onboarding or completed after sign-in.
+- Role behavior: controls whether roles are assigned immediately or by invite/registration flow.
 
 Developer behavior:
 
@@ -160,39 +147,20 @@ Developer behavior:
 - Do not create a tenant member automatically unless the flow is explicitly tenant administration onboarding.
 - Emit an audit event for admin-created users.
 
-## User Detail Response
+## User Detail
 
-A user detail response should help an administrator understand the account without exposing secret material.
+A user detail screen should help an administrator understand the account without exposing secret material.
 
-Example response shape:
+Useful detail areas:
 
-```json
-{
-  "user": {
-    "user_id": "1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598",
-    "tenant_id": "6a6eb931-3f50-4f60-81c1-15b3be0c9f4a",
-    "email": "mira@example.com",
-    "username": "mira",
-    "status": "active",
-    "is_email_verified": true,
-    "is_phone_verified": false,
-    "must_change_password": false
-  },
-  "security": {
-    "mfa_enabled": true,
-    "totp_enabled": true,
-    "webauthn_enabled": false,
-    "locked_until": null,
-    "failed_login_count": 0
-  },
-  "counts": {
-    "sessions": 3,
-    "trusted_devices": 1,
-    "linked_identities": 2,
-    "roles": 4
-  }
-}
-```
+- Account basics: user ID, tenant, email, username, phone, status, and timestamps.
+- Verification state: email and phone verification.
+- Security state: MFA summary, lockout state, and password lifecycle state.
+- Authorization state: assigned roles and tenant membership, shown separately.
+- Linked identities: configured provider links without upstream tokens.
+- Sessions and devices: current account access footprint.
+- Consents: OAuth clients the user approved.
+- Profiles: display and personal details.
 
 Do not include password hashes, backup codes, MFA seeds, refresh tokens, access tokens, OAuth authorization codes, provider refresh tokens, or reset links.
 
@@ -202,19 +170,12 @@ Password administration is sensitive because it can directly change account acce
 
 Admin password set should be used for support recovery, migration, bootstrap, or emergency remediation. It should not be the normal way users change passwords. Normal users should change passwords from the hosted identity UI after authenticating.
 
-Example password set pattern:
+Important password options:
 
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/users/1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598/set-password \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "password": "Use-A-Strong-Unique-Password-1!",
-    "must_change_password": true,
-    "revoke_existing_sessions": true,
-    "reason": "Support-assisted credential recovery"
-  }'
-```
+- New password: accepted only on write and never returned.
+- Must change password: forces the user to rotate the admin-set password at next login.
+- Revoke existing sessions: signs the user out after a credential recovery action.
+- Reason: operator explanation for audit logs.
 
 Developer behavior:
 
@@ -233,40 +194,34 @@ Email verification is used for account recovery, password reset, magic link, inv
 
 Admin verification should be rare. A safer default is to send a verification email or OTP and let the user prove control.
 
-Example admin verification pattern:
+Important verification options:
 
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/users/1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598/verify-email \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "reason": "Verified during enterprise migration"
-  }'
-```
+- Verification method: email link, email OTP, SMS OTP, or admin exception.
+- Expiration: how long the verification challenge remains valid.
+- Resend behavior: how often a new challenge can be sent.
+- Contact reset behavior: whether changing email or phone clears verification state.
+- Reason: required for admin exception flows.
 
 Developer behavior:
 
-- Changing an email address should usually set `is_email_verified` back to false.
-- Changing a phone number should usually set `is_phone_verified` back to false.
+- Changing an email address should usually set email verification back to false.
+- Changing a phone number should usually set phone verification back to false.
 - Verification links and OTPs must expire.
 - Verification responses should not reveal whether another account owns the email or phone.
 
 ## Lockout And Unlock
 
-Lockout protects accounts from repeated failed login attempts and other suspicious behavior. Auth may set `locked_until`, increment failed counters, or require additional verification before the user can continue.
+Lockout protects accounts from repeated failed login attempts and other suspicious behavior. Auth may set a temporary lockout, increment failed counters, or require additional verification before the user can continue.
 
 Unlocking clears temporary lockout state. It should not reset the password, disable MFA, or mark the account verified unless the admin explicitly performs those actions.
 
-Example unlock pattern:
+Important lockout options:
 
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/users/1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598/unlock \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "reason": "User passed support verification"
-  }'
-```
+- Failed attempt threshold: how many failures trigger lockout.
+- Lockout duration: how long the user remains blocked.
+- Reset behavior: when failed counters return to zero.
+- Admin unlock reason: why an operator cleared lockout.
+- Notification behavior: whether the user receives a security notice.
 
 Developer behavior:
 
@@ -278,17 +233,12 @@ Developer behavior:
 
 Roles assigned to users control product and API authorization. Tenant member roles control tenant administration. Keep them separate.
 
-Example role assignment pattern:
+Important role assignment options:
 
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/users/1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598/roles \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "role_id": "project-admin",
-    "reason": "Grant project administration access"
-  }'
-```
+- Role ID or name: identifies the tenant-local role to assign.
+- Scope or resource context: optional boundary if your role model supports scoped grants.
+- Assignment source: admin action, registration flow, invite, migration, or control plane.
+- Reason: operator explanation for audit history.
 
 Developer behavior:
 
@@ -301,25 +251,18 @@ Developer behavior:
 
 Provider identities let one Auth user sign in through more than one provider. For example, a user may have local password login plus Google Workspace and GitHub identities.
 
-Example linked identity:
+Important linked-identity fields and meanings:
 
-```json
-{
-  "identity_id": "9b99b5dd-fc40-47de-9c3f-305cb989cf7c",
-  "user_id": "1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598",
-  "provider": "github",
-  "sub": "98453412",
-  "metadata": {
-    "email": "mira@example.com",
-    "email_verified": true,
-    "name": "Mira Reyes"
-  }
-}
-```
+- Provider: which configured provider proved the identity.
+- Subject: the provider's stable user identifier.
+- Tenant: the tenant boundary for the link.
+- User: the Auth user that owns the link.
+- Metadata: normalized upstream claims such as email, name, avatar, locale, and verification state.
+- Provisioning source: whether the identity came from JIT provisioning, admin linking, or user self-service.
 
 Developer behavior:
 
-- Treat `(tenant_id, provider_id, sub)` as the stable upstream identity key.
+- Treat tenant, provider, and subject as the stable upstream identity key.
 - Do not silently merge users just because emails match.
 - Use account-link confirmation when a provider email matches an existing user.
 - Do not unlink the built-in local identity if that would leave the account without a safe anchor.
@@ -331,27 +274,14 @@ Sessions represent browser continuity. A user may have several sessions across b
 
 Admin session review helps support and security teams answer where an account is currently signed in. Session revocation helps respond to lost devices, suspected compromise, account disablement, or password reset.
 
-Example session summary:
+Useful session fields:
 
-```json
-{
-  "session_id": "sid_01J4M9TVV5SMH5G0WY9B8N2K6C",
-  "user_id": "1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598",
-  "client_id": "console",
-  "created_at": "2026-08-13T00:00:00Z",
-  "last_seen_at": "2026-08-13T01:15:00Z",
-  "ip_address": "203.0.113.10",
-  "user_agent": "Mozilla/5.0 ...",
-  "current": false
-}
-```
-
-Example revoke pattern:
-
-```bash
-curl -fsS -X DELETE https://console-api.auth.example.com/api/v1/users/1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598/sessions/sid_01J4M9TVV5SMH5G0WY9B8N2K6C \
-  -H "Authorization: Bearer $ACCESS_TOKEN"
-```
+- Session ID: stable identifier for review and revocation.
+- Client: which application created the session.
+- Created time: when the session began.
+- Last seen time: when Auth last observed activity.
+- IP address and user agent: useful for account security review.
+- Current flag: whether the listed session is the caller's current session.
 
 Developer behavior:
 
@@ -366,6 +296,15 @@ Devices represent remembered or trusted browser/device state. They can support s
 
 A device record is not proof that a person owns a physical device forever. Treat it as a remembered browser/device signal that can change, expire, or be revoked.
 
+Useful device fields:
+
+- Device ID: stable identifier for review and removal.
+- Display name: user-facing name when available.
+- Browser or platform: user agent-derived context.
+- First seen and last seen: lifecycle and security review data.
+- Trust status: whether the device can satisfy remembered-device behavior.
+- Approximate location: optional and should be coarse.
+
 Developer behavior:
 
 - Show device name, browser, approximate location, first seen, and last seen when available.
@@ -376,6 +315,14 @@ Developer behavior:
 ## Consents
 
 Consent records capture what a user approved for an OAuth client. They are useful when a client asks for scopes such as profile, email, offline access, or application-specific permissions.
+
+Useful consent fields:
+
+- Client: the application the user approved.
+- User and tenant: who granted the consent and where.
+- Scopes: what the client requested and the user approved.
+- Granted time: when approval occurred.
+- Revoked time: when the user or admin withdrew consent.
 
 Developer behavior:
 
@@ -390,19 +337,15 @@ Profiles store display and personal information. Use profiles for names, display
 
 Profiles should not drive authorization decisions. Use users, identities, tenant members, IAM roles, permissions, and policies for access control.
 
-Example profile:
+Useful profile fields:
 
-```json
-{
-  "profile_id": "prof_01J4MA2TP1RB8VBD3E78J41NYH",
-  "user_id": "1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598",
-  "display_name": "Mira Reyes",
-  "first_name": "Mira",
-  "last_name": "Reyes",
-  "profile_url": "https://cdn.example.com/profiles/mira.png",
-  "is_default": true
-}
-```
+- Profile ID: stable profile identifier.
+- User ID: the account that owns the profile.
+- Display name: user-facing name.
+- First and last name: structured personal name fields.
+- Profile image or URL: avatar source.
+- Default flag: which profile is used by default.
+- Metadata: user or tenant-specific display context.
 
 ## Invitations
 
@@ -418,26 +361,19 @@ Use invites when:
 
 An invite is not a password. Treat invite tokens as short-lived bearer secrets. Anyone with a valid invite link may be able to continue the invite flow, so links must expire and should be single-use where possible.
 
-## Invite Shape
+## Invite Fields And Status
 
-Example invite:
+Common invite fields and meanings:
 
-```json
-{
-  "invite_id": "inv_01J4MA8QXFMQ65HBQ1W4FX6S5J",
-  "tenant_id": "6a6eb931-3f50-4f60-81c1-15b3be0c9f4a",
-  "email": "new.user@example.com",
-  "status": "pending",
-  "registration_flow_id": "flow_01J4MA9J8DM7V2YW3G8D7VAQ91",
-  "role_ids": [
-    "project-reader"
-  ],
-  "expires_at": "2026-08-16T00:00:00Z",
-  "created_by": "1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598",
-  "created_at": "2026-08-13T00:00:00Z",
-  "accepted_at": null
-}
-```
+- Invite ID: stable identifier used by management and support workflows.
+- Tenant ID: the tenant that owns the invite.
+- Email: the intended recipient.
+- Status: pending, accepted, expired, or revoked.
+- Registration flow: the onboarding rules applied when the invite is accepted.
+- Pre-assigned roles: roles applied after successful acceptance.
+- Expiration time: when the invite stops being valid.
+- Creator: the admin or service that created the invite.
+- Accepted time: when the invite was consumed.
 
 Common invite statuses:
 
@@ -452,22 +388,15 @@ The default invite lifetime is controlled by `INVITE_TTL_HOURS` when configured.
 
 Create an invite when a tenant admin wants to onboard a person intentionally.
 
-Representative management API pattern:
+Important invite creation options:
 
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/invites \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "tenant_id": "6a6eb931-3f50-4f60-81c1-15b3be0c9f4a",
-    "email": "new.user@example.com",
-    "registration_flow_id": "flow_01J4MA9J8DM7V2YW3G8D7VAQ91",
-    "role_ids": [
-      "project-reader"
-    ],
-    "send_email": true
-  }'
-```
+- Tenant context: which tenant owns the invite.
+- Recipient email: who should receive the invite.
+- Registration flow: which onboarding behavior applies.
+- Pre-assigned roles: product or API roles granted after successful acceptance.
+- Email delivery flag: whether Auth should send the invitation email.
+- Expiration: how long the invite remains valid.
+- Metadata or reason: operator context for audit and support.
 
 Developer behavior:
 
@@ -480,12 +409,6 @@ Developer behavior:
 ## Public Invite Lookup
 
 Invite registration screens need to read safe invite context before the user signs in. Public invite lookup should reveal only what is needed to render the invite acceptance page.
-
-Example public lookup pattern:
-
-```bash
-curl -fsS "https://identity.auth.example.com/api/v1/public/invites/inv_01J4MA8QXFMQ65HBQ1W4FX6S5J"
-```
 
 Safe public fields may include:
 
@@ -514,21 +437,6 @@ Typical invite registration flow:
 8. Auth applies invite role assignments.
 9. Auth marks the invite accepted.
 10. Auth starts the normal login or post-registration flow.
-
-Example invite registration pattern:
-
-```bash
-curl -fsS -X POST https://identity.auth.example.com/api/v1/register/invite \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "invite_token": "signed-invite-token-from-email",
-    "email": "new.user@example.com",
-    "password": "Use-A-Strong-Unique-Password-1!",
-    "profile": {
-      "display_name": "New User"
-    }
-  }'
-```
 
 Developer behavior:
 
@@ -614,17 +522,13 @@ Erasure is the controlled anonymization path for user data. Auth supports self-s
 
 Erasure should process related account data such as identities, MFA factors, trusted devices, tokens, sessions, profiles, and related account records. It should preserve audit traceability without keeping personal details that should be removed.
 
-Example admin erasure request pattern:
+Important erasure options:
 
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/users/1d8f6cb5-920f-4c35-bd8a-cb4ce2a92598/erasure-requests \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "reason": "User requested deletion through support",
-    "process_after": "2026-08-20T00:00:00Z"
-  }'
-```
+- Request source: self-service user request or admin-created request.
+- Reason: user or operator explanation.
+- Process-after time: optional waiting period before anonymization.
+- Session handling: whether active sessions are revoked immediately.
+- Audit preservation: how the system keeps traceability while removing personal data.
 
 Developer behavior:
 
@@ -633,6 +537,30 @@ Developer behavior:
 - Revoke active sessions when erasure begins or completes.
 - Anonymize personal data instead of breaking historical audit records.
 - Do not use erasure as a substitute for normal account disablement.
+
+## Permissions
+
+User and invite operations should be protected by tenant-scoped management permissions.
+
+Typical permission areas:
+
+- User read: list and view user records.
+- User create: create accounts.
+- User update: edit account fields and status.
+- User credential administration: set password or force password change.
+- User verification administration: verify email or phone by exception.
+- User unlock: clear lockout state.
+- User role write: assign or remove roles.
+- User identity administration: link or unlink provider identities.
+- Session administration: inspect and revoke sessions.
+- Device administration: inspect or remove trusted devices.
+- Consent administration: inspect or revoke consents where supported.
+- Erasure administration: create or manage erasure requests.
+- Invite read: view invite records.
+- Invite create: create and send invites.
+- Invite revoke: cancel pending invites.
+
+Sensitive actions such as password reset, MFA remediation, disabling users, erasure, role assignment, session revocation, and invite creation should require strong authorization and may require step-up MFA.
 
 ## Events And Audit
 
@@ -664,7 +592,7 @@ Developer behavior:
 
 For normal invite-based onboarding:
 
-1. Confirm the tenant is `active`.
+1. Confirm the tenant is active.
 2. Configure email delivery for the tenant or inherited system tenant.
 3. Configure registration flows and allowed identity providers.
 4. Create roles that new users may need.
@@ -678,8 +606,8 @@ For normal invite-based onboarding:
 
 For admin-created onboarding:
 
-1. Confirm the tenant is `active`.
-2. Create the user in `pending` or `active` status according to policy.
+1. Confirm the tenant is active.
+2. Create the user in pending or active status according to policy.
 3. Set a temporary password only when necessary.
 4. Force password change on first login.
 5. Assign IAM roles separately from tenant membership.
@@ -704,6 +632,7 @@ Before shipping user and invite integration, verify:
 - Invite acceptance applies roles only after validation succeeds.
 - Email, magic-link, reset, and invite flows use the correct tenant host.
 - Erasure workflows anonymize personal data while preserving audit traceability.
+- API request and response details are documented in the API reference, not duplicated in this conceptual page.
 
 ## Troubleshooting
 

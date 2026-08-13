@@ -505,14 +505,7 @@ az network nsg rule create \
   --destination-port-ranges 8080 8082 50051
 ```
 
-After applying rules, test from the right network:
-
-```bash
-curl -I https://identity.auth.example.com/
-curl -fsS https://identity-api.auth.example.com/.well-known/openid-configuration
-curl -fsS http://auth-management.internal:8082/readyz
-nc -vz auth-grpc.internal 50051
-```
+After applying rules, test from the right network. Confirm the public identity host is reachable, OIDC discovery is available, management readiness works from the private network, and the gRPC listener is reachable only from trusted private networks. Use the API reference for exact HTTP probe requests.
 
 ## Cookies And Browser Security
 
@@ -833,13 +826,7 @@ Useful deployment signals:
 
 ## Probes
 
-The HTTP routers expose health endpoints on the internal API, public API, and management port:
-
-```text
-GET /healthz
-GET /readyz
-GET /livez
-```
+The HTTP routers expose health, readiness, and liveness probes on the internal API, public API, and management port. Use the deployment platform's probe configuration to call the appropriate path for each lifecycle check, and use the API reference for exact endpoint paths.
 
 Use `/livez` for liveness:
 

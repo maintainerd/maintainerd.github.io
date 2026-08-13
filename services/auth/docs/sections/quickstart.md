@@ -132,28 +132,19 @@ After setup, use the admin console to configure messaging, security, identity pr
 - Setup wizard: `https://console.auth.maintainerd.local/setup/tenant`
 - Admin console: `https://console.auth.maintainerd.local`
 - Hosted identity UI: `https://identity.auth.maintainerd.local`
-- OIDC discovery: `https://identity-api.auth.maintainerd.local/.well-known/openid-configuration`
-- Public JWKS: `https://identity-api.auth.maintainerd.local/.well-known/jwks.json`
+- Public identity API: `https://identity-api.auth.maintainerd.local`
 
 ## Verify The Runtime
 
-Check the public OIDC discovery document:
+Use the browser and Docker logs for the quickstart verification path:
 
-```bash
-curl -k https://identity-api.auth.maintainerd.local/.well-known/openid-configuration
-```
+- Open the console host and confirm the setup wizard loads.
+- Complete the tenant and admin setup screens.
+- Confirm the hosted identity UI can start a sign-in flow.
+- Confirm the Auth container is healthy in Docker.
+- Confirm nginx is routing the console and identity hosts.
 
-Check the public API health through nginx:
-
-```bash
-curl -k https://identity-api.auth.maintainerd.local/readyz
-```
-
-Check the console in your browser:
-
-```text
-https://console.auth.maintainerd.local
-```
+Use the API reference for exact health, discovery, and JWKS request details when you need command-line probes.
 
 If you need to inspect the private in-container ports from Docker, the Auth container serves:
 

@@ -80,69 +80,19 @@ Tenant slugs must be DNS-safe: lowercase letters, numbers, and hyphens, starting
 
 The setup admin is created as an email-verified, active user. Auth assigns the `registered` role and the `super-admin` role, creates a tenant membership with role `owner`, and binds the admin identity to the seeded console client and built-in provider.
 
-## REST Setup Endpoints
+## REST Setup Surface
 
-The console calls setup endpoints through the management API base path. In the packaged console this is normally same-origin under `/api/v1`.
+The console wizard is backed by setup actions on the management API. Those actions cover setup status, tenant creation, admin creation, optional profile creation, setup completion, and control-service registration.
 
-- `GET /api/v1/setup/status`
-- `POST /api/v1/setup/create_tenant`
-- `POST /api/v1/setup/create_admin`
-- `POST /api/v1/setup/create_profile`
-- `POST /api/v1/setup/complete`
-- `POST /api/v1/setup/register-control-service`
+This documentation explains the role of those actions instead of duplicating request samples. Use the dedicated API reference for exact paths, request bodies, response schemas, status codes, and generated client behavior.
 
-The REST setup endpoints inherit global security middleware and add stricter setup limits: request bodies are limited to 1 MB and setup requests time out after 30 seconds.
+The REST setup surface inherits global security middleware and adds stricter setup limits: setup bodies are small, setup requests time out quickly, and mutating setup actions are refused after setup locks.
 
-Example status check:
-
-```bash
-curl -fsS https://console-api.auth.example.com/api/v1/setup/status
-```
-
-Example tenant creation:
-
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/setup/create_tenant \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "name": "acme",
-    "display_name": "Acme",
-    "description": "Acme identity tenant",
-    "metadata": {
-      "language": "en",
-      "timezone": "UTC",
-      "date_format": "YYYY-MM-DD",
-      "time_format": "24h"
-    }
-  }'
-```
-
-Example admin creation:
-
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/setup/create_admin \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "username": "admin@acme.com",
-    "fullname": "Acme Admin",
-    "email": "admin@acme.com",
-    "password": "Use-A-Strong-Unique-Password-1!"
-  }'
-```
-
-Example completion:
-
-```bash
-curl -fsS -X POST https://console-api.auth.example.com/api/v1/setup/complete \
-  -H 'Content-Type: application/json' \
-  -d '{}'
-```
-
-Use the console wizard where possible. The direct REST examples are useful for debugging, smoke tests, or a simple unattended standalone bootstrap.
+Use the console wizard where possible. Direct setup calls are mainly for automated bootstrap, debugging, or smoke tests.
 
 ## Profile During Setup
 
-`POST /api/v1/setup/create_profile` exists for unattended bootstrap flows that want to create the first admin profile before anyone signs in. It requires the admin to exist first, is idempotent, and returns the existing profile if it was already created.
+The profile creation setup action exists for unattended bootstrap flows that want to create the first admin profile before anyone signs in. It requires the admin to exist first, is idempotent, and returns the existing profile if it was already created.
 
 The normal console setup flow does not call it. Profile completion belongs to the identity experience, where the first admin can provide personal details during sign-in if no profile exists yet.
 
@@ -184,7 +134,7 @@ If `SETUP_BOOTSTRAP_TOKEN` is empty, gRPC setup is disabled. That is expected fo
 
 Setup closes on an active system tenant. Auth does not keep a separate setup-state table; the active system tenant is the durable fact shared by all replicas.
 
-In standalone mode, setup stays available until the tenant and admin are created and `/setup/complete` marks the system tenant active.
+In standalone mode, setup stays available until the tenant and admin are created and setup completion marks the system tenant active.
 
 In orchestrated mode, setup is also bounded by `SETUP_WINDOW_TTL` from process start. If provisioning is abandoned past that deadline, mutating setup calls fail closed. Restart the instance to open a new setup window for the same fresh database.
 
@@ -207,11 +157,11 @@ After setup completes, verify the runtime before configuring application login:
 
 ## Troubleshooting
 
-If the setup page redirects away from `/setup/tenant`, call `/api/v1/setup/status`. A completed or partially completed setup changes which wizard page is valid.
+If the setup page redirects away from `/setup/tenant`, check setup status through the console or API reference workflow. A completed or partially completed setup changes which wizard page is valid.
 
 If `/setup/admin` redirects away, either the tenant has not been created yet or the admin already exists.
 
-If login returns a tenant unavailable error after creating the admin manually, call `/api/v1/setup/complete`. Creating the admin alone is not enough; completion is what activates the system tenant.
+If login returns a tenant unavailable error after creating the admin manually, complete setup before attempting normal sign-in. Creating the admin alone is not enough; completion is what activates the system tenant.
 
 If REST setup returns an orchestrator-managed error, this instance has `CONTROL_PLANE_ENABLED=true` and a bootstrap credential. Use gRPC `SetupService` from Core instead of the console wizard.
 
