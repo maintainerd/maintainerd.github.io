@@ -1,90 +1,118 @@
 # Auth Documentation
 
-Auth is Maintainerd's identity and access service. It gives teams one place to run hosted login, OAuth 2.0, OpenID Connect, users, tenants, clients, external identity providers, MFA, sessions, service authorization, audit trails, events, webhooks, messaging templates, and operational controls.
+Auth is Maintainerd's identity and access service. It gives your platform a place to manage tenants, users, login, registration, identity providers, sessions, MFA, application clients, permissions, audit events, and account self-service.
 
-Use these docs as a product map first, then as implementation guides section by section. The current focus is making every important Auth capability visible in the navigation so developers and operators know where each workflow belongs.
+These docs are written as an app guide. They explain where a feature appears in the Auth console or hosted identity UI, what the screen is for, what fields mean, what choices are available, and what permissions or security rules apply. Endpoint names, request bodies, response schemas, and generated-client examples live in the API reference.
 
-![Auth console identity provider configuration](/assets/auth-console-identity-provider.png)
+## How To Use These Docs
 
-## What Auth Is For
+Read the docs in the same order you would set up Auth:
 
-Auth is the boundary between an application, the people signing in to it, and the services enforcing access behind it.
+1. Understand the product areas.
+2. Run or open Auth.
+3. Complete setup.
+4. Configure runtime, hostnames, secrets, database, and deployment.
+5. Create tenants.
+6. Add users or invites.
+7. Configure identity providers.
+8. Configure registration, login, and account self-service.
 
-For a developer-owned app, Auth can act as the OAuth/OIDC provider. The app creates a client, sends users to hosted login, receives an authorization code, exchanges it for tokens, verifies JWTs with JWKS, and uses UserInfo or token claims to create its own session.
+When a page mentions a screen, treat the navigation path as the starting point. The field explanations tell you what you are looking at and what each choice changes. The workflow sections tell you the normal order of operations.
 
-For a Maintainerd service, Auth is also the authorization authority. Services can register APIs and permissions, receive policies, fetch policy bundles, call authorization endpoints, use token introspection, or use gRPC runtime APIs when that surface is enabled.
+## Main App Areas
 
-For operators, Auth is the console surface for managing tenants, users, identity providers, clients, roles, permissions, security controls, messaging, branding, webhooks, audit logs, and observability.
+Auth has two user-facing surfaces:
 
-## The Main Building Blocks
+- Console: the administrator app for configuring tenants, users, providers, clients, policies, audit, and operations.
+- Hosted identity UI: the end-user app for login, registration, MFA, consent, password reset, invite acceptance, and account settings.
 
-### Tenants
+Auth also has service surfaces used by applications and Maintainerd services:
 
-A tenant owns users, clients, identity providers, roles, permissions, policies, templates, branding, settings, events, and security controls. Hosted identity and console URLs are tenant-aware, so each tenant can have its own login context.
+- Public identity surface: the browser and application-facing identity layer.
+- Internal management surface: the private administrator and automation layer.
+- Optional gRPC surface: the service-to-service control-plane layer.
 
-### Users And Accounts
+Beginners should start in the console. Developers integrating an app should also understand the hosted identity UI because that is where users complete sign-in and account flows.
 
-Users sign in through the hosted identity UI. Account self-service includes profile data, email and username changes, password changes, MFA factors, sessions, trusted devices, linked identities, consent records, export, and erasure flows.
+## Navigation Map
 
-### Clients
+Use this map to know where a feature normally lives:
 
-Clients represent applications. External apps use `client_id` in public OAuth/OIDC flows. Client configuration controls redirect URIs, post-logout redirect URIs, grants, response types, token authentication, consent behavior, token lifetimes, and which login providers appear for that app.
+- Setup: open the setup wizard before the first tenant and admin user exist.
+- Runtime modes: choose how Auth runs in your environment.
+- Architecture: understand the boundaries before integrating services.
+- Environment variables: configure process-level runtime values.
+- Secrets and keys: configure signing, encryption, bootstrap, and provider secrets.
+- Database and Redis: configure persistence, migrations, cache, sessions, and background state.
+- Surfaces and hostnames: configure console, identity, API, and tenant hostnames.
+- Deployment: prepare production runtime, reverse proxy, TLS, workers, and probes.
+- Identity types: learn what tenant, user, member, provider, client, and session mean.
+- Tenants and members: manage tenant settings and administrator access.
+- Users and invites: manage human accounts and onboarding invitations.
+- Identity providers: configure password, social login, OIDC, SAML, and provider mapping.
+- Registration flows: choose who can create accounts and what happens during onboarding.
+- Login and registration: understand the hosted user journey.
+- Account self-service: understand what signed-in users can manage themselves.
 
-### Identity Providers
+## Important Concepts
 
-Identity providers let a tenant accept identities from built-in Auth credentials, social providers, enterprise OIDC/OAuth2 providers, and SAML providers. Providers can be attached to specific clients, which lets one application offer GitHub login while another offers only password or enterprise SSO.
+A tenant is the security boundary. Tenant settings decide which users, providers, clients, policies, branding, events, and data lifecycle rules apply.
 
-### OAuth And Sessions
+A user is a human account inside one tenant. A user can have profiles, sessions, devices, MFA factors, consents, linked identities, and roles.
 
-Auth handles authorization code with PKCE, refresh tokens, client credentials, device authorization, CIBA, token exchange, revocation, introspection, UserInfo, discovery, JWKS, consent, and end-session flows.
+A tenant member is an administrator relationship. Members are people allowed to manage tenant settings in the console. Tenant membership is separate from application roles.
 
-### Authorization
+A client is an application that uses Auth for login. Clients define redirect behavior, logout behavior, allowed login methods, provider connections, and OAuth/OIDC behavior.
 
-Auth models services, APIs, permissions, roles, and policies. Resource services can verify tokens locally, ask Auth for token state, fetch policy bundles, or call authorization APIs to make runtime access decisions.
+An identity provider is a way to prove identity. Auth can use built-in email/password, passwordless methods, OIDC/OAuth2 providers, SAML providers, and other configured provider types.
 
-## How Developers Use Auth
+A registration flow decides how accounts are created. It controls open signup, invite-only signup, provider-driven signup, profile completion, verification, and default access.
 
-The typical external application workflow is:
+## Permissions Model
 
-1. Create or choose a tenant.
-2. Create an OAuth client for the app.
-3. Add redirect and post-logout redirect URIs.
-4. Configure grant types, token settings, and consent behavior.
-5. Optionally create an external identity provider.
-6. Attach the provider to the client so it appears on that app's login screen.
-7. Send users to hosted login with the app's `client_id`.
-8. Exchange the authorization code for tokens.
-9. Verify tokens using OIDC discovery and JWKS.
-10. Protect application APIs with permissions, roles, policies, introspection, or authorization checks.
+Auth separates user self-service from administration.
 
-Start with **Developer workflows** when documenting app onboarding examples. Use **Applications & clients**, **Identity providers**, **OAuth & OIDC**, and **Protect an API** when expanding the implementation details.
+- Normal users can manage only their own account where policy allows.
+- Tenant administrators can manage tenant settings and users based on their member role.
+- Service identities and workloads can call service surfaces only when explicitly trusted.
+- Sensitive changes may require step-up MFA even for administrators.
 
-## How Operators Use Auth
+This separation matters because many identity features look similar but have different risk. A user changing their own password is not the same as an administrator resetting another user's password.
 
-Operators usually start by making the instance production-ready:
+## What Belongs In The API Reference
 
-- Finish setup and create the first tenant/admin.
-- Configure public identity, internal management, console, and management hostnames.
-- Configure PostgreSQL, Redis, secrets, signing keys, and cookie settings.
-- Configure email and SMS providers before enabling flows that send messages.
-- Review password, MFA, session, lockout, registration, and threat controls.
-- Set up branding, templates, webhooks, auth events, management audit logs, metrics, traces, and logs.
+The conceptual docs intentionally avoid API request samples and response shapes. Use the API reference when you need:
 
-## Runtime Modes
+- Exact endpoint paths.
+- Request and response fields.
+- Status codes.
+- Generated client usage.
+- Authentication headers.
+- Pagination, filtering, and sorting behavior.
 
-Auth can run standalone, with runtime gRPC, or under Core control.
+Use these docs when you need to understand what the feature does, where it appears in the app, which option to choose, and what the security impact is.
 
-- Standalone is the default. REST, OAuth/OIDC, the console, hosted identity, workers, metrics, and probes run without exposing the Core provisioning listener.
-- Runtime gRPC adds machine APIs for authorization, introspection, and peer reads without enabling Core provisioning.
-- Control-plane mode lets Maintainerd Core provision and manage Auth through mTLS gRPC.
+## First-Time Path
 
-Use **Runtime modes**, **Control plane**, **Surfaces & hostnames**, and **Transport security** when documenting deployments.
+For a new deployment:
 
-## What To Read Next
+1. Read Setup.
+2. Run the quickstart or open your deployed setup wizard.
+3. Create the first tenant and administrator.
+4. Review runtime mode.
+5. Configure hostnames.
+6. Configure secrets, database, and Redis.
+7. Create an application client.
+8. Configure login and registration.
+9. Add users or invites.
+10. Test the hosted identity UI and account self-service.
 
-- **Quickstart** for the shortest path from container to first usable instance.
-- **Setup** for first-run tenant and admin bootstrap.
-- **External app setup** for connecting a developer-owned application.
-- **Federated login per client** for adding social, enterprise, OIDC/OAuth2, or SAML login to one app.
-- **Protect an API** for permissions, policies, and runtime authorization.
-- **Feature inventory** for the current code-derived capability map.
+## Common Beginner Mistakes
+
+- Treating tenant members as application users. They are related, but not the same.
+- Using email as a global user identifier. Users are tenant-scoped.
+- Collecting Auth passwords inside downstream apps. Use the hosted identity UI.
+- Enabling public registration before default roles and abuse controls are ready.
+- Configuring an identity provider without connecting it to the client that should use it.
+- Changing hostnames without updating cookies, redirects, CORS, and WebAuthn origins.
+- Looking for endpoint payloads in conceptual docs instead of the API reference.

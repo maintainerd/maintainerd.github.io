@@ -1,394 +1,191 @@
 # Environment Variables
 
-Auth reads normal runtime settings from environment variables and reads credentials through its configured secret provider. In the default local mode the secret provider is `env`, so secret-backed values are still environment variables. In production, the same secret names can come from Docker secrets, AWS, Vault, GCP, or Azure without changing the application code.
+Environment variables are the deployment settings Auth reads when the process starts. They describe the runtime, hostnames, database, Redis, cookies, proxies, observability, and secret-provider behavior.
 
-This page is the operator-facing reference for the `maintainerd-auth` service, the embedded console, and the embedded identity app.
+Use this page when you are looking at deployment settings and need to understand what a field means. Keep secret values in the configured secret provider whenever possible.
 
-## How Configuration Is Loaded
+## Where To Configure Them
 
-At startup Auth:
+You configure environment variables in the place that starts Auth:
 
-1. Loads a local `.env` file when one exists.
-2. Selects the secret provider from `SECRET_PROVIDER`.
-3. Loads required host, database, frontend, key, and encryption settings.
-4. Connects to PostgreSQL and Redis.
-5. Starts the REST surfaces, background workers, management port, and optional gRPC listener.
+- Local quickstart environment file.
+- Docker Compose service environment.
+- Kubernetes Deployment, Secret, and ConfigMap.
+- Container platform settings.
+- Maintainerd Core service configuration when Auth is orchestrated.
+- CI/CD deployment variables.
 
-Plain environment variables are used for values that are not credentials, such as hostnames, ports, runtime mode, CORS allowlists, logging, and pool sizes.
+The Auth console can show runtime summaries and health, but process environment changes usually require a redeploy or restart.
 
-Secret-backed values are used for credentials and key material, such as database passwords, JWT keys, encryption keys, Redis passwords, signed URL keys, and control-plane bootstrap tokens.
+## How Auth Loads Configuration
 
-Required variables fail startup when missing or empty. Optional variables either have a documented default or disable the feature when unset.
+At startup Auth loads normal configuration, selects the secret provider, reads secret-backed values, connects to PostgreSQL and Redis, validates signing keys, and starts the enabled surfaces.
 
-## Value Types And Examples
+Plain environment variables are for non-secret settings such as hostnames, ports, runtime mode, CORS allowlists, logging, and pool sizes.
 
-Use these patterns when reading the rest of this page:
+Secret-backed values are for credentials and key material such as database passwords, Redis passwords, JWT keys, encryption keys, HMAC keys, and bootstrap tokens.
 
-- String: a plain value such as `DB_USER=maintainerd`.
-- Origin URL: a full URL with scheme and host, such as `APP_PUBLIC_HOSTNAME=https://identity-api.auth.example.com`.
-- Host and port: a network address such as `REDIS_ADDR=redis.internal:6379`.
-- Boolean: `true` or `false`, such as `REDIS_TLS=true`.
-- Integer seconds or milliseconds: numeric values such as `DB_CONN_MAX_LIFETIME_SEC=300` or `DB_STATEMENT_TIMEOUT_MS=30000`.
-- Go duration: values such as `SETUP_WINDOW_TTL=30m`, `10m`, or `1h`.
-- Comma-separated list: values such as `CORS_ALLOWED_ORIGINS=https://app.example.com,https://admin.example.com`.
-- Secret-backed value: store the logical key in the configured secret provider, such as AWS Secrets Manager secret `maintainerd/prod/auth/db-password` for `DB_PASSWORD`.
+If a required value is missing, Auth should fail startup instead of serving an incomplete identity system.
 
-Example production environment using AWS Secrets Manager:
-
-```env
-APP_ENV=production
-APP_PUBLIC_HOSTNAME=https://identity-api.auth.example.com
-APP_PRIVATE_HOSTNAME=https://console-api.auth.example.com
-APP_FRONTEND_IDENTITY_HOSTNAME=https://identity.auth.example.com
-APP_FRONTEND_CONSOLE_HOSTNAME=https://console.auth.example.com
-
-DB_HOST=auth-prod.cluster-example.us-east-1.rds.amazonaws.com
-DB_PORT=5432
-DB_USER=maintainerd_auth
-DB_NAME=maintainerd_auth
-DB_SSLMODE=require
+## Field Types
 
-REDIS_ADDR=auth-prod-cache.example.use1.cache.amazonaws.com:6379
-REDIS_TLS=true
+When a field asks for an origin URL, use a full browser origin with scheme and hostname.
 
-SECRET_PROVIDER=aws_secrets
-SECRET_PREFIX=maintainerd/prod/auth
-SECRET_STRICT=true
-AWS_REGION=us-east-1
+When a field asks for a hostname or address, use the value the Auth process can reach from inside its runtime network.
 
-COOKIE_SECURE=true
-COOKIE_SAMESITE=lax
-COOKIE_DOMAIN=auth.example.com
-WEBAUTHN_RP_ID=auth.example.com
+When a field asks for a boolean, use `true` or `false`.
 
-OTEL_ENABLED=true
-OTEL_SERVICE_NAME=maintainerd-auth
-OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector.observability.svc:4317
-```
+When a field asks for seconds or milliseconds, use an integer.
 
-With that configuration, secret-backed values are stored under names such as:
+When a field asks for a duration, use a duration format supported by the runtime, such as minutes or hours.
 
-```text
-maintainerd/prod/auth/db-password
-maintainerd/prod/auth/redis-password
-maintainerd/prod/auth/jwt-private-key
-maintainerd/prod/auth/jwt-public-key
-maintainerd/prod/auth/app-encryption-key
-maintainerd/prod/auth/hmac-secret-key
-```
+When a field asks for a comma-separated list, enter each value exactly and avoid spaces unless the deployment platform trims them safely.
 
-## Minimal Standalone Configuration
+When a field is secret-backed, store the value in the configured secret provider instead of exposing it in browser-visible or source-controlled configuration.
 
-A standalone Auth instance needs these plain variables:
+## Application Identity Fields
 
-- `APP_ENV`: optional runtime environment, default `production`. Set `APP_ENV=development` only for local development or test environments that intentionally need relaxed security behavior.
-- `APP_PUBLIC_HOSTNAME`: public API and OAuth issuer origin, for example `https://identity-api.auth.example.com`.
-- `APP_PRIVATE_HOSTNAME`: internal management API origin, for example `https://console-api.auth.example.com`.
-- `APP_FRONTEND_IDENTITY_HOSTNAME`: hosted identity UI origin, for example `https://identity.auth.example.com`.
-- `APP_FRONTEND_CONSOLE_HOSTNAME`: admin console origin, for example `https://console.auth.example.com`.
-- `DB_HOST`: PostgreSQL host.
-- `DB_PORT`: PostgreSQL port.
-- `DB_USER`: PostgreSQL username.
-- `DB_NAME`: PostgreSQL database name.
+`APP_ENV` tells Auth whether it is running in production-like behavior or development behavior. Production is the safe default. Use development only for local work.
 
-It also needs these secret-backed values:
+`APP_VERSION` controls the version shown in build info and telemetry when the build does not already provide one.
 
-- `DB_PASSWORD`: PostgreSQL password.
-- `JWT_PRIVATE_KEY`: PEM private key used to sign JWTs.
-- `JWT_PUBLIC_KEY`: PEM public key published through JWKS and used for verification.
-- `APP_ENCRYPTION_KEY`: exactly 32 bytes. Used as the current AES-256 application encryption key.
-- `HMAC_SECRET_KEY`: signing key for signed URLs and short-lived links.
-
-For local quickstart, `examples/quickstart/setup.sh` generates the required key material and appends it to the local `.env`.
-
-## Secret Provider
-
-`SECRET_PROVIDER` selects where Auth reads secret-backed values. Supported values:
+`LOG_LEVEL` controls how much detail Auth writes to logs. Use debug sparingly because identity logs can become noisy and may include sensitive context if the application is misconfigured.
 
-- `env`: read secret values directly from environment variables. This is the default and is simplest for local development.
-- `file`: read secret files from `SECRET_FILE_PATH`, default `/run/secrets`.
-- `aws_secrets`: read from AWS Secrets Manager.
-- `aws_ssm`: read from AWS SSM Parameter Store.
-- `vault`: read from HashiCorp Vault KV v2.
-- `gcp`: read from GCP Secret Manager.
-- `azure_kv`: read from Azure Key Vault.
+## Hostname Fields
 
-`SECRET_PREFIX` defaults to `maintainerd/auth`. External providers use it as the namespace or path prefix for Auth secrets.
+`APP_PUBLIC_HOSTNAME` is the public identity API and OAuth/OIDC issuer origin. Applications, discovery, JWKS, OAuth flows, and hosted identity API calls depend on this value.
 
-Secret values are normalized consistently across providers:
+`APP_PRIVATE_HOSTNAME` is the internal management API origin used by the console and administrator workflows. Keep it private or strongly protected.
 
-- Leading and trailing whitespace is trimmed.
-- Values prefixed with `base64:` are base64-decoded before use.
-- Empty required secrets fail startup.
+`APP_FRONTEND_IDENTITY_HOSTNAME` is the hosted identity UI origin where users sign in, register, reset passwords, complete MFA, and manage account settings.
 
-## Secret Provider Variables
+`APP_FRONTEND_CONSOLE_HOSTNAME` is the administrator console origin.
 
-- `SECRET_PROVIDER`: optional, default `env`. Selects the active secret provider.
-- `SECRET_PREFIX`: optional, default `maintainerd/auth`. Prefix for external secret names.
-- `SECRET_STRICT`: optional, default `false`. When `false`, a missing secret in a non-env provider may fall back to the same key in the process environment. When `true`, the configured provider is authoritative and missing secrets fail startup.
-- `SECRET_FILE_PATH`: optional, default `/run/secrets`. Directory used by the `file` provider. Secret filenames are lowercase with underscores converted to hyphens, so `JWT_PRIVATE_KEY` becomes `jwt-private-key`.
-- `AWS_REGION`: optional, default `us-east-1`. Region used by `aws_secrets` and `aws_ssm`.
-- `VAULT_ADDR`: optional for Vault, default `http://localhost:8200`. Must use HTTPS outside local development when `APP_ENV=production`.
-- `VAULT_TOKEN`: optional Vault token. If unset, Auth uses Vault AppRole.
-- `VAULT_MOUNT`: optional, default `secret`. Vault KV v2 mount.
-- `VAULT_SECRET_FIELD`: optional, default `value`. Field read from each Vault secret.
-- `VAULT_ROLE_ID`: required for Vault AppRole when `VAULT_TOKEN` is unset.
-- `VAULT_SECRET_ID`: required for Vault AppRole when `VAULT_TOKEN` is unset.
-- `GCP_PROJECT_ID`: required when `SECRET_PROVIDER=gcp`.
-- `AZURE_KEYVAULT_URL`: required when `SECRET_PROVIDER=azure_kv`.
+`APP_CONSOLE_PORT` and `APP_IDENTITY_PORT` are the embedded frontend listener ports inside the released image.
 
-## Required Secret Values
+`MANAGEMENT_PORT` is the operational listener for health, readiness, OpenAPI JSON, and metrics. It should not be treated as a public user surface.
 
-- `DB_PASSWORD`: PostgreSQL password. Loaded through the secret provider.
-- `JWT_PRIVATE_KEY`: private signing key for access tokens, ID tokens, and other JWTs.
-- `JWT_PUBLIC_KEY`: public verification key exposed through JWKS.
-- `APP_ENCRYPTION_KEY`: current application encryption key. It must be exactly 32 bytes because Auth uses it as AES-256 key material.
-- `HMAC_SECRET_KEY`: HMAC key used by the signed URL signer, including invite and short-lived link flows.
+## Database Fields
 
-Keep these values out of logs, source control, Docker image layers, and frontend builds.
+`DB_HOST`, `DB_PORT`, `DB_USER`, and `DB_NAME` tell Auth how to reach PostgreSQL.
 
-## Optional Secret Values
+`DB_PASSWORD` is the secret-backed PostgreSQL password.
 
-- `REDIS_PASSWORD`: Redis password. Leave unset for local Redis without AUTH.
-- `APP_ENCRYPTION_KEYS_PREVIOUS`: comma-separated list of retired 32-byte encryption keys. These keys are decrypt-only and are used during encryption-key rotation so old encrypted rows can still be read until they are re-encrypted.
-- `SETUP_BOOTSTRAP_TOKEN`: bootstrap credential for the gRPC setup service used by Core or another control plane. Standalone deployments normally leave it unset and use the REST setup wizard instead.
+`DB_SSLMODE` controls PostgreSQL TLS. Production should use TLS for remote or managed PostgreSQL.
 
-## Application Identity
+`DB_MAX_OPEN_CONNS` limits total database connections per Auth replica.
 
-- `APP_ENV`: optional, default `production`. Controls production-sensitive behavior such as security headers, database/TLS expectations, gRPC hardening, and development-only conveniences. Set `APP_ENV=development` explicitly for local work.
-- `APP_VERSION`: optional. Overrides the build-injected version shown in telemetry and build info. If unset, Auth uses the version baked into the binary; local builds fall back to `dev`.
-- `LOG_LEVEL`: optional, default `info`. Supported values are `debug`, `info`, `warn`, and `error`. `warning` is also accepted as `warn`.
+`DB_MAX_IDLE_CONNS` controls how many idle connections stay open.
 
-`ENV=production` is still recognized as a compatibility fallback for security middleware, but new deployments should use `APP_ENV`. Because Auth is secure by default, an unset `APP_ENV` is treated as `production`.
+`DB_CONN_MAX_LIFETIME_SEC` limits how long pooled connections are reused.
 
-## Hostnames And Surfaces
+`DB_STATEMENT_TIMEOUT_MS` bounds database statements so slow queries do not consume workers indefinitely.
 
-- `APP_PUBLIC_HOSTNAME`: required. Public API origin and OAuth/OIDC issuer origin. This is the origin used by discovery, JWKS, OAuth authorize/token flows, hosted identity API calls, and external application authentication.
-- `APP_PRIVATE_HOSTNAME`: required. Internal management API origin used by the console and operator/admin workflows.
-- `APP_FRONTEND_IDENTITY_HOSTNAME`: required. System-tenant hosted identity UI origin.
-- `APP_FRONTEND_CONSOLE_HOSTNAME`: required. System-tenant admin console UI origin.
-- `APP_CONSOLE_PORT`: optional, default `3000`. Embedded console SPA listener inside the released image.
-- `APP_IDENTITY_PORT`: optional, default `3001`. Embedded identity SPA listener inside the released image.
-- `MANAGEMENT_PORT`: optional, default `8082`. Operational listener for health, readiness, OpenAPI JSON, and Prometheus metrics.
+## Redis Fields
 
-Use full HTTPS origins for hostnames in deployed environments. The frontend hostname variables describe the system tenant host; tenant-specific identity and console hosts are derived from tenant DNS slugs.
+`REDIS_ADDR` tells Auth where Redis is reachable.
 
-## Database
+`REDIS_PASSWORD` is the optional secret-backed Redis password.
 
-- `DB_HOST`: required. PostgreSQL host.
-- `DB_PORT`: required. PostgreSQL port, usually `5432`.
-- `DB_USER`: required. PostgreSQL username.
-- `DB_PASSWORD`: required secret. PostgreSQL password.
-- `DB_NAME`: required. PostgreSQL database name.
-- `DB_SSLMODE`: optional, default `disable`. Use stronger modes such as `require` or `verify-full` in production when PostgreSQL is remote or managed.
-- `DB_MAX_OPEN_CONNS`: optional, default `25`. Maximum open connections in the database pool.
-- `DB_MAX_IDLE_CONNS`: optional, default `10`. Maximum idle connections retained by the pool.
-- `DB_CONN_MAX_LIFETIME_SEC`: optional, default `300`. Maximum connection lifetime in seconds.
-- `DB_STATEMENT_TIMEOUT_MS`: optional, default `30000`. Per-statement timeout applied to database work in milliseconds.
+`REDIS_TLS` enables TLS for Redis. Some Redis URLs also imply TLS.
 
-The database stores tenants, users, OAuth clients, identity providers, roles, policies, MFA state, sessions, event outbox rows, webhook deliveries, audit logs, branding, messaging configuration, and setup state.
+Redis is used for short-lived security and performance state. Treat Redis availability as part of the identity runtime, not as optional decoration.
 
-Example PostgreSQL values:
+## Cookie And Browser Fields
 
-```env
-DB_HOST=auth-prod.cluster-example.us-east-1.rds.amazonaws.com
-DB_PORT=5432
-DB_USER=maintainerd_auth
-DB_NAME=maintainerd_auth
-DB_SSLMODE=require
-DB_MAX_OPEN_CONNS=25
-DB_MAX_IDLE_CONNS=10
-DB_CONN_MAX_LIFETIME_SEC=300
-DB_STATEMENT_TIMEOUT_MS=30000
-```
+`COOKIE_SECURE` controls whether browser cookies require HTTPS. Keep it true outside local development.
 
-If `SECRET_PROVIDER=aws_secrets` and `SECRET_PREFIX=maintainerd/prod/auth`, store `DB_PASSWORD` as:
+`COOKIE_SAMESITE` controls how cookies behave across browser navigations. `lax` is the practical default for login redirects.
 
-```text
-maintainerd/prod/auth/db-password
-```
+`COOKIE_DOMAIN` allows first-party Auth subdomains to share cookie scope. Use it only for a domain whose subdomains you control.
 
-## Redis
+`WEBAUTHN_RP_ID` controls the relying-party ID for passkeys. It must match the hostname plan users will actually visit.
 
-- `REDIS_ADDR`: optional, default `redis-db:6379`. Redis address used for cache-backed runtime state.
-- `REDIS_PASSWORD`: optional secret. Password for Redis AUTH.
-- `REDIS_TLS`: optional, default `false`. Enables TLS for Redis. TLS is also enabled automatically when `REDIS_ADDR` starts with `rediss://`.
+## Proxy And Origin Fields
 
-Auth connects to Redis during startup and readiness depends on Redis being reachable.
+`TRUSTED_PROXY_CIDRS` lists proxies allowed to provide forwarding headers. This affects client IP detection, rate limits, audit context, and IP restrictions.
 
-Example Redis values:
+`TRUST_ALL_PROXIES` accepts forwarding headers from any peer. Use it only when your infrastructure guarantees headers are overwritten by a trusted edge.
 
-```env
-REDIS_ADDR=auth-prod-cache.example.use1.cache.amazonaws.com:6379
-REDIS_TLS=true
-```
+`CORS_ALLOWED_ORIGINS` adds static CORS exceptions. This should not replace registering applications as clients.
 
-If Redis AUTH is enabled and `SECRET_PROVIDER=aws_secrets`, store `REDIS_PASSWORD` as:
+## Runtime And gRPC Fields
 
-```text
-maintainerd/prod/auth/redis-password
-```
+`CONTROL_PLANE_ENABLED` enables Maintainerd control-plane behavior.
 
-## Cookies And Browser Sessions
+`GRPC_ENABLED` enables the gRPC listener without the full control-plane mode.
 
-- `COOKIE_SECURE`: optional, default `true`. When true, session cookies require HTTPS. Set to `false` only for local development without TLS.
-- `COOKIE_SAMESITE`: optional, default `lax`. Controls browser SameSite behavior. `lax` is the practical default for federated login redirects.
-- `COOKIE_DOMAIN`: optional. When unset, cookies are host-only. When set, Auth scopes cookies to a shared parent domain so first-party surfaces under that domain can share a session.
+`INSTANCE_ROLE` describes how the process participates in orchestrated deployments.
 
-Use `COOKIE_DOMAIN` only for a domain whose subdomains you control. Setting a cookie domain changes the cookie prefix strategy from host-only cookies to secure domain-scoped cookies. External relying-party applications do not share these cookies; they use OAuth/OIDC tokens and their own application sessions.
+`SETUP_BOOTSTRAP_TOKEN` is a secret-backed setup credential for orchestrated setup.
 
-## Proxy And Client IP Handling
+`SETUP_WINDOW_TTL` limits how long orchestrated setup remains available after start.
 
-- `TRUSTED_PROXY_CIDRS`: optional. Comma-separated list of proxy CIDRs or bare proxy IPs allowed to provide forwarding headers. Defaults to loopback plus private IPv4 ranges and the RFC4193 IPv6 private range.
-- `TRUST_ALL_PROXIES`: optional, default `false`. When `true`, Auth accepts forwarding headers from any peer. Use only when the platform guarantees those headers are overwritten by a trusted load balancer or reverse proxy.
+`GRPC_TLS_CERT_FILE`, `GRPC_TLS_KEY_FILE`, `GRPC_CLIENT_CA_FILE`, and `GRPC_REQUIRE_MTLS` configure gRPC TLS and mTLS.
 
-Client IP resolution affects rate limits, IP restriction rules, security events, and audit context. Production deployments should prefer explicit `TRUSTED_PROXY_CIDRS` over `TRUST_ALL_PROXIES=true`.
+## Secret Provider Fields
 
-## CORS
+`SECRET_PROVIDER` chooses where Auth reads secret-backed values. Common choices are environment, file secrets, cloud secret managers, Vault, GCP Secret Manager, and Azure Key Vault.
 
-- `CORS_ALLOWED_ORIGINS`: optional. Comma-separated list of extra origins allowed by the CORS middleware.
+`SECRET_PREFIX` scopes secret names inside providers that support namespaces or paths.
 
-This variable is for operational exceptions and static allowlists. It is not the normal way to onboard external applications. External applications should be registered as clients; their configured origins and redirect URIs become part of the tenant/client trust model and can be checked dynamically.
+`SECRET_STRICT` decides whether missing provider secrets may fall back to environment variables. Use strict mode after migration to a real provider is complete.
 
-## Runtime Modes And gRPC
+Provider-specific fields such as AWS region, Vault address, GCP project, or Azure Key Vault URL tell Auth how to reach the selected provider.
 
-- `CONTROL_PLANE_ENABLED`: optional, default `false`. Enables control-plane mode for a Maintainerd ecosystem deployment managed by Core. Enabling this also enables gRPC and forces mTLS.
-- `GRPC_ENABLED`: optional, default `false`. Enables the gRPC listener without enabling full control-plane mode.
-- `INSTANCE_ROLE`: optional, default `system`. Valid values are `system` and `regular`. Used by orchestrated deployments to distinguish a system instance from a regular tenant-scoped instance.
-- `SETUP_BOOTSTRAP_TOKEN`: optional secret. Required for orchestrated gRPC setup flows that provision Auth through Core. Leave unset for standalone REST setup.
-- `SETUP_WINDOW_TTL`: optional, default `30m`. Duration that bounds the orchestrated setup window after process start. Must be a positive Go duration such as `10m`, `30m`, or `1h`.
-- `GRPC_TLS_CERT_FILE`: optional unless gRPC TLS/mTLS is required. Path to the server certificate file.
-- `GRPC_TLS_KEY_FILE`: optional unless gRPC TLS/mTLS is required. Path to the server private key file.
-- `GRPC_CLIENT_CA_FILE`: optional unless mTLS is required. Path to the client CA bundle used to verify gRPC clients.
-- `GRPC_REQUIRE_MTLS`: optional, default `false`. Requires client certificates for gRPC when manually enabling gRPC. It is forced to true when `CONTROL_PLANE_ENABLED=true`.
+## Observability Fields
 
-Standalone Auth uses the REST setup wizard and normally leaves `CONTROL_PLANE_ENABLED`, `GRPC_ENABLED`, and `SETUP_BOOTSTRAP_TOKEN` unset. Maintainerd ecosystem deployments controlled by Core enable the control plane and provide mTLS material plus a bootstrap token.
+`OTEL_ENABLED` enables OpenTelemetry export.
 
-## JWT And Key Rotation
+`OTEL_SERVICE_NAME` controls the service name attached to telemetry.
 
-- `JWT_PRIVATE_KEY`: required secret. Current JWT signing private key.
-- `JWT_PUBLIC_KEY`: required secret. Public key paired with `JWT_PRIVATE_KEY`.
-- `JWT_KEY_ID`: optional, default `maintainerd-auth-key-1`. Key ID installed into the in-memory signing key store and exposed through token headers/JWKS.
-- `JWT_KEY_ROTATION_PERIOD_SECONDS`: optional, default `86400`. Period used by the JWT key rotation runner.
-- `SECRET_REFRESH_PERIOD_SECONDS`: optional, default `300`. Period used by the runtime secret refresh loop.
+`OTEL_EXPORTER_OTLP_ENDPOINT` points to the OpenTelemetry collector.
 
-JWT keys should be rotated deliberately. Keep old public keys available long enough for already-issued tokens to expire or for consumers to refresh JWKS.
+`GEOIP_DB_PATH` points to optional GeoIP enrichment data.
 
-## WebAuthn And Passkeys
+Prometheus metrics are exposed from the management port. Keep that port private while still connecting readiness and metrics to your operations stack.
 
-- `WEBAUTHN_RP_ID`: optional. Overrides the relying-party ID derived from `APP_PUBLIC_HOSTNAME`.
+## Messaging And Local Testing Fields
 
-Set this when console, identity, and tenant subdomains need passkeys to work across a shared registrable parent domain. For example, if identity runs at `identity.auth.example.com` and tenant identity surfaces run under `*.auth.example.com`, use `WEBAUTHN_RP_ID=auth.example.com`.
+`RABBITMQ_URL` enables AMQP event publishing when configured. Treat it as secret operational configuration because broker URLs commonly include credentials.
 
-Auth validates WebAuthn ceremony origins at request time against the RP ID. A removed older setting named `WEBAUTHN_EXTRA_ORIGINS` is no longer used.
+`INVITE_TTL_HOURS` controls default invite expiration.
 
-## CAPTCHA
+`MAINTAINERD_DEV_LOG_OTP` prints OTP values to logs for local development. Never enable it in shared or production environments.
 
-- `CAPTCHA_SECRET`: optional. Enables CAPTCHA verification for flows that provide a CAPTCHA token. When unset, CAPTCHA verification is disabled for local development and tests.
-- `CAPTCHA_VERIFY_URL`: optional, default `https://www.google.com/recaptcha/api/siteverify`. Verification endpoint used by the configured CAPTCHA provider.
-- `CAPTCHA_MIN_SCORE`: optional, default `0.5`. Risk threshold for providers that return a score, such as reCAPTCHA v3. Providers that only return success/failure are accepted based on their success result.
+Email providers, SMS providers, templates, and tenant messaging behavior are mainly configured through Auth management data rather than process environment variables.
 
-Do not put CAPTCHA provider secrets in frontend bundles. Browser apps should send only the provider response token; Auth sends the secret to the provider from the server side.
+## Beginner Workflow
 
-## Events And Webhooks
-
-- `RABBITMQ_URL`: optional. Enables AMQP publishing when set, for example `amqp://user:password@rabbitmq:5672/`.
-
-When unset, the broker integration is disabled. When set, Auth connects to RabbitMQ, declares the durable topic exchange `maintainerd-auth.events`, and publishes integration events with publisher confirms. The URL contains credentials, so treat it as secret operational configuration even though it is currently read as a normal environment variable.
-
-## Invites, OTP, And Local Testing
-
-- `INVITE_TTL_HOURS`: optional, default `72`. Number of hours before invite links expire.
-- `MAINTAINERD_DEV_LOG_OTP`: optional, default `false`. When exactly `true`, OTP values are printed to logs for local development flows without a real email or SMS provider.
-
-Never enable `MAINTAINERD_DEV_LOG_OTP` in a deployed environment. OTPs are single-use credentials, and logs are often shipped to shared systems.
-
-Email providers, SMS providers, templates, branding, and tenant messaging behavior are primarily configured through Auth management data instead of process environment variables.
-
-## Observability
-
-- `OTEL_ENABLED`: optional, default `false`. Enables OTLP export for traces and logs when set to `true`.
-- `OTEL_SERVICE_NAME`: optional, default `maintainerd-auth`. Service name attached to OpenTelemetry resources and the slog-to-OTel bridge.
-- `OTEL_EXPORTER_OTLP_ENDPOINT`: optional. Standard OpenTelemetry endpoint for OTLP/gRPC export, commonly `http://otel-collector:4317`.
-
-Auth uses the standard OpenTelemetry SDK, so standard `OTEL_*` variables for headers, TLS, protocol-specific endpoints, and exporter behavior are also respected by the SDK.
-
-Prometheus metrics are available from the management port at `/metrics`. The Prometheus exporter is initialized for the management endpoint even when OTLP trace/log export is disabled.
-
-Important built-in metrics include:
-
-- `build_info`: version, service name, and build metadata.
-- `auth_events_total`: authentication and authorization event counts.
-- `security_denials_total`: middleware access-denial counts.
-- `audit_write_failures_total`: management audit-log write failures.
-
-## GeoIP
-
-- `GEOIP_DB_PATH`: optional. Path to a local GeoIP database used for resolving request location context when available.
-
-When unset or unavailable, Auth continues without GeoIP enrichment.
-
-## Frontend Runtime Variables
-
-The released image can inject SPA configuration at container start through `/config.js` and `window.__ENV__`. Build-time `VITE_*` values remain as fallbacks for local or split frontend deployments.
-
-Console variables:
-
-- `VITE_AUTH_API_BASE_URL`: internal management API base URL for the console. In production it defaults to `/api/v1` when same-origin proxying is used.
-- `VITE_AUTH_PUBLIC_API_BASE_URL`: public identity API base URL for console flows that need the public/OAuth data plane. In production it defaults to `/public-api/api/v1` when same-origin proxying is used.
-- `VITE_AUTH_IDENTITY_BASE_URL`: fallback identity UI origin. The console normally prefers tenant bootstrap data when it knows the tenant-specific identity URL.
-
-Identity variables:
-
-- `VITE_AUTH_API_BASE_URL`: public API base URL for the hosted identity app. In production it defaults to `/api/v1` when same-origin proxying is used.
-
-In Vite development mode, the console and identity apps ignore these absolute values and use relative proxy paths instead. This keeps local cookies and API calls on the same browser origin.
-
-## Example Local Environment
-
-```env
-APP_ENV=development
-APP_PUBLIC_HOSTNAME=https://identity-api.auth.maintainerd.local
-APP_PRIVATE_HOSTNAME=https://console-api.auth.maintainerd.local
-APP_FRONTEND_IDENTITY_HOSTNAME=https://identity.auth.maintainerd.local
-APP_FRONTEND_CONSOLE_HOSTNAME=https://console.auth.maintainerd.local
-
-DB_HOST=postgres
-DB_PORT=5432
-DB_USER=maintainerd
-DB_PASSWORD=change-me
-DB_NAME=maintainerd
-DB_SSLMODE=disable
-
-REDIS_ADDR=redis:6379
-COOKIE_SECURE=true
-COOKIE_SAMESITE=lax
-WEBAUTHN_RP_ID=auth.maintainerd.local
-LOG_LEVEL=info
-
-SECRET_PROVIDER=env
-APP_ENCRYPTION_KEY=replace-with-32-byte-secret-value
-HMAC_SECRET_KEY=replace-with-random-secret
-JWT_PRIVATE_KEY=replace-with-private-pem
-JWT_PUBLIC_KEY=replace-with-public-pem
-```
-
-For the maintained local setup, prefer the quickstart files because they generate key material and wire the Docker service names correctly.
+1. Start from the quickstart values locally.
+2. Confirm hostnames match what you open in the browser.
+3. Confirm PostgreSQL and Redis are reachable.
+4. Move secrets into a secret provider before production.
+5. Turn on production cookie and database TLS behavior.
+6. Configure proxies and CORS only after the hostname plan is clear.
+7. Add observability once the service is reachable.
+8. Restart or redeploy after changing process environment.
 
 ## Production Checklist
 
-Before running Auth in production:
-
-- Leave `APP_ENV` unset or set `APP_ENV=production` explicitly.
 - Use HTTPS origins for all public, private, console, and identity hostnames.
-- Keep `COOKIE_SECURE=true`.
-- Use an explicit `COOKIE_DOMAIN` only when shared first-party sessions are required and every subdomain is trusted.
-- Use `DB_SSLMODE=require` or stronger for remote PostgreSQL.
-- Move secrets out of plain env when your platform supports a secret manager.
-- Set `SECRET_STRICT=true` after every required secret has been migrated to the configured provider.
-- Use explicit `TRUSTED_PROXY_CIDRS` for the reverse proxy or load balancer.
-- Keep `MANAGEMENT_PORT` private.
-- Configure `WEBAUTHN_RP_ID` when passkeys span multiple subdomains.
-- Configure `RABBITMQ_URL` only when events/webhooks should publish to RabbitMQ.
-- Configure `OTEL_ENABLED=true` and `OTEL_EXPORTER_OTLP_ENDPOINT` when exporting traces and logs to a collector.
-- Leave `MAINTAINERD_DEV_LOG_OTP` unset.
+- Keep the management port private.
+- Keep `COOKIE_SECURE` enabled.
+- Use database TLS for remote PostgreSQL.
+- Store secret-backed values outside source control and frontend builds.
+- Use explicit trusted proxy settings.
+- Configure WebAuthn before enabling passkeys across subdomains.
+- Leave development OTP logging disabled.
+- Verify readiness checks before sending traffic.
+
+## Troubleshooting
+
+If Auth will not start, check missing required values, secret-provider access, PostgreSQL, Redis, and signing keys.
+
+If login redirects to the wrong place, check public, console, identity, and tenant hostnames.
+
+If cookies do not stick, check HTTPS, cookie domain, SameSite, and proxy headers.
+
+If passkeys fail, check the WebAuthn relying-party ID and browser origin.
+
+If rate limits or audit IPs look wrong, check trusted proxy settings.
