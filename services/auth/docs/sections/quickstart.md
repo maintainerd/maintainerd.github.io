@@ -1,113 +1,231 @@
 # Quickstart
 
-The quickstart is the shortest path from an empty machine to a running Auth instance you can open in a browser. It is not a production deployment guide. Use it to learn the app, explore the console, and test login flows locally.
+This quickstart runs the released `maintainerd-auth` image locally with PostgreSQL, Redis, and an nginx HTTPS edge. It is the fastest way to try Auth with clean browser URLs, hosted login, OIDC discovery, and the admin console without building from source.
 
-## What You Will See
+Use this for local evaluation. For production, keep the same surface model, but replace the local certificate, local hostnames, sample passwords, and env-backed secrets with your own infrastructure.
 
-After the quickstart starts, you should be able to open:
+## What You Will Run
 
-- Setup wizard: the first-run screen for creating the initial tenant and administrator.
-- Console: the administrator app for tenant, user, provider, client, and policy management.
-- Hosted identity UI: the user-facing login, registration, MFA, consent, recovery, and account screen.
-- Health or readiness view: the operational signal that the runtime is reachable.
+- `xreyc/maintainerd-auth:latest`: the all-in-one Auth image.
+- PostgreSQL: persistent Auth database.
+- Redis: cache, rate-limit, session, and short-lived state support.
+- nginx: local HTTPS reverse proxy for the browser-facing hostnames.
+- A generated `.env`: local JWT keys, encryption key, HMAC key, database settings, hostnames, and cookie settings.
+- A generated self-signed TLS certificate for the local `.maintainerd.local` hostnames.
 
-If you are new to Auth, the setup wizard is the first screen that matters. Do not start by editing users or providers before setup is complete.
+The Auth image itself serves the backend, admin console, hosted identity UI, workers, probes, metrics, and optional gRPC listener. nginx only gives the local quickstart clean HTTPS hostnames.
 
-## Before You Start
+## Prerequisites
 
-You need:
+- Docker with Compose support.
+- `openssl`.
+- Permission to add local hostnames to your hosts file.
+- A browser where you can accept a one-time self-signed certificate warning.
 
-- Docker or another supported local container runtime.
-- A local database and Redis if your quickstart does not bundle them.
-- Local hostnames mapped to your machine.
-- Browser access to the console and hosted identity UI hostnames.
-- Permission to trust local TLS certificates if the quickstart uses HTTPS.
+On Linux and macOS, the hosts file is usually `/etc/hosts`. On Windows, it is usually `C:\Windows\System32\drivers\etc\hosts`.
 
-Local development can use test credentials and local-only secrets. Production must use real secrets, real TLS, stable hostnames, hardened cookies, persistent storage, and monitored background workers.
+## 1. Create An Empty Folder
 
-## First Screen: Setup Wizard
+Create a folder for the quickstart files:
 
-Open the setup wizard after Auth starts. The wizard exists because Auth needs a safe initial state before anyone can administer the system.
+```bash
+mkdir maintainerd-auth-quickstart
+cd maintainerd-auth-quickstart
+```
 
-The setup wizard normally asks for:
+## 2. Download The Quickstart Files
 
-- System tenant name: the first tenant that owns the installation.
-- Tenant slug: the short stable identifier used in URLs and internal lookup.
-- Admin email: the first administrator's sign-in and recovery email.
-- Admin name: the display name shown in console and audit records.
-- Initial password or password setup method: how the first admin proves access.
-- Console hostname: where administrators will manage Auth.
-- Identity hostname: where users will sign in and manage accounts.
+Download these four files from the `maintainerd-auth` repository:
 
-Complete setup once. After setup is locked, normal administrators should use the console instead of returning to first-run setup.
+- [docker-compose.yml](https://raw.githubusercontent.com/maintainerd/maintainerd-auth/main/examples/quickstart/docker-compose.yml)
+- [.env.example](https://raw.githubusercontent.com/maintainerd/maintainerd-auth/main/examples/quickstart/.env.example)
+- [nginx.conf](https://raw.githubusercontent.com/maintainerd/maintainerd-auth/main/examples/quickstart/nginx.conf)
+- [setup.sh](https://raw.githubusercontent.com/maintainerd/maintainerd-auth/main/examples/quickstart/setup.sh)
 
-## After Setup: Console Tour
+With `curl`:
 
-Once setup is complete, sign in to the console and confirm these areas:
+```bash
+curl -fsSLO https://raw.githubusercontent.com/maintainerd/maintainerd-auth/main/examples/quickstart/docker-compose.yml
+curl -fsSLO https://raw.githubusercontent.com/maintainerd/maintainerd-auth/main/examples/quickstart/.env.example
+curl -fsSLO https://raw.githubusercontent.com/maintainerd/maintainerd-auth/main/examples/quickstart/nginx.conf
+curl -fsSLO https://raw.githubusercontent.com/maintainerd/maintainerd-auth/main/examples/quickstart/setup.sh
+```
 
-- Tenants: shows the current tenant, status, branding, rate limits, messaging, and security defaults.
-- Members: shows who can administer the tenant and what role they have.
-- Users: shows human accounts inside the tenant.
-- Invites: shows pending onboarding links.
-- Identity providers: shows password, passwordless, social, OIDC, or SAML login options.
-- Registration flows: shows whether signup is open, invite-only, or provider-driven.
-- Login and registration: shows how users will enter the hosted identity UI.
-- Account self-service: shows what signed-in users can manage themselves.
+## 3. Generate Local Secrets And TLS
 
-The point of the quickstart is to make these screens understandable before you wire Auth into a real application.
+Copy the sample environment file, then run the setup script:
 
-## Configure The First Login
+```bash
+cp .env.example .env
+chmod +x setup.sh
+./setup.sh
+```
 
-For a basic local test:
+The script appends local-only secrets to `.env`:
 
-1. Confirm the tenant is active.
-2. Confirm the console client is active.
-3. Confirm the built-in provider is enabled.
-4. Confirm password login is allowed.
-5. Create or invite a test user.
-6. Open the hosted identity UI.
-7. Sign in as the test user.
-8. Open account settings and review profile, sessions, and security controls.
+- `APP_ENCRYPTION_KEY`
+- `HMAC_SECRET_KEY`
+- `JWT_PRIVATE_KEY`
+- `JWT_PUBLIC_KEY`
 
-If the login page does not show the method you expected, check the tenant, client, provider, and registration-flow settings. The hosted identity UI only shows methods that are actually allowed by backend policy.
+It also creates a self-signed TLS certificate in `certs/` for the local console, identity, console API, and identity API hostnames.
 
-## Local Fields To Verify
+Do not commit the generated `.env` or `certs/` directory.
 
-In the console or setup wizard, verify:
+## 4. Add Local Hostnames
 
-- Tenant status is active.
-- Console hostname points to the local console.
-- Identity hostname points to the local identity UI.
-- Management surface is not publicly exposed.
-- Database connection is healthy.
-- Redis connection is healthy when enabled.
-- Email and SMS providers are either configured or intentionally using local test behavior.
-- Cookie and WebAuthn hostnames match the browser hostnames you are using.
+Add the quickstart hostnames to your hosts file:
 
-These fields are boring in the good way: when they are correct, the rest of the app becomes easier to reason about.
+```bash
+sudo tee -a /etc/hosts >/dev/null <<'EOF'
+127.0.0.1 console.auth.maintainerd.local identity.auth.maintainerd.local console-api.auth.maintainerd.local identity-api.auth.maintainerd.local
+EOF
+```
 
-## Common Local Issues
+These names map the browser and nginx to your local Docker stack:
 
-If the browser shows a certificate warning, confirm whether the quickstart uses self-signed local TLS. Trust it only for local development.
+- `console.auth.maintainerd.local`: admin console.
+- `identity.auth.maintainerd.local`: hosted identity UI.
+- `console-api.auth.maintainerd.local`: internal management API behind nginx.
+- `identity-api.auth.maintainerd.local`: public identity API and OIDC issuer behind nginx.
 
-If a hostname does not resolve, check your local host mapping and make sure you are opening the hostname Auth expects, not only `localhost`.
+## 5. Start Auth
 
-If setup does not load, check that the database is reachable, migrations completed, and setup is not already locked.
+Start the stack:
 
-If login works but passkeys fail, check WebAuthn origin and relying-party settings. Passkeys are hostname-sensitive.
+```bash
+docker compose up -d
+```
 
-If emails or SMS messages do not arrive, check whether messaging is configured for real delivery or local test output.
+Check that the containers are running:
 
-## When To Move To Production Docs
+```bash
+docker compose ps
+```
 
-Move from quickstart to deployment docs when:
+Follow logs if startup is still settling:
 
-- Other people will use the instance.
-- You need public hostnames.
-- You need real TLS.
-- You need durable database and Redis storage.
-- You need real email or SMS delivery.
-- You need monitoring, backups, scaling, or key rotation.
-- You need a reverse proxy or Kubernetes.
+```bash
+docker compose logs -f auth nginx
+```
 
-The quickstart teaches the app. Deployment makes it safe to operate.
+Auth runs database migrations at startup, so the first boot can take a moment before readiness passes.
+
+## 6. Open The Setup Wizard
+
+Open:
+
+```text
+https://console.auth.maintainerd.local/setup/tenant
+```
+
+Your browser will warn about the self-signed local certificate. Accept it for this local setup, then create:
+
+1. The first tenant.
+2. The first admin user.
+3. The initial admin profile if prompted.
+
+After setup, use the admin console to configure messaging, security, identity providers, OAuth clients, roles, permissions, policies, branding, events, and webhooks.
+
+## Local URLs
+
+- Setup wizard: `https://console.auth.maintainerd.local/setup/tenant`
+- Admin console: `https://console.auth.maintainerd.local`
+- Hosted identity UI: `https://identity.auth.maintainerd.local`
+- Public identity API: `https://identity-api.auth.maintainerd.local`
+
+## Verify The Runtime
+
+Use the browser and Docker logs for the quickstart verification path:
+
+- Open the console host and confirm the setup wizard loads.
+- Complete the tenant and admin setup screens.
+- Confirm the hosted identity UI can start a sign-in flow.
+- Confirm the Auth container is healthy in Docker.
+- Confirm nginx is routing the console and identity hosts.
+
+Use the API reference for exact health, discovery, and JWKS request details when you need command-line probes.
+
+If you need to inspect the private in-container ports from Docker, the Auth container serves:
+
+- `3000`: embedded admin console.
+- `3001`: embedded hosted identity UI.
+- `8080`: internal management API.
+- `8081`: public identity API and OIDC issuer.
+- `8082`: management health and Prometheus metrics.
+
+The quickstart does not publish those ports directly. nginx is the entry point.
+
+## First Things To Configure
+
+After the setup wizard, a useful first pass is:
+
+1. Configure email before testing registration, invites, reset password, magic links, and email verification.
+2. Configure SMS before testing SMS login or SMS MFA.
+3. Review password, MFA, session, lockout, registration, and threat controls.
+4. Create an OAuth client for your app.
+5. Add redirect and post-logout redirect URIs.
+6. Optionally create an external identity provider and attach it to that client.
+7. Start an OAuth login request with that app's `client_id`.
+8. Register services, APIs, permissions, roles, and policies if your app has protected APIs.
+
+Use **External app setup**, **Federated login per client**, and **Protect an API** for the next guide-level workflows.
+
+## Common Issues
+
+### The Browser Shows A Certificate Warning
+
+That is expected for the local quickstart. `setup.sh` creates a self-signed certificate for local HTTPS. Accept it only for this local environment.
+
+### The Hostname Does Not Resolve
+
+Re-check your hosts file. All four quickstart hostnames should point to `127.0.0.1`.
+
+### The Setup Page Does Not Load
+
+Check the stack:
+
+```bash
+docker compose ps
+docker compose logs auth nginx
+```
+
+The first boot runs migrations before the app is fully ready. If Postgres is still starting, wait and retry.
+
+### Passkey Enrollment Fails Locally
+
+The quickstart sets `WEBAUTHN_RP_ID=auth.maintainerd.local` so passkeys can work across the local console, identity, and tenant subdomains. If you change hostnames, update the RP ID to a registrable parent of those surfaces.
+
+### Email Or SMS Codes Do Not Arrive
+
+The quickstart does not configure a real email or SMS provider. Configure providers in the console before testing those flows. For local-only OTP testing, the sample env includes `MAINTAINERD_DEV_LOG_OTP=true` as a commented option; never enable that in production.
+
+## Stop Or Reset
+
+Stop the stack:
+
+```bash
+docker compose down
+```
+
+Delete all local database state and start fresh:
+
+```bash
+docker compose down -v
+```
+
+If you reset volumes, rerun setup from the browser after starting the stack again.
+
+## Production Differences
+
+For production:
+
+- Use real DNS and trusted TLS certificates.
+- Keep the internal management API and management port private.
+- Leave `APP_ENV` unset or set `APP_ENV=production` explicitly. Auth defaults to production mode when `APP_ENV` is not provided.
+- Use `DB_SSLMODE=require` or stricter.
+- Replace sample passwords.
+- Source secrets from a provider such as files, AWS Secrets Manager, AWS SSM, Vault, Azure Key Vault, or GCP Secret Manager.
+- Keep `COOKIE_SECURE=true`.
+- Configure observability before traffic: logs, traces, metrics, health checks, and alerts.
+- Pin a specific `xreyc/maintainerd-auth` image version instead of `latest`.

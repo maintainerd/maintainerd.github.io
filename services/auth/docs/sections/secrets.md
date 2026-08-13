@@ -1,127 +1,276 @@
 # Secrets & Keys
 
-Secrets and keys protect Auth's database access, token signing, encrypted storage, signed links, provider credentials, and setup trust. They are operationally sensitive and should be managed deliberately.
+Auth separates ordinary configuration from credential material. Hostnames, ports, runtime mode, pool sizes, and feature toggles are normal environment variables. Passwords, signing keys, encryption keys, and bootstrap credentials are loaded through the secret provider selected by `SECRET_PROVIDER`.
 
-## Where To Configure Them
-
-Configure secrets in the secret provider selected for the Auth deployment:
-
-- Local environment for development.
-- Container file secrets.
-- AWS Secrets Manager or SSM Parameter Store.
-- HashiCorp Vault.
-- GCP Secret Manager.
-- Azure Key Vault.
-- Maintainerd control-plane secret configuration when available.
-
-The console should never show raw secret values. It may show whether required secrets are present, which provider is selected, key IDs, rotation status, and validation errors.
+In local development, `SECRET_PROVIDER=env` is usually enough. In production, move the same secret names into a secret manager and let Auth read them from that provider.
 
 ## Required Secrets
 
-`DB_PASSWORD` lets Auth connect to PostgreSQL. Without it, Auth cannot load durable identity state.
+Auth needs these secrets before it can serve traffic:
 
-`JWT_PRIVATE_KEY` signs access tokens, ID tokens, and other JWTs. It must remain private.
+- `DB_PASSWORD`: PostgreSQL password.
+- `JWT_PRIVATE_KEY`: RSA private key in PEM format. Used to sign access tokens, ID tokens, and other JWTs.
+- `JWT_PUBLIC_KEY`: RSA public key in PEM format. Must match `JWT_PRIVATE_KEY`; it is used for verification and published through JWKS.
+- `APP_ENCRYPTION_KEY`: exactly 32 bytes after normalization. Used as the current AES-256 key for encrypting stored secrets.
+- `HMAC_SECRET_KEY`: non-empty random secret used for signed URLs and signed state values.
 
-`JWT_PUBLIC_KEY` verifies tokens and is published through JWKS. It must match the private key.
+These values must never be committed to source control, baked into frontend bundles, logged, sent to browsers, or copied into issue trackers.
 
-`APP_ENCRYPTION_KEY` encrypts sensitive stored values such as provider credentials, client secrets, webhook signing secrets, TOTP seeds, and stored signing-key material. It must be exactly the required key size after normalization.
+## Secret Value Examples
 
-`HMAC_SECRET_KEY` signs short-lived links and state values such as invites, magic links, password reset links, SAML state, and other tamper-resistant URL values.
+These examples show valid shapes only. Generate your own values for every environment.
+
+```env
+DB_PASSWORD='replace-with-a-long-random-database-password'
+APP_ENCRYPTION_KEY=base64:gynBDhdZQkEO+JBOdiryYBPo5WB/wtU4BzoilY4y1M0=
+HMAC_SECRET_KEY=base64:ZD4f9tVsRNMYwasQq+32KRxP3GwH6kM8ZpA/XUjD1lY=
+JWT_PRIVATE_KEY='-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----'
+JWT_PUBLIC_KEY='-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----'
+```
+
+`APP_ENCRYPTION_KEY` must decode to exactly 32 bytes. `HMAC_SECRET_KEY` must be non-empty and should be generated with strong randomness. JWT keys must be a matching RSA private/public PEM pair.
 
 ## Optional Secrets
 
-`REDIS_PASSWORD` is required only when Redis AUTH is enabled.
+- `REDIS_PASSWORD`: Redis AUTH password. Leave unset when Redis does not require authentication.
+- `APP_ENCRYPTION_KEYS_PREVIOUS`: comma-separated list of retired 32-byte application encryption keys. These keys are decrypt-only during key rotation.
+- `SETUP_BOOTSTRAP_TOKEN`: bootstrap credential for the gRPC setup service used by Core or another control plane. Standalone deployments usually leave it unset and use the REST setup wizard.
 
-`APP_ENCRYPTION_KEYS_PREVIOUS` stores retired decrypt-only encryption keys during key rotation.
+`RABBITMQ_URL` contains a broker password when credentials are embedded in the URL. It is read as an environment variable, but should be handled like a secret operational value.
 
-`SETUP_BOOTSTRAP_TOKEN` gates orchestrated gRPC setup when Auth is provisioned by Core or another control plane.
+## Secret Provider Selection
 
-Broker URLs, provider client secrets, webhook signing secrets, email credentials, and SMS credentials should also be treated as secrets even when they are configured through console screens instead of startup environment.
+- `SECRET_PROVIDER`: optional, default `env`. Supported values are `env`, `file`, `aws_secrets`, `aws_ssm`, `vault`, `gcp`, and `azure_kv`.
+- `SECRET_PREFIX`: optional, default `maintainerd/auth`. Used by AWS and Vault providers as the secret namespace or path prefix.
+- `SECRET_STRICT`: optional, default `false`. When `false`, a missing secret in a non-env provider can fall back to the same key in process environment variables. When `true`, the configured provider is authoritative and missing provider values fail startup.
 
-## Secret Provider Fields
+Use `SECRET_STRICT=false` while migrating a deployment gradually from environment variables to a secret manager. After every required and optional secret has moved into the provider, set `SECRET_STRICT=true`.
 
-`SECRET_PROVIDER` selects the active secret source.
+## Value Normalization
 
-`SECRET_PREFIX` scopes names in providers that support a path or namespace.
-
-`SECRET_STRICT` decides whether missing provider values can fall back to process environment variables. Use relaxed behavior while migrating. Use strict behavior once production secrets are fully in the provider.
-
-Provider-specific fields tell Auth how to reach the selected backend, such as AWS region, Vault address, Vault AppRole values, GCP project, or Azure Key Vault URL.
-
-## How Values Are Interpreted
-
-Auth normalizes secret values consistently:
+Every provider uses the same normalization rules:
 
 - Leading and trailing whitespace is trimmed.
-- Values with a base64 marker are decoded before validation.
-- Required secrets fail startup when empty.
-- Key material is validated before Auth serves traffic.
+- Values prefixed with `base64:` are base64-decoded.
+- Empty required secrets fail startup.
 
-This lets operators store binary-safe values in providers that only accept strings.
+This makes file secrets, cloud secrets, and environment variables behave the same way. It also means a generated binary key can be stored safely as `base64:<encoded-value>`.
+
+## Provider Naming
+
+Auth looks up the same logical keys regardless of provider, but each provider maps key names differently.
+
+For `env`, the key is the environment variable name:
+
+```env
+JWT_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n..."
+APP_ENCRYPTION_KEY=base64:...
+```
+
+For `file`, secret names are lowercased and underscores become hyphens under `SECRET_FILE_PATH`:
+
+```text
+/run/secrets/jwt-private-key
+/run/secrets/jwt-public-key
+/run/secrets/app-encryption-key
+/run/secrets/hmac-secret-key
+```
+
+For `aws_secrets`, names use `SECRET_PREFIX` plus a hyphenated key:
+
+```text
+maintainerd/auth/jwt-private-key
+maintainerd/auth/app-encryption-key
+```
+
+Example AWS Secrets Manager values for a production prefix:
+
+```text
+maintainerd/prod/auth/db-password          -> replace-with-a-long-random-database-password
+maintainerd/prod/auth/redis-password       -> replace-with-a-long-random-redis-password
+maintainerd/prod/auth/app-encryption-key   -> base64:gynBDhdZQkEO+JBOdiryYBPo5WB/wtU4BzoilY4y1M0=
+maintainerd/prod/auth/hmac-secret-key      -> base64:ZD4f9tVsRNMYwasQq+32KRxP3GwH6kM8ZpA/XUjD1lY=
+maintainerd/prod/auth/jwt-private-key      -> -----BEGIN RSA PRIVATE KEY-----...
+maintainerd/prod/auth/jwt-public-key       -> -----BEGIN PUBLIC KEY-----...
+```
+
+Example AWS CLI commands:
+
+```bash
+aws secretsmanager create-secret \
+  --name maintainerd/prod/auth/app-encryption-key \
+  --secret-string 'base64:gynBDhdZQkEO+JBOdiryYBPo5WB/wtU4BzoilY4y1M0='
+
+aws secretsmanager create-secret \
+  --name maintainerd/prod/auth/db-password \
+  --secret-string 'replace-with-a-long-random-database-password'
+```
+
+For `aws_ssm`, parameter paths use `SECRET_PREFIX` with a leading slash:
+
+```text
+/maintainerd/auth/jwt-private-key
+/maintainerd/auth/app-encryption-key
+```
+
+For `vault`, Auth reads Vault KV v2 at:
+
+```text
+<VAULT_MOUNT>/data/<SECRET_PREFIX>/<key-lowercased-hyphens>
+```
+
+Each Vault secret must contain the field named by `VAULT_SECRET_FIELD`, default `value`.
+
+For `gcp`, `SECRET_PREFIX` is not applied. Auth reads the latest version of a hyphenated secret in `GCP_PROJECT_ID`:
+
+```text
+projects/<GCP_PROJECT_ID>/secrets/jwt-private-key/versions/latest
+```
+
+For `azure_kv`, `SECRET_PREFIX` is not applied. Auth reads a hyphenated Azure Key Vault secret name:
+
+```text
+jwt-private-key
+app-encryption-key
+```
+
+## Provider Configuration
+
+- `SECRET_FILE_PATH`: optional, default `/run/secrets`. Used by the `file` provider.
+- `AWS_REGION`: optional, default `us-east-1`. Used by `aws_secrets` and `aws_ssm`.
+- `VAULT_ADDR`: optional, default `http://localhost:8200`. Must use HTTPS outside local development when `APP_ENV=production`.
+- `VAULT_TOKEN`: optional. Static Vault token. If unset, Auth uses AppRole.
+- `VAULT_MOUNT`: optional, default `secret`. Vault KV v2 mount.
+- `VAULT_SECRET_FIELD`: optional, default `value`. Field read from each Vault secret.
+- `VAULT_ROLE_ID`: required when using Vault AppRole.
+- `VAULT_SECRET_ID`: required when using Vault AppRole.
+- `GCP_PROJECT_ID`: required when `SECRET_PROVIDER=gcp`.
+- `AZURE_KEYVAULT_URL`: required when `SECRET_PROVIDER=azure_kv`.
+
+AWS uses the standard AWS credential chain. GCP uses Application Default Credentials. Azure uses `DefaultAzureCredential`, including environment credentials, workload identity, managed identity, and Azure CLI credentials for local development.
+
+## Fallback And Failure Behavior
+
+Fallback is allowed only for absent secrets, not for broken providers.
+
+When `SECRET_PROVIDER` is not `env` and `SECRET_STRICT=false`, Auth may fall back to the same key in process environment variables only if the provider returns a definitive not-found response.
+
+Auth does not fall back when the provider is unavailable, unauthorized, misconfigured, returns malformed data, times out after retries, or cannot be reached securely. Those are startup or refresh failures because the operator expected Auth to read the secret store.
+
+Remote provider reads are retried up to three times. Local providers such as `env` and `file` fail immediately because missing environment variables and missing files are deterministic.
 
 ## JWT Signing Keys
 
-JWT signing keys prove that tokens came from Auth. Applications and services verify tokens using the public key published through JWKS.
+`JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` are the token signing key pair. Auth validates that:
 
-Important fields:
+- Both values are present.
+- The private key parses as an RSA private key.
+- The public key parses as an RSA public key.
+- The private and public keys belong to the same key pair.
+- The key strength passes the runtime validation.
 
-- Private key: signs tokens and must never leave the server side.
-- Public key: verifies tokens and may be distributed through JWKS.
-- Key ID: identifies the active key to token consumers.
-- Rotation period: controls background refresh behavior where configured.
+`JWT_KEY_ID` controls the key ID used when the process installs the configured key pair. It defaults to `maintainerd-auth-key-1`.
 
-Rotate JWT keys carefully. Every replica must agree on active key material, and token consumers need time to refresh JWKS before old tokens expire.
+`SECRET_REFRESH_PERIOD_SECONDS` controls how often Auth re-fetches provider-backed secrets. When `JWT_PRIVATE_KEY` or `JWT_PUBLIC_KEY` changes, Auth reloads the key material and reinstalls the configured signing key without requiring a process restart.
+
+Coordinate JWT key rotation carefully. The provider-backed key path is operator-managed: update every replica consistently, expect JWKS to publish the newly configured key, and plan around the lifetime of tokens signed by the previous key. Do not rotate only one replica or one secret value; the private key, public key, and key ID must move together.
 
 ## Application Encryption Key
 
-The application encryption key protects secrets stored by Auth itself. If this key is lost, encrypted provider credentials and other protected records may become unreadable.
+`APP_ENCRYPTION_KEY` protects secrets stored by Auth itself. It must be exactly 32 bytes after normalization because it is used as AES-256 key material.
 
-Use previous encryption keys during rotation. The new key writes new encrypted values. Previous keys let Auth read older values until they are re-encrypted.
+Auth uses this key for encrypted-at-rest values such as provider credentials, client secrets, webhook signing secrets, TOTP seeds, and stored signing-key material where that path is used.
 
-Do not remove previous keys until you know no stored values still need them.
+New encrypted values are written with a key tag:
+
+```text
+k1:<key-id>:<ciphertext>
+```
+
+The key ID is a short fingerprint derived from the key. It lets Auth choose the correct current or retired key during decryption without storing the key itself.
+
+## Previous Encryption Keys
+
+`APP_ENCRYPTION_KEYS_PREVIOUS` is for decrypt-only retired keys during rotation.
+
+Use it when changing `APP_ENCRYPTION_KEY`:
+
+1. Keep the old `APP_ENCRYPTION_KEY`.
+2. Generate a new 32-byte `APP_ENCRYPTION_KEY`.
+3. Put the old key into `APP_ENCRYPTION_KEYS_PREVIOUS`.
+4. Deploy with both values.
+5. Re-encrypt stored secrets so new rows use the new key.
+6. Remove the retired key only after no stored encrypted values need it.
+
+Every value in `APP_ENCRYPTION_KEYS_PREVIOUS` must also be exactly 32 bytes. If a tagged value cannot be decrypted by the current or previous keys, Auth fails closed for that value and logs that the encryption key set needs attention.
 
 ## HMAC Secret
 
-The HMAC secret protects signed links and signed state. Rotating it invalidates outstanding signed URLs and browser state values.
+`HMAC_SECRET_KEY` configures Auth's signed URL signer and signed state helpers.
 
-Plan HMAC rotation around link lifetimes. Wait for old invite links, magic links, password reset links, and signed login state to expire before removing old behavior.
+It is used for:
 
-## Bootstrap Token
+- Invite registration links.
+- Magic-link login links.
+- Password reset links.
+- Signed login and registration parameters.
+- SAML provider state signing.
+- Other short-lived URL parameters that must be tamper resistant.
 
-The setup bootstrap token is only for orchestrated setup. It should be temporary, high-entropy, and available only to the control plane or setup automation.
+Rotate this key carefully. Links and state values signed with the previous key will stop validating after the new key is deployed. For a clean rotation, wait for outstanding invite, magic-link, and password-reset URLs to expire before removing or replacing the old key in active traffic.
 
-Standalone deployments normally use the setup wizard and do not need a bootstrap token.
+## Control-Plane Bootstrap Token
 
-## Rotation Workflow
+`SETUP_BOOTSTRAP_TOKEN` is optional and secret-backed. It gates the gRPC setup service used when Auth is provisioned by Core or another control plane.
 
-1. Generate the new secret or key with strong randomness.
-2. Add it to the configured secret provider.
-3. Keep any required previous key available for read or validation windows.
-4. Deploy all replicas with the same provider state.
-5. Confirm readiness, signing, encryption, and login behavior.
-6. Re-encrypt data or wait for old tokens and links to expire where required.
-7. Remove retired material only after it is no longer needed.
+Standalone Auth usually leaves it unset. In standalone mode, first-time setup is performed through the REST setup wizard.
 
-## Permissions And Security
+When control-plane mode is enabled, treat `SETUP_BOOTSTRAP_TOKEN` like a one-deployment bootstrap credential:
 
-Only deployment operators or owner-level administrators should manage startup secrets and key rotation.
+- Generate it with strong randomness.
+- Provide it only to the orchestrator that performs setup.
+- Keep the gRPC setup window bounded with `SETUP_WINDOW_TTL`.
+- Do not log it or store it in frontend configuration.
 
-Protect secrets from:
+## Local Key Generation
 
-- Source control.
-- Browser-visible frontend configuration.
-- Container image layers.
-- Build logs.
-- Runtime logs.
-- Issue trackers and chat tools.
-- Screenshots of production settings.
+The quickstart setup script generates local-only secrets:
 
-## Troubleshooting
+```bash
+cd examples/quickstart
+./setup.sh
+```
 
-If Auth fails startup with a missing secret, check the selected provider, prefix, strict mode, provider credentials, and secret name mapping.
+It generates:
 
-If tokens cannot be verified, check that the private key, public key, and key ID match across replicas.
+- RSA JWT private and public PEM keys.
+- A random 32-byte application encryption key.
+- A random HMAC key.
 
-If encrypted provider settings cannot be read, check the current and previous application encryption keys.
+The helper stores binary random values with the `base64:` prefix so Auth decodes them before use.
 
-If invite, reset, or magic links suddenly fail, check HMAC secret rotation and link expiration windows.
+For manual generation, the Auth repository also includes `scripts/generate-jwt-keys.sh`.
+
+Manual shape for a local `.env`:
+
+```env
+SECRET_PROVIDER=env
+APP_ENCRYPTION_KEY=base64:gynBDhdZQkEO+JBOdiryYBPo5WB/wtU4BzoilY4y1M0=
+HMAC_SECRET_KEY=base64:ZD4f9tVsRNMYwasQq+32KRxP3GwH6kM8ZpA/XUjD1lY=
+JWT_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
+JWT_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----"
+```
+
+## Production Practices
+
+For production deployments:
+
+- Prefer `SECRET_PROVIDER=file`, `aws_secrets`, `aws_ssm`, `vault`, `gcp`, or `azure_kv` over plain environment variables.
+- Leave `APP_ENV` unset or set `APP_ENV=production` explicitly so secure-by-default behavior remains active.
+- Set `SECRET_STRICT=true` after migration to a secret provider is complete.
+- Use HTTPS for Vault and any remote secret-store transport.
+- Use provider IAM, Vault policies, or managed identity to restrict Auth to only the secrets it needs.
+- Rotate JWT keys deliberately and coordinate across replicas.
+- Keep previous application encryption keys until every stored value has been re-encrypted.
+- Treat broker URLs, provider credentials, client secrets, webhook signing secrets, and SMS/email credentials as secrets even when they are configured through management APIs instead of environment variables.
+- Keep all secret-backed values out of `VITE_*` variables and `/config.js`; those are browser-visible.

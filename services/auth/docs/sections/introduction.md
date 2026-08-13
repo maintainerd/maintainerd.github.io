@@ -2,7 +2,9 @@
 
 Auth is Maintainerd's identity and access service. It gives your platform a place to manage tenants, users, login, registration, identity providers, sessions, MFA, application clients, permissions, audit events, and account self-service.
 
-These docs are written as an app guide. They explain where a feature appears in the Auth console or hosted identity UI, what the screen is for, what fields mean, what choices are available, and what permissions or security rules apply. Endpoint names, request bodies, response schemas, and generated-client examples live in the API reference.
+These docs are written as an app and setup guide. They explain where a feature appears in the Auth console or hosted identity UI, what the screen is for, what fields mean, what choices are available, how to configure the service, and what permissions or security rules apply.
+
+Setup commands, environment examples, DNS examples, reverse-proxy examples, and deployment snippets belong in these docs because developers need them to run Auth. API request samples, endpoint payloads, response schemas, and generated-client examples belong in the API reference.
 
 ## How To Use These Docs
 
@@ -79,9 +81,25 @@ Auth separates user self-service from administration.
 
 This separation matters because many identity features look similar but have different risk. A user changing their own password is not the same as an administrator resetting another user's password.
 
+## What Belongs In These Docs
+
+These docs should include:
+
+- Step-by-step setup commands.
+- Configuration examples.
+- Environment-variable examples.
+- DNS and TLS examples.
+- Reverse-proxy and deployment examples.
+- Console navigation guidance.
+- Field explanations.
+- Permission and security notes.
+- Troubleshooting guidance.
+
+The goal is that a beginner can follow the setup pages without guessing what command to run or what a field means.
+
 ## What Belongs In The API Reference
 
-The conceptual docs intentionally avoid API request samples and response shapes. Use the API reference when you need:
+These docs intentionally avoid API request samples and response shapes. Use the API reference when you need:
 
 - Exact endpoint paths.
 - Request and response fields.

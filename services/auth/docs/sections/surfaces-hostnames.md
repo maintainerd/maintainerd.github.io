@@ -1,162 +1,313 @@
 # Surfaces & Hostnames
 
-Surfaces and hostnames decide where administrators, users, applications, and services reach Auth. They affect redirects, cookies, passkeys, CORS, tenant routing, and security boundaries.
+Auth exposes several surfaces from one `maintainerd-auth` process. The important rule is simple: each surface has a different audience, and the hostname tells Auth which tenant, browser app, or API boundary the request belongs to.
 
-## Where To Configure Them
+Use this section when deciding DNS names, reverse-proxy routes, frontend runtime config, client domains, redirect URIs, and tenant subdomain behavior.
 
-Hostnames appear in:
+## Surface Model
 
-- Setup wizard for first-run console and identity hosts.
-- Deployment configuration for process-level public and private origins.
-- Tenant settings for tenant-specific host routing.
-- Application client settings for redirect URIs, logout URIs, and allowed origins.
-- Reverse proxy or ingress configuration.
-- DNS and TLS configuration.
+Auth separates these surfaces:
 
-Most hostname changes require both Auth configuration and infrastructure changes.
+- Internal management API: operator/admin API used by the console.
+- Public identity API: OAuth/OIDC issuer, hosted login data plane, account self-service, and public client/tenant lookup.
+- Management port: health, readiness, OpenAPI JSON, and Prometheus metrics.
+- Embedded admin console: browser UI for operators.
+- Embedded hosted identity UI: browser UI for end users and OAuth login.
+- Optional gRPC surface: runtime and control-plane machine traffic when enabled.
 
-## What The Screen Is For
+The HTTP API ports are plain process listeners. In production, put TLS termination, DNS, and public/private exposure rules in front of them with a load balancer, ingress, reverse proxy, or platform routing layer.
 
-The hostname settings help you answer:
+## Process Ports
 
-- Where do administrators open the console?
-- Where do users sign in?
-- Which origin is the OAuth/OIDC issuer?
-- Which surface is private management traffic?
-- How are tenant-specific hosts resolved?
-- Which domains can applications use for redirects and browser calls?
-- Which hostnames are valid for passkeys?
+Default listeners:
 
-If these answers are inconsistent, login and account flows fail in confusing ways.
+- `:8080`: internal management API. Keep this private.
+- `:8081`: public identity API and OAuth/OIDC issuer.
+- `:8082`: management port for probes, `/openapi.json`, and `/metrics`.
+- `:3000`: embedded admin console when the release image is built with embedded assets.
+- `:3001`: embedded hosted identity UI when the release image is built with embedded assets.
 
-## Surface Types
+Configurable listener variables:
 
-Console frontend is the administrator application.
+- `MANAGEMENT_PORT`: optional, default `8082`. Accepts `8082` or `:8082`.
+- `APP_CONSOLE_PORT`: optional, default `3000`. Accepts `3000` or `:3000`.
+- `APP_IDENTITY_PORT`: optional, default `3001`. Accepts `3001` or `:3001`.
 
-Hosted identity frontend is the user-facing application for login, registration, MFA, consent, recovery, and account self-service.
+The internal API and public API ports are fixed in the current server: internal API on `:8080`, public API on `:8081`.
 
-Public identity API is the issuer and browser/application-facing identity surface.
+Example local process listeners:
 
-Internal management API is the private administration and automation surface.
+```env
+MANAGEMENT_PORT=8082
+APP_CONSOLE_PORT=3000
+APP_IDENTITY_PORT=3001
+```
 
-Management port is the operational surface for health, readiness, OpenAPI JSON, and metrics.
+## Required Hostname Variables
 
-gRPC surface is the service-to-service surface when enabled.
+Auth requires four deployment hostnames:
 
-Do not expose private management surfaces as public login surfaces.
+- `APP_PUBLIC_HOSTNAME`: public API/OAuth issuer origin.
+- `APP_PRIVATE_HOSTNAME`: internal management API origin.
+- `APP_FRONTEND_IDENTITY_HOSTNAME`: system-tenant hosted identity UI origin.
+- `APP_FRONTEND_CONSOLE_HOSTNAME`: system-tenant admin console UI origin.
 
-## Hostname Fields
+Valid shape:
 
-Public hostname is the origin applications use as the identity issuer and public identity API.
+```env
+APP_PUBLIC_HOSTNAME=https://identity-api.auth.example.com
+APP_PRIVATE_HOSTNAME=https://console-api.auth.example.com
+APP_FRONTEND_IDENTITY_HOSTNAME=https://identity.auth.example.com
+APP_FRONTEND_CONSOLE_HOSTNAME=https://console.auth.example.com
+```
 
-Private hostname is the origin the console uses for management actions.
+Use full HTTPS origins in production. Do not include `/api/v1` in these values; paths are mounted by Auth and the reverse proxy.
 
-Identity frontend hostname is where users interact with hosted Auth screens.
+## What Each Hostname Means
 
-Console frontend hostname is where administrators use the console.
+`APP_PUBLIC_HOSTNAME` is the authorization-server origin. It is used for OAuth/OIDC discovery, JWKS, token issuer behavior, public identity API calls, and external application authentication.
 
-Tenant identity hostname is the tenant-specific user-facing host when tenants have custom or slug-based identity hosts.
+The exact discovery, JWKS, OAuth, and token paths belong in the API reference. This page only defines which origin owns that public identity traffic.
 
-Tenant console hostname is the tenant-specific admin host when tenant console routing is enabled.
+`APP_PRIVATE_HOSTNAME` is the internal management API origin used by the console and operator/admin workflows. Keep it on private networking or behind operator-only access controls.
 
-Redirect URI is the application callback URL Auth can send users back to after login.
+The exact management paths belong in the API reference. This page only defines which origin should be private and operator-facing.
 
-Logout URI is where Auth can send users after logout.
+`APP_FRONTEND_IDENTITY_HOSTNAME` is the system-tenant hosted identity UI. It is where users see login, registration, MFA, consent, password reset, invite registration, and account self-service screens.
 
-Allowed origin is a browser origin permitted to call the public identity surface where policy allows it.
+Example identity UI URL:
 
-WebAuthn relying-party ID is the domain boundary passkeys use.
+```text
+https://identity.auth.example.com/login
+```
 
-Cookie domain is the domain boundary browser cookies use.
+`APP_FRONTEND_CONSOLE_HOSTNAME` is the system-tenant admin console UI. It is where operators manage tenants, clients, identity providers, policies, users, messaging, events, webhooks, security settings, and observability-adjacent views.
+
+Example console URL:
+
+```text
+https://console.auth.example.com/clients
+```
+
+## Embedded Frontends
+
+The release image can serve the console and identity SPAs from the Go process itself.
+
+The console listener serves:
+
+- Static console assets.
+- `/config.js` for runtime frontend configuration.
+- `/api/` mounted to the internal management router.
+- `/public-api/` mounted to the public identity router.
+
+The identity listener serves:
+
+- Static hosted identity assets.
+- `/config.js` for runtime frontend configuration.
+- `/api/` mounted to the public identity router.
+- `/.well-known/` mounted to public OIDC discovery and JWKS.
+
+This same-origin design is intentional. Browser sessions use secure host-bound cookies, so the browser should call the API on the same origin as the SPA whenever possible.
+
+In embedded mode, console browser calls stay on the console origin and identity browser calls stay on the identity origin. The mounted API paths are implementation details covered by the API reference and frontend runtime configuration.
+
+## Reverse Proxy Shape
+
+A typical production routing shape is:
+
+```text
+console.auth.example.com        -> auth:3000
+identity.auth.example.com       -> auth:3001
+console-api.auth.example.com    -> auth:8080
+identity-api.auth.example.com   -> auth:8081
+auth-management.internal        -> auth:8082
+```
+
+The local quickstart uses the same shape with `.local` hostnames:
+
+```env
+APP_FRONTEND_CONSOLE_HOSTNAME=https://console.auth.maintainerd.local
+APP_FRONTEND_IDENTITY_HOSTNAME=https://identity.auth.maintainerd.local
+APP_PUBLIC_HOSTNAME=https://identity-api.auth.maintainerd.local
+APP_PRIVATE_HOSTNAME=https://console-api.auth.maintainerd.local
+```
+
+Do not expose `:8080` or `:8082` directly to the public internet. The public internet should normally reach the hosted identity UI and the public identity/OAuth API, not the management API or management probe port.
 
 ## Tenant Host Resolution
 
-Tenant host resolution means Auth uses the hostname to determine which tenant owns the request.
+`APP_FRONTEND_IDENTITY_HOSTNAME` and `APP_FRONTEND_CONSOLE_HOSTNAME` define the system-tenant hosts. Regular tenant hosts are derived by prepending one DNS label before the configured system host.
 
-This matters before login because the user may not be authenticated yet. Auth must know the tenant before it can show branding, provider buttons, registration rules, MFA policy, and account self-service options.
+Example:
 
-Use tenant-aware hostnames when:
+```text
+System identity UI: https://identity.auth.example.com
+Tenant identity UI: https://acme.identity.auth.example.com
 
-- Each tenant should have branded identity screens.
-- Tenant selection should come from a trusted host instead of a user-submitted ID.
-- External applications need tenant-specific login destinations.
+System console UI:  https://console.auth.example.com
+Tenant console UI:  https://acme.console.auth.example.com
+```
 
-## Application Domains
+Auth resolves tenant hosts by comparing the incoming `Host` header to the configured frontend bases:
 
-External applications should be registered as clients. Their redirect URIs and allowed origins belong in client configuration, not just static CORS configuration.
+- Exact match means the system tenant.
+- A single label before the base means a regular tenant slug.
+- Deeper nested hosts are rejected for tenant resolution.
+- Unknown hosts do not resolve to a tenant.
 
-When configuring an app, verify:
+Valid tenant host:
 
-- The redirect URI exactly matches the application's callback.
-- The logout URI is expected.
-- The app origin is allowed only when browser calls require it.
-- The app uses the correct issuer/public identity hostname.
-- The app does not expect to share Auth's browser cookies.
+```text
+acme.identity.auth.example.com
+```
 
-Applications should use OAuth/OIDC tokens and their own application sessions.
+Rejected as a tenant slug because it has more than one label before the base:
 
-## Cookies And SameSite
+```text
+dev.acme.identity.auth.example.com
+```
 
-Cookies are browser state. Their hostname behavior depends on HTTPS, SameSite policy, and cookie domain.
+The incoming host is authoritative for tenant-bound browser flows. Auth does not trust a caller-provided tenant ID to decide which tenant a browser request belongs to.
 
-Use host-only cookies when each Auth host should keep independent cookies.
+## Frontend URL Generation
 
-Use a cookie domain only when Auth-owned subdomains need shared first-party session behavior and you control every subdomain in that domain.
+When Auth needs to build a frontend URL, it uses the configured system-tenant frontend host and the tenant slug.
 
-Do not use cookie domain settings to share Auth cookies with arbitrary customer applications.
+For the system tenant:
 
-## WebAuthn And Passkeys
+```text
+https://identity.auth.example.com/reset-password
+https://console.auth.example.com/settings
+```
 
-Passkeys are strict about origins and relying-party IDs. A passkey created for one domain cannot be freely used from another unrelated domain.
+For a regular tenant named `acme`:
 
-Before enabling passkeys, decide:
+```text
+https://acme.identity.auth.example.com/reset-password
+https://acme.console.auth.example.com/settings
+```
 
-- Which identity host users will visit.
-- Whether tenant subdomains share a parent domain.
-- What relying-party ID should be used.
-- Whether console and identity hosts need separate passkey behavior.
+The URL helper normalizes frontend hosts to HTTPS. Production DNS and TLS certificates must cover both the system host and tenant subdomains.
 
-Changing passkey hostnames after launch can strand existing credentials.
+## Frontend Runtime Configuration
 
-## Reverse Proxy And TLS
+The embedded image serves `/config.js` dynamically. The SPAs read `window.__ENV__` first, then fall back to build-time `VITE_*` values.
 
-Your reverse proxy or ingress should route each hostname to the correct Auth surface and preserve enough forwarding headers for Auth to detect scheme, host, and client IP safely.
+Console runtime variables:
 
-Use TLS for browser-facing surfaces. Keep management and metrics private. Configure trusted proxy CIDRs so rate limits, audit context, and IP restrictions use the real client IP.
+- `VITE_AUTH_API_BASE_URL`: management API base URL. Default in embedded/same-origin mode: `/api/v1`.
+- `VITE_AUTH_PUBLIC_API_BASE_URL`: public identity API base URL. Default in embedded/same-origin mode: `/public-api/api/v1`.
+- `VITE_AUTH_IDENTITY_BASE_URL`: fallback hosted identity UI origin. Usually set from `APP_FRONTEND_IDENTITY_HOSTNAME`.
 
-## Beginner Workflow
+Identity runtime variables:
 
-1. Pick console, identity, public API, and private API hostnames.
-2. Create DNS records.
-3. Configure TLS.
-4. Set Auth hostname fields.
-5. Configure the reverse proxy or ingress.
-6. Complete setup.
-7. Register an application client.
-8. Add redirect and logout URIs.
-9. Test login, logout, account settings, and passkeys.
+- `VITE_AUTH_API_BASE_URL`: public identity API base URL. Default in embedded/same-origin mode: `/api/v1`.
 
-## Permissions And Security
+For split frontend deployments, point the console to the private management API origin and the public identity API origin, then point identity UI configuration at the public identity API origin. Prefer same-origin API mounts for browser sessions when using the embedded image.
 
-Hostname and surface changes are administrator or operator actions. They can affect every login and integration, so they should require strong permissions and audit records.
+Use absolute `VITE_*` values only when your platform intentionally serves the SPA and API from different origins.
 
-Protect:
+## External Application Domains
 
-- Private management hostname.
-- Management port.
-- gRPC hostname.
-- Cookie domain.
-- WebAuthn relying-party ID.
-- Application redirect and logout URIs.
+External application domains are not the same as Auth deployment hostnames.
 
-## Troubleshooting
+Auth deployment hostnames answer:
 
-If the login page shows the wrong tenant, check tenant host resolution and DNS.
+- Where is Auth's public API?
+- Where is Auth's private management API?
+- Where is Auth's hosted identity UI?
+- Where is Auth's console UI?
 
-If OAuth redirect fails, check the client's redirect URI and public issuer hostname.
+Client configuration answers:
 
-If cookies are missing, check HTTPS, cookie domain, SameSite, and proxy headers.
+- What application is asking users to sign in?
+- What is the client's domain?
+- Which redirect URIs are allowed?
+- Which CORS origins are allowed?
+- Which login/logout URIs are allowed?
 
-If passkeys fail, check browser origin and relying-party ID.
+Example external app:
 
-If audit IPs show proxy addresses, check trusted proxy configuration.
+```text
+Application domain: https://app.customer.example
+Redirect URI:       https://app.customer.example/auth/callback
+CORS origin URI:    https://app.customer.example
+Post logout URI:    https://app.customer.example/logout/callback
+```
+
+For browser OAuth clients, redirect URI matching is exact. Wildcards, prefix matching, and arbitrary subdomain matching are not accepted. Plain `http` redirects are allowed only for loopback development hosts such as `127.0.0.1` and `[::1]`. Mobile clients may use reverse-domain private schemes such as `com.example.app:/oauth`.
+
+Register external app domains, redirect URIs, logout URIs, and CORS origins on the client record. Do not change `APP_PUBLIC_HOSTNAME` or frontend hostnames to onboard an external application.
+
+## CORS And Origins
+
+Auth has two CORS paths:
+
+- `CORS_ALLOWED_ORIGINS`: static operator allowlist from environment.
+- Client `cors_origin_uri` entries: dynamic per-tenant origins registered with clients.
+
+Client CORS origins are scoped to the tenant whose host received the request. This prevents one tenant's registered origin from reading another tenant's credentialed responses.
+
+Example static allowlist:
+
+```env
+CORS_ALLOWED_ORIGINS=https://ops.example.com,https://admin.example.com
+```
+
+Example client origin:
+
+```text
+https://app.customer.example
+```
+
+Prefer client `cors_origin_uri` entries for external applications. Use `CORS_ALLOWED_ORIGINS` for operator-owned exceptions that are not modeled as a tenant client.
+
+## Cookie Domain And Same-Site Boundaries
+
+`COOKIE_DOMAIN` is optional. When unset, cookies are host-only. When set, cookies can be shared across first-party Auth surfaces under a parent domain.
+
+Example:
+
+```env
+COOKIE_DOMAIN=auth.example.com
+```
+
+Only set `COOKIE_DOMAIN` for a domain whose subdomains you control. External applications on other domains do not share Auth cookies. They authenticate through OAuth/OIDC and maintain their own application session.
+
+First-party browser trust is based on same-site/domain behavior, not a row flag. A client is treated as first-party only when its stored domain shares the same registrable domain as the Auth deployment's public hostname.
+
+## WebAuthn Hostname Planning
+
+Passkeys depend on the relying-party ID. By default, Auth derives the RP ID from `APP_PUBLIC_HOSTNAME`. If users enroll passkeys across console, identity, and tenant subdomains, set `WEBAUTHN_RP_ID` to the shared parent domain.
+
+Example:
+
+```env
+APP_PUBLIC_HOSTNAME=https://identity-api.auth.example.com
+APP_FRONTEND_IDENTITY_HOSTNAME=https://identity.auth.example.com
+APP_FRONTEND_CONSOLE_HOSTNAME=https://console.auth.example.com
+WEBAUTHN_RP_ID=auth.example.com
+```
+
+With this shape, passkey ceremonies can work across:
+
+```text
+identity.auth.example.com
+console.auth.example.com
+acme.identity.auth.example.com
+acme.console.auth.example.com
+```
+
+## Production Checklist
+
+Before deploying hostnames:
+
+- Use HTTPS origins for all `APP_*_HOSTNAME` values.
+- Keep public identity API and hosted identity UI reachable by end users and external OAuth clients.
+- Keep the internal management API private.
+- Keep the management port private.
+- Route console and identity SPA API calls same-origin when using the embedded image.
+- Configure DNS and TLS certificates for tenant subdomains.
+- Register external application domains and redirect/origin URIs on client records, not in Auth deployment hostname variables.
+- Configure `COOKIE_DOMAIN` only when you intentionally want first-party Auth surfaces to share browser sessions.
+- Configure `WEBAUTHN_RP_ID` when passkeys must work across multiple Auth subdomains.
