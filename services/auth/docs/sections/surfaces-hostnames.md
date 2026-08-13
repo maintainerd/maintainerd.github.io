@@ -67,11 +67,11 @@ Use full HTTPS origins in production. Do not include `/api/v1` in these values; 
 
 `APP_PUBLIC_HOSTNAME` is the authorization-server origin. It is used for OAuth/OIDC discovery, JWKS, token issuer behavior, public identity API calls, and external application authentication.
 
-The exact discovery, JWKS, OAuth, and token paths belong in the API reference. This page only defines which origin owns that public identity traffic.
+The exact discovery, JWKS, OAuth, and token paths belong in the API reference. This page defines which origin owns that public identity traffic.
 
 `APP_PRIVATE_HOSTNAME` is the internal management API origin used by the console and operator/admin workflows. Keep it on private networking or behind operator-only access controls.
 
-The exact management paths belong in the API reference. This page only defines which origin should be private and operator-facing.
+The exact management paths belong in the API reference. This page defines which origin should be private and operator-facing.
 
 `APP_FRONTEND_IDENTITY_HOSTNAME` is the system-tenant hosted identity UI. It is where users see login, registration, MFA, consent, password reset, invite registration, and account self-service screens.
 

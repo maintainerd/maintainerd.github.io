@@ -48,7 +48,7 @@ Typical statuses:
 - Inactive: tenant exists but should not serve normal traffic.
 - Deleted or erased: tenant is no longer available except for required records.
 
-Changing status affects login, registration, OAuth, token refresh, account self-service, clients, and provider behavior. Treat it as an operational action, not a cosmetic field.
+Changing status affects login, registration, OAuth, token refresh, account self-service, clients, and provider behavior. Treat it as an operational action, not a display-only field.
 
 ## Tenant Settings
 

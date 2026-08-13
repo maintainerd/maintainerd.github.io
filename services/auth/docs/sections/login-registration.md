@@ -32,7 +32,7 @@ The login screen can show:
 - Consent screen when an application needs approval.
 - Error or lockout states.
 
-The screen should not show a method just because it exists. A method appears only when tenant, client, provider, registration, and security policy allow it.
+The screen shows a method only when tenant, client, provider, registration, and security policy allow it.
 
 ## Login Context
 

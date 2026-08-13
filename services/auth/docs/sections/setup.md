@@ -88,7 +88,7 @@ This documentation explains the role of those actions instead of duplicating req
 
 The REST setup surface inherits global security middleware and adds stricter setup limits: setup bodies are small, setup requests time out quickly, and mutating setup actions are refused after setup locks.
 
-Use the console wizard where possible. Direct setup calls are mainly for automated bootstrap, debugging, or smoke tests.
+Use the console wizard for operator-led setup. Direct setup calls are intended for automated bootstrap, debugging, or smoke tests.
 
 ## Profile During Setup
 

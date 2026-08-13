@@ -157,7 +157,7 @@ maintainerd/prod/auth/redis-password
 
 Auth creates a Redis client, loads `REDIS_PASSWORD` through the configured secret provider, and pings Redis with retry/backoff before the service is considered started.
 
-Startup fails when Redis cannot be reached. This is intentional: Redis backs cross-replica security behavior, not just cosmetic caching.
+Startup fails when Redis cannot be reached. Redis backs cross-replica security behavior, not optional display caching.
 
 Redis commands are instrumented with OpenTelemetry tracing through the Redis OTel integration.
 

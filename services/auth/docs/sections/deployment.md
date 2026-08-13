@@ -50,7 +50,7 @@ services:
 
 Avoid deploying `latest` to shared environments unless you intentionally want every restart to pull whatever was published most recently.
 
-For local evaluation, `latest` is fine:
+For local evaluation, `latest` can be used:
 
 ```yaml
 services:
@@ -222,7 +222,7 @@ console-api.auth.example.com    CNAME  auth-edge-123.us-east-1.elb.amazonaws.com
 *.identity.auth.example.com     CNAME  auth-edge-123.us-east-1.elb.amazonaws.com
 ```
 
-Some DNS providers do not allow CNAME records at the zone apex. If you deploy Auth on the apex, use the provider's `ALIAS`, `ANAME`, or flattened CNAME feature. For Auth subdomains, ordinary CNAME records are normally fine.
+Some DNS providers do not allow CNAME records at the zone apex. If you deploy Auth on the apex, use the provider's `ALIAS`, `ANAME`, or flattened CNAME feature. For Auth subdomains, ordinary CNAME records are usually supported.
 
 Verify DNS before starting certificate issuance:
 
@@ -283,7 +283,7 @@ For tenant host resolution rules, see [Hostnames & tenant URLs](#surfaces-hostna
 
 Caddy is a simple way to run Auth behind automatic HTTPS on a VPS. This is only an example edge; the same routing can be implemented with Nginx, Traefik, Envoy, AWS ALB, GCP Load Balancing, Azure Application Gateway, EKS ingress, or any provider-specific ingress.
 
-Do not copy this as the one blessed production setup. Copy the routing idea: frontend console traffic reaches `:3000`, hosted identity traffic reaches `:3001`, public issuer/API traffic reaches `:8081`, and management/API traffic stays private or explicitly allowlisted.
+Do not treat this as the only supported production topology. Use it to understand the routing model: frontend console traffic reaches `:3000`, hosted identity traffic reaches `:3001`, public issuer/API traffic reaches `:8081`, and management/API traffic stays private or explicitly allowlisted.
 
 For exact hostnames only:
 
