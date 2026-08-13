@@ -299,8 +299,8 @@ Example structure:
   "event_id": "9c8e0b3e-2c7b-4fc3-8e13-6c6b083e8f21",
   "event_type": "user.updated",
   "event_version": 1,
-  "tenant_id": 42,
-  "actor_user_id": 17,
+  "tenant_id": "770e8400-e29b-41d4-a716-446655440001",
+  "actor_user_id": "880e8400-e29b-41d4-a716-446655440002",
   "subject_uuid": "1b9d6bcd-8f89-4b98-84a7-f0ef70cc7f8a",
   "subject_type": "user",
   "changed_fields": ["email", "status"],
@@ -318,8 +318,8 @@ Fields:
 | `event_id` | Stable UUID for the event. Use it for deduplication. |
 | `event_type` | Canonical event type, such as `client.secret_rotated`. |
 | `event_version` | Event schema version. Current catalog starts at `1`. |
-| `tenant_id` | Tenant that owns the event. Receivers should filter by it when they process multiple tenants. |
-| `actor_user_id` | User who triggered the change when Auth can identify one. It can be empty for system or service actions. |
+| `tenant_id` | Tenant UUID that owns the event. Receivers should filter by it when they process multiple tenants. |
+| `actor_user_id` | User UUID for the user who triggered the change when Auth can identify one. It can be empty for system or service actions. |
 | `subject_uuid` | UUID of the changed resource. |
 | `subject_type` | Resource type, such as `user`, `tenant`, `client`, `role`, `permission`, `api`, or `service`. |
 | `changed_fields` | Names of fields that changed. Values are not included. |
