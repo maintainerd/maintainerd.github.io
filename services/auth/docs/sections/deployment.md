@@ -125,7 +125,7 @@ JWT_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----..."
 JWT_PUBLIC_KEY="-----BEGIN RSA PUBLIC KEY-----..."
 ```
 
-`APP_ENV` defaults to `production`. Set `APP_ENV=development` only for local development because production mode enables stricter behavior such as HSTS, database SSL enforcement, production gRPC TLS requirements, and stricter secret-store transport checks.
+`APP_ENV` defaults to `production`. Released-image deployments should leave it unset or set it to `production` explicitly so stricter behavior such as HSTS, database SSL enforcement, gRPC TLS requirements, and strict secret-store transport checks remain active.
 
 Use the Environment Variables, Secrets & Keys, Database & Redis, and Surfaces & Hostnames sections for the full reference. This page focuses on the deployment decisions and the minimum set that must come together.
 
@@ -695,7 +695,7 @@ Deployment reminders:
 
 - Do not put the external app domain in `APP_PUBLIC_HOSTNAME`; that variable is Auth's issuer.
 - Register external app domains on client records.
-- Redirect URI matching is exact, except for supported loopback development redirects and mobile reverse-domain schemes.
+- Redirect URI matching is exact, except for supported loopback redirects and mobile reverse-domain schemes.
 - Credentialed browser API calls from an external app require a registered `cors_origin_uri` on the client or an operator-owned `CORS_ALLOWED_ORIGINS` entry.
 - The OIDC issuer URL seen by the external app is `APP_PUBLIC_HOSTNAME`.
 
@@ -759,14 +759,6 @@ SMS deployment requirements:
 - Tenant SMS configuration created in the console or API.
 - SMS templates reviewed for OTP and MFA flows.
 - Rate limits monitored because SMS endpoints are abuse-prone and cost-bearing.
-
-Never enable this in production:
-
-```env
-MAINTAINERD_DEV_LOG_OTP=true
-```
-
-That flag prints OTP codes to logs for local testing only.
 
 ## Events, Webhooks, And RabbitMQ
 
@@ -1103,7 +1095,7 @@ volumes:
   pgdata:
 ```
 
-The quickstart in the Auth repository expands this with local `.maintainerd.local` DNS, development TLS certificates, and same-origin frontend proxying.
+The quickstart in the Auth repository expands this with local `.maintainerd.local` DNS, self-signed TLS certificates, and released-image routing.
 
 ## Scaling And Rollouts
 
@@ -1177,7 +1169,6 @@ Before sending real traffic to Auth:
 - Enable Redis TLS when Redis is outside a private trusted network.
 - Configure SMTP before enabling invite, verification, reset, or magic-link flows.
 - Configure SMS before enabling SMS login or SMS MFA.
-- Keep `MAINTAINERD_DEV_LOG_OTP` unset.
 - Set `WEBAUTHN_RP_ID` before enrolling production passkeys.
 - Register external application redirect, logout, origin, and CORS URIs on client records.
 - Enable OTLP export or stdout log collection.

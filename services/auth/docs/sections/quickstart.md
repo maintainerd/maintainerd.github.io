@@ -61,7 +61,7 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-The script appends local-only secrets to `.env`:
+The script appends quickstart secrets to `.env`:
 
 - `APP_ENCRYPTION_KEY`
 - `HMAC_SECRET_KEY`
@@ -198,7 +198,7 @@ The quickstart sets `WEBAUTHN_RP_ID=auth.maintainerd.local` so passkeys can work
 
 ### Email Or SMS Codes Do Not Arrive
 
-The quickstart does not configure a real email or SMS provider. Configure providers in the console before testing those flows. For local-only OTP testing, the sample env includes `MAINTAINERD_DEV_LOG_OTP=true` as a commented option; never enable that in production.
+The quickstart does not configure a real email or SMS provider. Configure providers in the console before testing those flows so the released image behaves like the environment users will actually run.
 
 ## Stop Or Reset
 

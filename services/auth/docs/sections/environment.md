@@ -81,7 +81,7 @@ maintainerd/prod/auth/hmac-secret-key
 
 A standalone Auth instance needs these plain variables:
 
-- `APP_ENV`: optional runtime environment, default `production`. Set `APP_ENV=development` only for local development or test environments that intentionally need relaxed security behavior.
+- `APP_ENV`: optional runtime environment, default `production`. Released-image documentation assumes production behavior; leave this unset or set it to `production` explicitly.
 - `APP_PUBLIC_HOSTNAME`: public API and OAuth issuer origin, for example `https://identity-api.auth.example.com`.
 - `APP_PRIVATE_HOSTNAME`: internal management API origin, for example `https://console-api.auth.example.com`.
 - `APP_FRONTEND_IDENTITY_HOSTNAME`: hosted identity UI origin, for example `https://identity.auth.example.com`.
@@ -105,7 +105,7 @@ For local quickstart, `examples/quickstart/setup.sh` generates the required key 
 
 `SECRET_PROVIDER` selects where Auth reads secret-backed values. Supported values:
 
-- `env`: read secret values directly from environment variables. This is the default and is simplest for local development.
+- `env`: read secret values directly from environment variables. This is the default and is simplest for the released-image quickstart.
 - `file`: read secret files from `SECRET_FILE_PATH`, default `/run/secrets`.
 - `aws_secrets`: read from AWS Secrets Manager.
 - `aws_ssm`: read from AWS SSM Parameter Store.
@@ -128,7 +128,7 @@ Secret values are normalized consistently across providers:
 - `SECRET_STRICT`: optional, default `false`. When `false`, a missing secret in a non-env provider may fall back to the same key in the process environment. When `true`, the configured provider is authoritative and missing secrets fail startup.
 - `SECRET_FILE_PATH`: optional, default `/run/secrets`. Directory used by the `file` provider. Secret filenames are lowercase with underscores converted to hyphens, so `JWT_PRIVATE_KEY` becomes `jwt-private-key`.
 - `AWS_REGION`: optional, default `us-east-1`. Region used by `aws_secrets` and `aws_ssm`.
-- `VAULT_ADDR`: optional for Vault, default `http://localhost:8200`. Must use HTTPS outside local development when `APP_ENV=production`.
+- `VAULT_ADDR`: optional for Vault, default `http://localhost:8200`. Use HTTPS for released-image deployments.
 - `VAULT_TOKEN`: optional Vault token. If unset, Auth uses Vault AppRole.
 - `VAULT_MOUNT`: optional, default `secret`. Vault KV v2 mount.
 - `VAULT_SECRET_FIELD`: optional, default `value`. Field read from each Vault secret.
@@ -155,8 +155,8 @@ Keep these values out of logs, source control, Docker image layers, and frontend
 
 ## Application Identity
 
-- `APP_ENV`: optional, default `production`. Controls production-sensitive behavior such as security headers, database/TLS expectations, gRPC hardening, and development-only conveniences. Set `APP_ENV=development` explicitly for local work.
-- `APP_VERSION`: optional. Overrides the build-injected version shown in telemetry and build info. If unset, Auth uses the version baked into the binary; local builds fall back to `dev`.
+- `APP_ENV`: optional, default `production`. Controls production-sensitive behavior such as security headers, database/TLS expectations, gRPC hardening, and secret-store transport checks.
+- `APP_VERSION`: optional. Overrides the build-injected version shown in telemetry and build info. If unset, Auth uses the version baked into the released image.
 - `LOG_LEVEL`: optional, default `info`. Supported values are `debug`, `info`, `warn`, and `error`. `warning` is also accepted as `warn`.
 
 `ENV=production` is still recognized as a compatibility fallback for security middleware, but new deployments should use `APP_ENV`. Because Auth is secure by default, an unset `APP_ENV` is treated as `production`.
@@ -231,7 +231,7 @@ maintainerd/prod/auth/redis-password
 
 ## Cookies And Browser Sessions
 
-- `COOKIE_SECURE`: optional, default `true`. When true, session cookies require HTTPS. Set to `false` only for local development without TLS.
+- `COOKIE_SECURE`: optional, default `true`. When true, session cookies require HTTPS. Released-image docs assume HTTPS and keep this enabled.
 - `COOKIE_SAMESITE`: optional, default `lax`. Controls browser SameSite behavior. `lax` is the practical default for federated login redirects.
 - `COOKIE_DOMAIN`: optional. When unset, cookies are host-only. When set, Auth scopes cookies to a shared parent domain so first-party surfaces under that domain can share a session.
 
@@ -284,7 +284,7 @@ Auth validates WebAuthn ceremony origins at request time against the RP ID. A re
 
 ## CAPTCHA
 
-- `CAPTCHA_SECRET`: optional. Enables CAPTCHA verification for flows that provide a CAPTCHA token. When unset, CAPTCHA verification is disabled for local development and tests.
+- `CAPTCHA_SECRET`: optional. Enables CAPTCHA verification for flows that provide a CAPTCHA token. When unset, CAPTCHA verification is disabled.
 - `CAPTCHA_VERIFY_URL`: optional, default `https://www.google.com/recaptcha/api/siteverify`. Verification endpoint used by the configured CAPTCHA provider.
 - `CAPTCHA_MIN_SCORE`: optional, default `0.5`. Risk threshold for providers that return a score, such as reCAPTCHA v3. Providers that only return success/failure are accepted based on their success result.
 
@@ -296,12 +296,9 @@ Do not put CAPTCHA provider secrets in frontend bundles. Browser apps should sen
 
 When unset, the broker integration is disabled. When set, Auth connects to RabbitMQ, declares the durable topic exchange `maintainerd-auth.events`, and publishes integration events with publisher confirms. The URL contains credentials, so treat it as secret operational configuration even though it is currently read as a normal environment variable.
 
-## Invites, OTP, And Local Testing
+## Invites And OTP
 
 - `INVITE_TTL_HOURS`: optional, default `72`. Number of hours before invite links expire.
-- `MAINTAINERD_DEV_LOG_OTP`: optional, default `false`. When exactly `true`, OTP values are printed to logs for local development flows without a real email or SMS provider.
-
-Never enable `MAINTAINERD_DEV_LOG_OTP` in a deployed environment. OTPs are single-use credentials, and logs are often shipped to shared systems.
 
 Email providers, SMS providers, templates, branding, and tenant messaging behavior are primarily configured through Auth management data instead of process environment variables.
 
@@ -342,12 +339,10 @@ Identity variables:
 
 - `VITE_AUTH_API_BASE_URL`: public API base URL for the hosted identity app. In production it defaults to `/api/v1` when same-origin proxying is used.
 
-In Vite development mode, the console and identity apps ignore these absolute values and use relative proxy paths instead. This keeps local cookies and API calls on the same browser origin.
-
-## Example Local Environment
+## Example Released-Image Environment
 
 ```env
-APP_ENV=development
+APP_ENV=production
 APP_PUBLIC_HOSTNAME=https://identity-api.auth.maintainerd.local
 APP_PRIVATE_HOSTNAME=https://console-api.auth.maintainerd.local
 APP_FRONTEND_IDENTITY_HOSTNAME=https://identity.auth.maintainerd.local
@@ -358,7 +353,7 @@ DB_PORT=5432
 DB_USER=maintainerd
 DB_PASSWORD=change-me
 DB_NAME=maintainerd
-DB_SSLMODE=disable
+DB_SSLMODE=require
 
 REDIS_ADDR=redis:6379
 COOKIE_SECURE=true
@@ -391,4 +386,3 @@ Before running Auth in production:
 - Configure `WEBAUTHN_RP_ID` when passkeys span multiple subdomains.
 - Configure `RABBITMQ_URL` only when events/webhooks should publish to RabbitMQ.
 - Configure `OTEL_ENABLED=true` and `OTEL_EXPORTER_OTLP_ENDPOINT` when exporting traces and logs to a collector.
-- Leave `MAINTAINERD_DEV_LOG_OTP` unset.

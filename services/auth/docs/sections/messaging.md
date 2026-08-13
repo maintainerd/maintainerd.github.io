@@ -23,7 +23,6 @@ SMS configuration is tenant-scoped with system-tenant fallback.
 
 Supported SMS providers:
 
-- `log`: development/no-op style provider that writes SMS messages to logs.
 - `twilio`.
 - `sns`.
 - `vonage`.

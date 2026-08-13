@@ -235,7 +235,7 @@ CORS origin URI:    https://app.customer.example
 Post logout URI:    https://app.customer.example/logout/callback
 ```
 
-For browser OAuth clients, redirect URI matching is exact. Wildcards, prefix matching, and arbitrary subdomain matching are not accepted. Plain `http` redirects are allowed only for loopback development hosts such as `127.0.0.1` and `[::1]`. Mobile clients may use reverse-domain private schemes such as `com.example.app:/oauth`.
+For browser OAuth clients, redirect URI matching is exact. Wildcards, prefix matching, and arbitrary subdomain matching are not accepted. Plain `http` redirects are allowed only for loopback hosts such as `127.0.0.1` and `[::1]`. Mobile clients may use reverse-domain private schemes such as `com.example.app:/oauth`.
 
 Register external app domains, redirect URIs, logout URIs, and CORS origins on the client record. Do not change `APP_PUBLIC_HOSTNAME` or frontend hostnames to onboard an external application.
 

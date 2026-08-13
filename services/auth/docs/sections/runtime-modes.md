@@ -29,7 +29,7 @@ This is operational information. It helps prevent exposing private surfaces or d
 
 ## Modes You Can Choose
 
-Standalone mode runs Auth as a complete service. It is the simplest option for local development, small deployments, and teams that want Auth to own its own runtime.
+Standalone mode runs Auth as a complete service. It is the simplest option for quickstart evaluation, small deployments, and teams that want Auth to own its own runtime.
 
 Runtime gRPC mode keeps Auth's HTTP identity surfaces available while also exposing service-to-service gRPC behavior for Maintainerd runtimes.
 

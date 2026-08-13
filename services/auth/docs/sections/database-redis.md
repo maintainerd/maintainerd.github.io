@@ -49,16 +49,15 @@ Optional PostgreSQL variables:
 
 Auth builds a PostgreSQL keyword/value DSN from these values and passes `statement_timeout` through the connection `options` parameter. The timeout applies at the database session level so long-running queries are bounded even when a handler forgets to add a narrower context timeout.
 
-Example local PostgreSQL values:
+Example PostgreSQL values for the released-image quickstart:
 
 ```env
-APP_ENV=development
 DB_HOST=postgres
 DB_PORT=5432
 DB_USER=maintainerd
 DB_PASSWORD=change-me
 DB_NAME=maintainerd
-DB_SSLMODE=disable
+DB_SSLMODE=require
 DB_MAX_OPEN_CONNS=25
 DB_MAX_IDLE_CONNS=10
 DB_CONN_MAX_LIFETIME_SEC=300
@@ -90,7 +89,7 @@ maintainerd/prod/auth/db-password
 
 Auth defaults to `APP_ENV=production` when `APP_ENV` is unset. In production mode, startup rejects `DB_SSLMODE=disable`.
 
-Use `DB_SSLMODE=require` or stricter for production deployments. Use `verify-ca` or `verify-full` when your PostgreSQL platform provides a CA chain and stable host identity. The local quickstart sets `APP_ENV=development` explicitly, which is why its sample `.env` can use `DB_SSLMODE=disable`.
+Use `DB_SSLMODE=require` or stricter for released-image deployments. Use `verify-ca` or `verify-full` when your PostgreSQL platform provides a CA chain and stable host identity.
 
 ## Connection Startup
 
@@ -192,19 +191,17 @@ When any required readiness check fails, `/ready` and `/readyz` return `503` wit
 
 When gRPC is enabled, its health status uses the same core dependency checks: PostgreSQL, Redis, and JWKS.
 
-## Local Quickstart Values
+## Quickstart Values
 
-The quickstart compose stack uses service names for internal networking:
+The released-image quickstart compose stack uses service names for internal networking:
 
 ```env
-APP_ENV=development
-
 DB_HOST=postgres
 DB_PORT=5432
 DB_USER=maintainerd
 DB_PASSWORD=change-me
 DB_NAME=maintainerd
-DB_SSLMODE=disable
+DB_SSLMODE=require
 
 REDIS_ADDR=redis:6379
 REDIS_TLS=false

@@ -2,7 +2,7 @@
 
 Auth separates ordinary configuration from credential material. Hostnames, ports, runtime mode, pool sizes, and feature toggles are normal environment variables. Passwords, signing keys, encryption keys, and bootstrap credentials are loaded through the secret provider selected by `SECRET_PROVIDER`.
 
-In local development, `SECRET_PROVIDER=env` is usually enough. In production, move the same secret names into a secret manager and let Auth read them from that provider.
+For the released-image quickstart, `SECRET_PROVIDER=env` is usually enough. For production deployments, move the same secret names into a secret manager and let Auth read them from that provider.
 
 ## Required Secrets
 
@@ -138,7 +138,7 @@ app-encryption-key
 
 - `SECRET_FILE_PATH`: optional, default `/run/secrets`. Used by the `file` provider.
 - `AWS_REGION`: optional, default `us-east-1`. Used by `aws_secrets` and `aws_ssm`.
-- `VAULT_ADDR`: optional, default `http://localhost:8200`. Must use HTTPS outside local development when `APP_ENV=production`.
+- `VAULT_ADDR`: optional, default `http://localhost:8200`. Use HTTPS for released-image deployments.
 - `VAULT_TOKEN`: optional. Static Vault token. If unset, Auth uses AppRole.
 - `VAULT_MOUNT`: optional, default `secret`. Vault KV v2 mount.
 - `VAULT_SECRET_FIELD`: optional, default `value`. Field read from each Vault secret.
@@ -147,7 +147,7 @@ app-encryption-key
 - `GCP_PROJECT_ID`: required when `SECRET_PROVIDER=gcp`.
 - `AZURE_KEYVAULT_URL`: required when `SECRET_PROVIDER=azure_kv`.
 
-AWS uses the standard AWS credential chain. GCP uses Application Default Credentials. Azure uses `DefaultAzureCredential`, including environment credentials, workload identity, managed identity, and Azure CLI credentials for local development.
+AWS uses the standard AWS credential chain. GCP uses Application Default Credentials. Azure uses `DefaultAzureCredential`, including environment credentials, workload identity, managed identity, and Azure CLI credentials for operator-managed secret access.
 
 ## Fallback And Failure Behavior
 
@@ -234,7 +234,7 @@ When control-plane mode is enabled, treat `SETUP_BOOTSTRAP_TOKEN` like a one-dep
 
 ## Local Key Generation
 
-The quickstart setup script generates local-only secrets:
+The quickstart setup script generates quickstart secrets:
 
 ```bash
 cd examples/quickstart
