@@ -6,7 +6,7 @@ Maintainerd is an open-source cloud platform: a self-hostable service catalog wi
 
 ## Development
 
-The site is built with SvelteKit and prerendered as a static site for GitHub Pages.
+The site is built with plain Svelte and Vite.
 
 ```bash
 npm install
@@ -19,7 +19,9 @@ Build the production artifact locally with:
 npm run build
 ```
 
-The generated site is written to `build/`. GitHub Actions deploys that folder to GitHub Pages on pushes to `main`.
+The generated site is written to `dist/`. GitHub Actions deploys that folder to GitHub Pages on pushes to `main`.
+
+The post-build script copies the SPA entry file to each known clean URL path, so GitHub Pages can serve routes such as `/services/` and `/services/auth/docs/` directly. It also writes `404.html` as a fallback for unknown client-side routes.
 
 For repository settings, use GitHub Pages with GitHub Actions as the publishing source. The source app and the deployment workflow live in this repository; a second repository is not needed.
 
@@ -33,11 +35,13 @@ For repository settings, use GitHub Pages with GitHub Actions as the publishing 
 
 ## Source Structure
 
-- `src/routes/` - SvelteKit pages and static routes
+- `src/App.svelte` - top-level app and simple route switch
+- `src/lib/pages/` - page components
 - `src/lib/components/` - shared navigation, footer, hero, terminal, and card components
 - `src/lib/data/` - service catalog and Auth documentation navigation data
 - `src/lib/content/auth-docs/` - Auth documentation markdown sections
 - `static/` - static images, icons, manifest, robots, verification, and `.nojekyll`
+- `scripts/postbuild.js` - GitHub Pages clean URL generation
 
 ## Platform Positioning
 

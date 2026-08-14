@@ -3,19 +3,13 @@
   import Terminal from "$lib/components/Terminal.svelte";
   import { serviceNav } from "$lib/data/services.js";
 
-  export let data;
-
-  $: service = data.service;
+  export let service;
 </script>
 
 <svelte:head>
   <title>{service.name} | Maintainerd Services</title>
   <meta name="description" content={`${service.name} is a Maintainerd service. ${service.headline}`} />
   <link rel="canonical" href={`https://maintainerd.github.io/services/${service.slug}/`} />
-  <meta property="og:title" content={`${service.name} | Maintainerd Services`} />
-  <meta property="og:description" content={`${service.name} is a Maintainerd service. ${service.headline}`} />
-  <meta property="og:url" content={`https://maintainerd.github.io/services/${service.slug}/`} />
-  <meta property="og:image" content="https://maintainerd.github.io/assets/m9d-auth-console.png" />
 </svelte:head>
 
 <main>

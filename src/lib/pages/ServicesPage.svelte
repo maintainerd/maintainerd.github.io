@@ -14,10 +14,6 @@
   <title>Services | Maintainerd</title>
   <meta name="description" content="Explore Maintainerd services and external Docker-image service categories that Maintainerd Core can provision." />
   <link rel="canonical" href="https://maintainerd.github.io/services/" />
-  <meta property="og:title" content="Services | Maintainerd" />
-  <meta property="og:description" content="Maintainerd services and external Docker-image service categories for Core-managed provisioning." />
-  <meta property="og:url" content="https://maintainerd.github.io/services/" />
-  <meta property="og:image" content="https://maintainerd.github.io/assets/m9d-auth-console.png" />
 </svelte:head>
 
 <main>

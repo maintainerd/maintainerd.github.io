@@ -24,7 +24,7 @@
       type="button"
       aria-label="Open navigation"
       aria-expanded={isOpen}
-      on:click={() => (isOpen = !isOpen)}
+      onclick={() => (isOpen = !isOpen)}
     >
       <span></span>
     </button>

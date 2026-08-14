@@ -17,10 +17,6 @@
   <title>Auth API Reference | Maintainerd</title>
   <meta name="description" content="API reference overview for Auth endpoint families and integration contracts." />
   <link rel="canonical" href="https://maintainerd.github.io/services/auth/api/" />
-  <meta property="og:title" content="Auth API Reference | Maintainerd" />
-  <meta property="og:description" content="API reference overview for Auth endpoint families and integration contracts." />
-  <meta property="og:url" content="https://maintainerd.github.io/services/auth/api/" />
-  <meta property="og:image" content="https://maintainerd.github.io/assets/m9d-auth-console.png" />
 </svelte:head>
 
 <main>

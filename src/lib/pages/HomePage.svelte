@@ -3,7 +3,6 @@
   import { maintainerdServices } from "$lib/data/services.js";
 
   const auth = maintainerdServices.find((service) => service.slug === "auth");
-  const servicePreview = maintainerdServices;
 </script>
 
 <svelte:head>
@@ -13,13 +12,6 @@
     content="Maintainerd is an open-source cloud platform: self-hostable services for identity, storage, messaging, databases, jobs, observability, billing, and more."
   />
   <link rel="canonical" href="https://maintainerd.github.io/" />
-  <meta property="og:title" content="Maintainerd | Open-source cloud platform" />
-  <meta
-    property="og:description"
-    content="Self-hostable cloud services for identity, storage, messaging, databases, jobs, and more. Adopt one service or run the whole platform."
-  />
-  <meta property="og:url" content="https://maintainerd.github.io/" />
-  <meta property="og:image" content="https://maintainerd.github.io/assets/maintainerd-logo-dark.png" />
 </svelte:head>
 
 <main>
@@ -72,7 +64,7 @@
       <h2>Everything, in one place.</h2>
       <p class="section-lede">Independent services that stand alone or connect through Core. Everything past Auth is on the roadmap.</p>
       <div class="service-grid">
-        {#each servicePreview as service}
+        {#each maintainerdServices as service}
           <a class="service-card" href={service.href || `/services/${service.slug}/`}>
             <div class="service-kicker">
               <img class="service-icon" src={service.icon} alt="" />

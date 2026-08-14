@@ -18,7 +18,7 @@
 <div class="terminal">
   <div class="terminal-header">
     <span>{title}</span>
-    <button class="copy-button" type="button" on:click={copy}>{label}</button>
+    <button class="copy-button" type="button" onclick={copy}>{label}</button>
   </div>
   <pre>{command}</pre>
 </div>

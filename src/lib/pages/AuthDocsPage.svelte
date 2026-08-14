@@ -1,41 +1,45 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { marked } from "marked";
   import PageHero from "$lib/components/PageHero.svelte";
   import { loadDocContent } from "$lib/data/doc-content.js";
   import { docAnchors, docsGroups, docsSections, findDocSection } from "$lib/data/docs.js";
 
-  export let data;
+  export let hash = "";
 
-  let activeSlug = docsSections[0]?.slug || "introduction";
-  let activeContent = data.initialContent || "";
-  let isLoading = false;
+  let activeSlug = "introduction";
+  let activeContent = "";
+  let isLoading = true;
+  let contentRequest = 0;
+  let initialized = false;
 
+  $: requestedSlug = hash.replace(/^#/, "") || "introduction";
+  $: if (initialized && requestedSlug !== activeSlug && findDocSection(requestedSlug)) {
+    selectSection(requestedSlug, false);
+  }
   $: activeSection = findDocSection(activeSlug) || docsSections[0];
   $: rendered = activeContent ? marked.parse(activeContent, { gfm: true }) : "";
 
-  async function selectSection(slug, pushState = true) {
+  async function selectSection(slug, updateHash = true) {
     if (!findDocSection(slug)) return;
+    const requestId = ++contentRequest;
     activeSlug = slug;
     isLoading = true;
-    if (pushState && typeof history !== "undefined") {
-      history.replaceState(null, "", `#${slug}`);
-    }
-    activeContent = await loadDocContent(slug) || `# ${activeSection.title}\n\nThis section is not available yet.`;
+    const content = await loadDocContent(slug);
+    if (requestId !== contentRequest) return;
+    activeContent = content || `# ${activeSection.title}\n\nThis section is not available yet.`;
     isLoading = false;
+
+    if (updateHash) {
+      history.replaceState(null, "", `#${slug}`);
+      await tick();
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    }
   }
 
   onMount(() => {
-    const readHash = () => {
-      const slug = window.location.hash.replace(/^#/, "");
-      if (slug && findDocSection(slug)) {
-        selectSection(slug, false);
-      }
-    };
-
-    readHash();
-    window.addEventListener("hashchange", readHash);
-    return () => window.removeEventListener("hashchange", readHash);
+    initialized = true;
+    selectSection(findDocSection(requestedSlug) ? requestedSlug : "introduction", false);
   });
 </script>
 
@@ -43,10 +47,6 @@
   <title>Auth Documentation | Maintainerd</title>
   <meta name="description" content="Documentation for Auth, the Maintainerd identity and access management service." />
   <link rel="canonical" href="https://maintainerd.github.io/services/auth/docs/" />
-  <meta property="og:title" content="Auth Documentation | Maintainerd" />
-  <meta property="og:description" content="Documentation for Auth, the Maintainerd identity and access management service." />
-  <meta property="og:url" content="https://maintainerd.github.io/services/auth/docs/" />
-  <meta property="og:image" content="https://maintainerd.github.io/assets/auth-console-identity-provider.png" />
 </svelte:head>
 
 <main>
@@ -72,13 +72,13 @@
       {#each docsGroups as group}
         <span class="side-nav-label">{group.label}</span>
         {#each group.sections as [slug, title]}
-          <a
-            href={`#${slug}`}
+          <button
+            type="button"
+            data-route-hash={`#${slug}`}
             aria-current={activeSlug === slug ? "page" : undefined}
-            on:click|preventDefault={() => selectSection(slug)}
           >
             {title}
-          </a>
+          </button>
         {/each}
       {/each}
     </aside>
