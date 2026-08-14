@@ -383,7 +383,7 @@ Useful fields:
 
 Do not log access tokens, refresh tokens, authorization codes, client secrets, private keys, or full identity-provider assertions.
 
-Use Auth audit events and application logs together when investigating access behavior. Audit event concepts are covered in [Audit events](#audit).
+Use Auth events and application logs together when investigating access behavior. Auth event concepts are covered in [Auth events](#audit).
 
 ## Security Checklist
 

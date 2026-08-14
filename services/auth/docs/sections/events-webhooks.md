@@ -6,7 +6,7 @@ Use this section when an external application needs to receive notifications fro
 
 Auth sends integration events through a transactional outbox. That means the event is written with the business change, then a background relay delivers it to subscribed webhook endpoints and, when configured, to RabbitMQ. Delivery is at least once and unordered, so receivers must deduplicate and fetch current state when they need full details.
 
-Integration events are not audit logs and they are not full data exports. They are compact, signed notifications designed for system-to-system workflows. Audit concepts are documented in [Audit events](#audit). Deployment-level broker setup is documented in [Deployment](#deployment).
+Integration events are not audit logs and they are not full data exports. They are compact, signed notifications designed for system-to-system workflows. Security event review is documented in [Auth events](#audit). Deployment-level broker setup is documented in [Deployment](#deployment).
 
 ## Webhooks, Broker Events, And Audit Logs
 
@@ -16,9 +16,9 @@ Auth has three event-related concepts that serve different jobs:
 |---|---|---|---|
 | Integration events | Tell external systems that Auth state changed. | Application developers and platform integrators. | HTTPS webhooks and optional RabbitMQ messages. |
 | Webhook delivery history | Show whether a webhook endpoint received an integration event. | Operators investigating integrations. | Console records inside Auth. |
-| Audit events | Record security and administration activity for review. | Security, compliance, and administrators. | Audit views and retention workflows. |
+| Auth events | Record authentication, authorization, session, user, token, OAuth, and system security activity for review. | Security, compliance, and administrators. | Auth event views, exports, and retention workflows. |
 
-Use integration events when another application must take action. Use audit events when a person needs to review who did what.
+Use integration events when another application must take action. Use Auth events when a person needs to review security activity and identity behavior.
 
 ## Complete Event Catalog
 
