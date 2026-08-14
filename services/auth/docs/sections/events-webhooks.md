@@ -20,6 +20,118 @@ Auth has three event-related concepts that serve different jobs:
 
 Use integration events when another application must take action. Use audit events when a person needs to review who did what.
 
+## Complete Event Catalog
+
+This is the current Auth integration-event catalog. These are the event names you use when choosing webhook subscriptions or RabbitMQ routes.
+
+Each event includes a `subject_uuid` when the changed resource has a public UUID. The `subject_type` tells the receiver what kind of record changed. Payloads stay thin; receivers should fetch current state when they need the full record.
+
+### User Events
+
+Use user events when an external system needs to provision access, sync account state, update directory records, or react to identity-link changes.
+
+| Event Type | What Changed | Subject Type | Subscribe When |
+|---|---|---|---|
+| `user.created` | A user account was created. | `user` | Create a matching user record, provision default access, or start onboarding. |
+| `user.updated` | User identity or profile fields changed. | `user` | Sync user profile, display name, email, phone, or other account metadata. |
+| `user.status_changed` | User status changed, such as active, suspended, or locked. | `user` | Suspend downstream access, re-enable access, or notify security automation. |
+| `user.deleted` | A user account was deleted. | `user` | Deprovision access, archive linked records, or remove user cache entries. |
+| `user.role_assigned` | A role was assigned to a user. | `user` | Refresh authorization caches or grant application access. |
+| `user.role_removed` | A role was removed from a user. | `user` | Refresh authorization caches or revoke application access. |
+| `identity.linked` | An external identity was linked to a user. | `user` | Sync federation state or update account-linking records. |
+| `identity.unlinked` | An external identity was removed from a user. | `user` | Remove federation links or alert when an identity provider connection changes. |
+
+### Tenant Events
+
+Use tenant events when billing, provisioning, support, CRM, or other business systems need to track organization lifecycle.
+
+| Event Type | What Changed | Subject Type | Subscribe When |
+|---|---|---|---|
+| `tenant.created` | A tenant was created. | `tenant` | Create billing, support, provisioning, or workspace records. |
+| `tenant.updated` | Tenant attributes changed. | `tenant` | Sync tenant name, slug, settings, or external account metadata. |
+| `tenant.status_changed` | Tenant status changed, such as active or suspended. | `tenant` | Pause downstream access, resume service, or notify account operations. |
+| `tenant.deleted` | A tenant was deleted. | `tenant` | Deprovision tenant resources and archive external records. |
+| `tenant_member.added` | A user became a member of the tenant. | `tenant_member` | Sync membership into downstream tools or provision tenant-scoped access. |
+| `tenant_member.removed` | A user was removed from the tenant. | `tenant_member` | Remove tenant-scoped access or update membership directories. |
+| `tenant_member.ownership_transferred` | Tenant ownership moved to another member. | `tenant_member` | Update billing owner, support owner, approval owner, or escalation contacts. |
+
+### IAM Events
+
+Use IAM events when downstream APIs, gateways, policy engines, or caches need to react to authorization model changes.
+
+| Event Type | What Changed | Subject Type | Subscribe When |
+|---|---|---|---|
+| `role.created` | A role was created. | `role` | Sync available roles or refresh role catalogs. |
+| `role.updated` | A role's label, status, or metadata changed. | `role` | Refresh role displays, access tooling, or cached role metadata. |
+| `role.deleted` | A role was deleted. | `role` | Remove role references and refresh authorization caches. |
+| `role.permissions_changed` | A role's permission set changed. | `role` | Rebuild authorization decisions for users or clients using the role. |
+| `permission.created` | A permission was created. | `permission` | Sync permission catalogs into policy or gateway tooling. |
+| `permission.updated` | A permission definition changed. | `permission` | Refresh permission metadata and policy displays. |
+| `permission.deleted` | A permission was deleted. | `permission` | Remove permission references and refresh policy caches. |
+| `iam.policy.updated` | An IAM policy changed. | `policy` | Refresh policy engines or invalidate tenant authorization cache. |
+| `policy.created` | A policy was created. | `policy` | Sync policy inventory into downstream systems. |
+| `policy.deleted` | A policy was deleted. | `policy` | Remove policy references and refresh authorization cache. |
+| `iam.service.policy.assigned` | A policy was attached to a service. | `service` | Refresh service authorization and service-to-service access. |
+| `iam.service.policy.removed` | A policy was removed from a service. | `service` | Revoke service permissions and refresh service authorization. |
+
+### Client Events
+
+Use client events when external app inventory, compliance, or automation systems need to track OAuth/OIDC client changes.
+
+| Event Type | What Changed | Subject Type | Subscribe When |
+|---|---|---|---|
+| `client.created` | An OAuth/OIDC client was created. | `client` | Sync application inventory or start downstream app setup. |
+| `client.updated` | Client settings changed. | `client` | Refresh redirect URI, grant, scope, consent, or metadata inventory. |
+| `client.deleted` | A client was deleted. | `client` | Remove app inventory and revoke downstream automation for the client. |
+| `client.status_changed` | A client was enabled, disabled, or otherwise changed status. | `client` | Pause or resume downstream app access. |
+| `client.secret_rotated` | A client secret was rotated. | `client` | Notify operations, refresh compliance evidence, or trigger secret rollout workflows. |
+
+### Session And Token Events
+
+Use session events when security automation or protected services need to react to revoked access.
+
+| Event Type | What Changed | Subject Type | Subscribe When |
+|---|---|---|---|
+| `session.revoked` | A user session was revoked. | `session` | Clear downstream sessions or update security dashboards. |
+| `token.revoked` | A token was revoked. | `token` | Update token denylist caches or notify protected services. |
+
+### API Events
+
+Use API events when gateways, policy engines, or service catalogs need to track protected API records.
+
+| Event Type | What Changed | Subject Type | Subscribe When |
+|---|---|---|---|
+| `api.created` | A protected API record was created. | `api` | Register the API in gateway or policy tooling. |
+| `api.updated` | API metadata or configuration changed. | `api` | Refresh gateway configuration or API catalog data. |
+| `api.status_changed` | API status changed. | `api` | Enable, disable, or update downstream enforcement. |
+| `api.deleted` | A protected API record was deleted. | `api` | Remove gateway or policy references. |
+
+### Service Events
+
+Use service events when platform automation tracks service principals or service records.
+
+| Event Type | What Changed | Subject Type | Subscribe When |
+|---|---|---|---|
+| `service.created` | A service record or service principal was created. | `service` | Register the service in inventory or policy tooling. |
+| `service.updated` | Service metadata or configuration changed. | `service` | Refresh service inventory and service authorization context. |
+| `service.status_changed` | Service status changed. | `service` | Pause, resume, or update service-level automation. |
+| `service.deleted` | A service record was deleted. | `service` | Remove service inventory and authorization references. |
+
+## Which Events To Subscribe To
+
+Choose the smallest event set that supports the receiver's job.
+
+| Receiver | Recommended Events | Why |
+|---|---|---|
+| User directory sync | `user.created`, `user.updated`, `user.status_changed`, `user.deleted` | Keeps external user records aligned with Auth user lifecycle. |
+| Application access sync | `user.role_assigned`, `user.role_removed`, `role.permissions_changed`, `iam.policy.updated` | Keeps app authorization aligned with Auth roles and policies. |
+| Tenant provisioning | `tenant.created`, `tenant.updated`, `tenant.status_changed`, `tenant.deleted` | Creates, updates, suspends, or deprovisions tenant resources. |
+| Tenant membership sync | `tenant_member.added`, `tenant_member.removed`, `tenant_member.ownership_transferred` | Keeps external tenant memberships and owners current. |
+| OAuth client inventory | `client.created`, `client.updated`, `client.status_changed`, `client.secret_rotated`, `client.deleted` | Tracks relying-party applications and credential rotation. |
+| API gateway configuration | `api.created`, `api.updated`, `api.status_changed`, `api.deleted`, `permission.created`, `permission.updated`, `permission.deleted`, `iam.policy.updated` | Refreshes routing and authorization enforcement. |
+| Service authorization | `service.created`, `service.updated`, `service.status_changed`, `service.deleted`, `iam.service.policy.assigned`, `iam.service.policy.removed` | Keeps service principals and service policies current. |
+| Security automation | `session.revoked`, `token.revoked`, `user.status_changed`, `identity.linked`, `identity.unlinked` | Reacts to revocation, account state changes, and federation changes. |
+
 ## What Events Are For
 
 Use events when another system needs to react after Auth state changes.
@@ -123,11 +235,11 @@ The permissions used by the console are:
 
 Use least privilege. A support operator who only investigates failed deliveries usually needs `webhook-endpoint:read`, not update or delete access. Operators who rotate secrets, replay deliveries, or change subscriptions need `webhook-endpoint:update`.
 
-## Event Types
+## Event Type Records
 
-Event types are the named changes Auth can emit. Each tenant has its own event type catalog and tenant-level enablement settings.
+Event types are the named changes Auth can emit. The complete list is in [Complete event catalog](#complete-event-catalog).
 
-An event type has:
+In the console, each event type record shows:
 
 - Key: stable event name, such as `user.updated`.
 - Category: grouping used for browsing and filtering.
@@ -136,66 +248,7 @@ An event type has:
 - Active status: whether Auth can emit that event type.
 - Tenant setting: whether the selected tenant allows that event type.
 
-Current event categories:
-
-| Category | Covers | Typical Receivers |
-|---|---|---|
-| `USER` | User lifecycle, role assignment, and linked identities. | User sync, CRM, provisioning, security automation. |
-| `IAM` | Roles, permissions, policies, and service-policy links. | Authorization cache, API gateways, policy sync workers. |
-| `TENANT` | Tenant lifecycle, members, and ownership changes. | Billing, provisioning, support, account lifecycle workflows. |
-| `CLIENT` | OAuth/OIDC application client lifecycle and secrets. | Client inventory, compliance checks, application automation. |
-| `SESSION` | Session and token revocation. | Security automation, session dashboards, token denylist sync. |
-| `API` | Protected API records and status changes. | API gateways, authorization policy stores. |
-| `SERVICE` | Service principals or service records. | Service inventory, policy sync, platform automation. |
-
-Current event type catalog:
-
-| Event Type | Category | When It Is Emitted |
-|---|---|---|
-| `user.created` | USER | A user is created. |
-| `user.updated` | USER | Identity or profile fields change. |
-| `user.status_changed` | USER | A user is activated, suspended, locked, or otherwise changes status. |
-| `user.deleted` | USER | A user is deleted. |
-| `user.role_assigned` | USER | A role is assigned to a user. |
-| `user.role_removed` | USER | A role is removed from a user. |
-| `role.created` | IAM | A role is created. |
-| `role.updated` | IAM | A role is updated. |
-| `role.deleted` | IAM | A role is deleted. |
-| `role.permissions_changed` | IAM | A role's permissions change. |
-| `permission.created` | IAM | A permission is created. |
-| `permission.updated` | IAM | A permission is updated. |
-| `permission.deleted` | IAM | A permission is deleted. |
-| `iam.policy.updated` | IAM | An IAM policy is updated. |
-| `policy.created` | IAM | A policy is created. |
-| `policy.deleted` | IAM | A policy is deleted. |
-| `iam.service.policy.assigned` | IAM | A service policy link is assigned. |
-| `iam.service.policy.removed` | IAM | A service policy link is removed. |
-| `tenant.created` | TENANT | A tenant is created. |
-| `tenant.updated` | TENANT | Tenant attributes change. |
-| `tenant.status_changed` | TENANT | A tenant is activated, suspended, or otherwise changes status. |
-| `tenant.deleted` | TENANT | A tenant is deleted. |
-| `tenant_member.added` | TENANT | A member is added to a tenant. |
-| `tenant_member.removed` | TENANT | A member is removed from a tenant. |
-| `tenant_member.ownership_transferred` | TENANT | Tenant ownership is transferred. |
-| `client.created` | CLIENT | An OAuth client is created. |
-| `client.updated` | CLIENT | An OAuth client is updated. |
-| `client.deleted` | CLIENT | An OAuth client is deleted. |
-| `client.status_changed` | CLIENT | A client is enabled, disabled, or otherwise changes status. |
-| `client.secret_rotated` | CLIENT | A client secret is rotated. |
-| `session.revoked` | SESSION | A session is revoked. |
-| `token.revoked` | SESSION | A token is revoked. |
-| `identity.linked` | USER | An external identity is linked to a user. |
-| `identity.unlinked` | USER | An external identity is unlinked from a user. |
-| `api.created` | API | A protected API record is created. |
-| `api.updated` | API | A protected API record is updated. |
-| `api.status_changed` | API | A protected API changes status. |
-| `api.deleted` | API | A protected API record is deleted. |
-| `service.created` | SERVICE | A service principal or service record is created. |
-| `service.updated` | SERVICE | A service record is updated. |
-| `service.status_changed` | SERVICE | A service changes status. |
-| `service.deleted` | SERVICE | A service record is deleted. |
-
-Use the catalog screen before creating subscriptions. It shows the event types available for the selected tenant.
+Use the event type catalog before creating subscriptions. It shows the event types available for the selected tenant and helps administrators decide which events should be routed to each receiver.
 
 ## Tenant Event Type Settings
 
