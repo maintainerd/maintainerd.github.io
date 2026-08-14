@@ -1,0 +1,525 @@
+const internal = "Internal management API";
+const publicApi = "Public identity API";
+const root = "Router root";
+const management = "Management router";
+
+const endpoint = (method, path, summary, surface = internal) => ({
+  method,
+  path,
+  summary,
+  surface
+});
+
+export const apiBaseUrls = [
+  {
+    label: "Internal management API",
+    url: "https://auth.example.com/api/v1",
+    description: "Authenticated console and administration endpoints."
+  },
+  {
+    label: "Public identity API",
+    url: "https://tenant.auth.example.com/api/v1",
+    description: "Browser-facing login, registration, OAuth, account, MFA, and federation endpoints."
+  },
+  {
+    label: "Discovery and operations",
+    url: "https://tenant.auth.example.com",
+    description: "Root-level health, readiness, OpenAPI, OIDC discovery, JWKS, and metrics surfaces."
+  }
+];
+
+export const apiGroups = [
+  {
+    slug: "setup",
+    label: "Setup",
+    description: "Initial bootstrap APIs for first tenant creation, first administrator creation, setup completion, and control-service registration.",
+    endpoints: [
+      endpoint("GET", "/setup/status", "Read whether setup is pending or already completed."),
+      endpoint("POST", "/setup/complete", "Mark the installation setup flow as completed."),
+      endpoint("POST", "/setup/register-control-service", "Register the control-plane service during bootstrap."),
+      endpoint("POST", "/setup/create_tenant", "Create the first tenant during setup."),
+      endpoint("POST", "/setup/create_admin", "Create the first administrator account."),
+      endpoint("POST", "/setup/create_profile", "Create the first administrator profile.")
+    ]
+  },
+  {
+    slug: "operations",
+    label: "Operations",
+    description: "Health, readiness, liveness, OpenAPI, and private metrics endpoints used by load balancers and operators.",
+    endpoints: [
+      endpoint("GET", "/health", "Basic process health check.", root),
+      endpoint("GET", "/healthz", "Kubernetes-style health check alias.", root),
+      endpoint("GET", "/ready", "Readiness probe that checks whether dependencies are available.", root),
+      endpoint("GET", "/readyz", "Kubernetes-style readiness check alias.", root),
+      endpoint("GET", "/livez", "Liveness probe for process supervision.", root),
+      endpoint("GET", "/openapi.json", "Machine-readable OpenAPI document exposed by the Auth service.", root),
+      endpoint("GET", "/metrics", "Prometheus metrics endpoint on the private management router.", management)
+    ]
+  },
+  {
+    slug: "tenant-discovery",
+    label: "Tenant Discovery",
+    description: "Unauthenticated tenant lookup endpoints used by the identity app and console to resolve tenant context before authentication.",
+    endpoints: [
+      endpoint("GET", "/tenant/", "Resolve the default tenant for the request host.", publicApi),
+      endpoint("GET", "/tenant/{name}", "Resolve a tenant by slug, name, or identifier.", publicApi)
+    ]
+  },
+  {
+    slug: "tenants-members",
+    label: "Tenants and Members",
+    description: "Tenant administration APIs for tenant lifecycle, tenant status, tenant membership, and ownership changes.",
+    endpoints: [
+      endpoint("GET", "/tenants/", "List tenants available to the authenticated operator."),
+      endpoint("GET", "/tenants/{tenant_uuid}", "Read one tenant by UUID."),
+      endpoint("POST", "/tenants/", "Create a tenant."),
+      endpoint("PUT", "/tenants/{tenant_uuid}", "Update tenant metadata such as name and status."),
+      endpoint("PUT", "/tenants/{tenant_uuid}/status", "Change the active, inactive, or suspended status for a tenant."),
+      endpoint("DELETE", "/tenants/{tenant_uuid}", "Delete a tenant."),
+      endpoint("GET", "/tenants/{tenant_uuid}/members", "List tenant members."),
+      endpoint("POST", "/tenants/{tenant_uuid}/members", "Add a member to a tenant."),
+      endpoint("PATCH", "/tenants/{tenant_uuid}/members/{tenant_member_uuid}/role", "Change a tenant member role or ownership."),
+      endpoint("DELETE", "/tenants/{tenant_uuid}/members/{tenant_member_uuid}", "Remove a member from a tenant.")
+    ]
+  },
+  {
+    slug: "tenant-settings",
+    label: "Tenant Settings",
+    description: "Per-tenant runtime controls for rate limiting, audit behavior, and maintenance windows.",
+    endpoints: [
+      endpoint("GET", "/tenant-settings/rate-limit", "Read tenant rate-limit configuration."),
+      endpoint("PUT", "/tenant-settings/rate-limit", "Update tenant rate-limit configuration."),
+      endpoint("GET", "/tenant-settings/audit", "Read tenant audit logging configuration."),
+      endpoint("PUT", "/tenant-settings/audit", "Update tenant audit logging configuration."),
+      endpoint("GET", "/tenant-settings/maintenance", "Read tenant maintenance window configuration."),
+      endpoint("PUT", "/tenant-settings/maintenance", "Update tenant maintenance window configuration.")
+    ]
+  },
+  {
+    slug: "users",
+    label: "Users",
+    description: "Administrative user APIs for account lifecycle, status, verification, roles, MFA visibility, identities, devices, sessions, consents, profiles, lockout remediation, and erasure requests.",
+    endpoints: [
+      endpoint("GET", "/users/", "List users with pagination and filtering."),
+      endpoint("GET", "/users/membership-candidates", "List system-tenant users that can be added as tenant members."),
+      endpoint("GET", "/users/{user_uuid}", "Read one user by UUID."),
+      endpoint("POST", "/users/", "Create a user."),
+      endpoint("PUT", "/users/{user_uuid}", "Update a user record."),
+      endpoint("PUT", "/users/{user_uuid}/password", "Set a user's password administratively."),
+      endpoint("PATCH", "/users/{user_uuid}/status", "Change a user's status."),
+      endpoint("PATCH", "/users/{user_uuid}/verify-email", "Mark a user's email as verified."),
+      endpoint("PATCH", "/users/{user_uuid}/verify-phone", "Mark a user's phone number as verified."),
+      endpoint("DELETE", "/users/{user_uuid}", "Delete a user."),
+      endpoint("PUT", "/users/{user_uuid}/force-password-change", "Require a password change on the next login."),
+      endpoint("GET", "/users/{user_uuid}/roles", "List roles assigned to a user."),
+      endpoint("POST", "/users/{user_uuid}/roles", "Assign roles to a user."),
+      endpoint("DELETE", "/users/{user_uuid}/roles/{role_uuid}", "Remove a role from a user."),
+      endpoint("GET", "/users/{user_uuid}/mfa", "Read a user's MFA enrollment status for administration."),
+      endpoint("GET", "/users/{user_uuid}/identities", "List external identities linked to a user."),
+      endpoint("POST", "/users/{user_uuid}/identities", "Link an external identity to a user."),
+      endpoint("DELETE", "/users/{user_uuid}/identities/{identity_uuid}", "Unlink an external identity from a user."),
+      endpoint("GET", "/users/{user_uuid}/devices", "List trusted devices for a user."),
+      endpoint("DELETE", "/users/{user_uuid}/devices/{device_uuid}", "Revoke a user's trusted device."),
+      endpoint("GET", "/users/{user_uuid}/consents", "List consent records for a user."),
+      endpoint("POST", "/users/{user_uuid}/consents/withdraw", "Withdraw consent on behalf of a user."),
+      endpoint("GET", "/users/{user_uuid}/sessions", "List active sessions for a user."),
+      endpoint("DELETE", "/users/{user_uuid}/sessions/{session_uuid}", "Revoke a single user session."),
+      endpoint("DELETE", "/users/{user_uuid}/sessions", "Revoke all sessions for a user."),
+      endpoint("POST", "/users/{user_uuid}/unlock", "Clear a user's failed-login lockout."),
+      endpoint("GET", "/users/{user_uuid}/profiles", "List profiles for a user."),
+      endpoint("POST", "/users/{user_uuid}/profiles", "Create a profile for a user."),
+      endpoint("GET", "/users/{user_uuid}/profiles/{profile_uuid}", "Read one user profile."),
+      endpoint("PUT", "/users/{user_uuid}/profiles/{profile_uuid}", "Update one user profile."),
+      endpoint("DELETE", "/users/{user_uuid}/profiles/{profile_uuid}", "Delete one user profile."),
+      endpoint("POST", "/users/{user_uuid}/erasure-requests", "Create an administrative data-erasure request for a user.")
+    ]
+  },
+  {
+    slug: "account-self-service",
+    label: "Account Self-Service",
+    description: "Authenticated user-owned APIs for account details, profile management, devices, sessions, consent, recovery, settings, external identity links, and self-service erasure.",
+    endpoints: [
+      endpoint("GET", "/account/", "Read the authenticated user's account.", publicApi),
+      endpoint("POST", "/account/email/change", "Start an email change flow.", publicApi),
+      endpoint("POST", "/account/email/verify", "Verify and complete an email change.", publicApi),
+      endpoint("POST", "/account/phone/send-verification", "Send a phone verification code.", publicApi),
+      endpoint("POST", "/account/phone/verify", "Verify a phone number.", publicApi),
+      endpoint("PUT", "/account/username", "Change the authenticated user's username.", publicApi),
+      endpoint("PUT", "/account/password", "Change the authenticated user's password.", publicApi),
+      endpoint("DELETE", "/account/", "Delete the authenticated user's account.", publicApi),
+      endpoint("GET", "/account/export", "Export the authenticated user's account data.", publicApi),
+      endpoint("GET", "/account/sessions", "List the authenticated user's sessions.", publicApi),
+      endpoint("DELETE", "/account/sessions", "Revoke all sessions for the authenticated user.", publicApi),
+      endpoint("DELETE", "/account/sessions/others", "Revoke all sessions except the current session.", publicApi),
+      endpoint("DELETE", "/account/sessions/{session_uuid}", "Revoke one session owned by the authenticated user.", publicApi),
+      endpoint("POST", "/account/consent", "Record consent for the authenticated user.", publicApi),
+      endpoint("GET", "/me/devices", "List the authenticated user's trusted devices.", publicApi),
+      endpoint("DELETE", "/me/devices/{device_uuid}", "Remove one trusted device from the authenticated user.", publicApi),
+      endpoint("POST", "/me/erasure-request", "Request erasure of the authenticated user's data.", publicApi),
+      endpoint("GET", "/profile/", "Read the authenticated user's default profile.", publicApi),
+      endpoint("POST", "/profile/", "Create or update the default profile.", publicApi),
+      endpoint("PUT", "/profile/", "Update the default profile.", publicApi),
+      endpoint("DELETE", "/profile/", "Delete the default profile.", publicApi),
+      endpoint("GET", "/profiles/", "List all profiles for the authenticated user.", publicApi),
+      endpoint("POST", "/profiles/", "Create a profile for the authenticated user.", publicApi),
+      endpoint("GET", "/profiles/{profile_uuid}", "Read one profile owned by the authenticated user.", publicApi),
+      endpoint("PUT", "/profiles/{profile_uuid}", "Update one profile owned by the authenticated user.", publicApi),
+      endpoint("PUT", "/profiles/{profile_uuid}/set-default", "Set a profile as the default profile.", publicApi),
+      endpoint("DELETE", "/profiles/{profile_uuid}", "Delete one profile owned by the authenticated user.", publicApi),
+      endpoint("POST", "/profiles/{profile_uuid}/picture", "Upload a profile picture.", publicApi),
+      endpoint("DELETE", "/profiles/{profile_uuid}/picture", "Delete a profile picture.", publicApi),
+      endpoint("GET", "/profiles/{profile_uuid}/picture", "Read a profile picture.", publicApi),
+      endpoint("POST", "/recovery/backup-code", "Recover an account by verifying a backup code.", publicApi),
+      endpoint("GET", "/account/identities/", "List external identities linked to the authenticated user.", publicApi),
+      endpoint("POST", "/account/identities/link", "Link an external identity to the authenticated user.", publicApi),
+      endpoint("POST", "/account/identities/link/start", "Start an OAuth identity-link redirect.", publicApi),
+      endpoint("POST", "/account/identities/link/callback", "Complete an OAuth identity-link callback.", publicApi),
+      endpoint("DELETE", "/account/identities/{identity_uuid}", "Unlink an external identity from the authenticated user.", publicApi),
+      endpoint("POST", "/user-settings/", "Create or update user settings.", publicApi),
+      endpoint("GET", "/user-settings/", "Read user settings.", publicApi),
+      endpoint("DELETE", "/user-settings/", "Delete user settings.", publicApi)
+    ]
+  },
+  {
+    slug: "auth",
+    label: "Authentication",
+    description: "Public login, registration, token refresh, logout, password recovery, email verification, magic links, SMS login, MFA challenge completion, and registration context APIs.",
+    endpoints: [
+      endpoint("POST", "/account-link/{token}/confirm", "Confirm an account-link token for the authenticated user.", publicApi),
+      endpoint("POST", "/email-verification/send", "Send an email verification message.", publicApi),
+      endpoint("POST", "/email-verification/verify", "Verify an email address with a code or token.", publicApi),
+      endpoint("POST", "/forgot-password", "Start a forgot-password flow.", publicApi),
+      endpoint("POST", "/login", "Authenticate with credentials.", publicApi),
+      endpoint("POST", "/refresh-token", "Exchange a refresh token for a fresh token set.", publicApi),
+      endpoint("POST", "/logout", "End a login session.", publicApi),
+      endpoint("POST", "/login/mfa/verify", "Verify an MFA challenge during login.", publicApi),
+      endpoint("POST", "/login/mfa/send-sms", "Send an SMS MFA challenge during login.", publicApi),
+      endpoint("POST", "/login/mfa/send-email-otp", "Send an email OTP MFA challenge during login.", publicApi),
+      endpoint("POST", "/login/mfa/webauthn/begin", "Begin WebAuthn authentication during login MFA.", publicApi),
+      endpoint("POST", "/magic-link/send", "Send a magic-link login email.", publicApi),
+      endpoint("POST", "/magic-link/verify", "Verify a magic-link login token.", publicApi),
+      endpoint("POST", "/register", "Register a new user account.", publicApi),
+      endpoint("POST", "/register/invite", "Complete registration from an invitation.", publicApi),
+      endpoint("POST", "/reset-password", "Reset a password with a reset token.", publicApi),
+      endpoint("POST", "/sms-login/send", "Send an SMS login code.", publicApi),
+      endpoint("POST", "/sms-login/verify", "Verify an SMS login code and issue tokens.", publicApi),
+      endpoint("GET", "/registration_context", "Read tenant/client registration context for the public app.", publicApi)
+    ]
+  },
+  {
+    slug: "oauth-oidc",
+    label: "OAuth 2.0 and OIDC",
+    description: "Authorization server APIs for authorization code, PKCE, consent, token exchange, introspection, discovery, JWKS, userinfo, logout, PAR, device flow, CIBA, broker callbacks, signing keys, and dynamic client registration.",
+    endpoints: [
+      endpoint("GET", "/.well-known/openid-configuration", "OpenID Connect discovery metadata.", root),
+      endpoint("GET", "/.well-known/oauth-authorization-server", "OAuth 2.0 authorization server metadata.", root),
+      endpoint("GET", "/.well-known/jwks.json", "JSON Web Key Set for token verification.", root),
+      endpoint("GET", "/oauth/authorize", "Start an OAuth authorization request.", publicApi),
+      endpoint("GET", "/oauth/consent/{challenge_id}", "Read consent challenge details.", publicApi),
+      endpoint("POST", "/oauth/consent", "Submit a consent allow or deny decision.", publicApi),
+      endpoint("POST", "/oauth/authorize/continue", "Continue an interrupted authorization flow.", publicApi),
+      endpoint("POST", "/oauth/broker/resume", "Resume a brokered identity-provider authorization flow.", publicApi),
+      endpoint("GET", "/oauth/userinfo", "Read OpenID Connect UserInfo claims.", publicApi),
+      endpoint("GET", "/oauth/consent/grants", "List consent grants for the authenticated user.", publicApi),
+      endpoint("DELETE", "/oauth/consent/grants/{grant_uuid}", "Revoke one consent grant.", publicApi),
+      endpoint("POST", "/oauth/device", "Approve a device flow user code.", publicApi),
+      endpoint("POST", "/oauth/device/deny", "Deny a device flow user code.", publicApi),
+      endpoint("POST", "/oauth/ciba/approve", "Approve a CIBA authentication request.", publicApi),
+      endpoint("POST", "/oauth/ciba/deny", "Deny a CIBA authentication request.", publicApi),
+      endpoint("GET", "/oauth/end_session", "Start RP-initiated logout.", publicApi),
+      endpoint("POST", "/oauth/end_session", "Submit RP-initiated logout.", publicApi),
+      endpoint("POST", "/oauth/token", "Exchange grants for tokens.", publicApi),
+      endpoint("POST", "/oauth/revoke", "Revoke access or refresh tokens.", publicApi),
+      endpoint("GET", "/oauth/connections", "List available brokered identity-provider connections.", publicApi),
+      endpoint("POST", "/oauth/par", "Create a pushed authorization request.", publicApi),
+      endpoint("POST", "/oauth/device_authorization", "Start OAuth device authorization.", publicApi),
+      endpoint("POST", "/oauth/ciba", "Start a CIBA backchannel authentication request.", publicApi),
+      endpoint("GET", "/oauth/callback/{idp_identifier}", "Handle brokered identity-provider callback.", publicApi),
+      endpoint("POST", "/oauth/logout/backchannel", "Receive OIDC backchannel logout messages.", publicApi),
+      endpoint("POST", "/oauth/introspect", "Introspect a token from the management surface."),
+      endpoint("GET", "/oauth/signing-keys", "List OAuth signing keys."),
+      endpoint("POST", "/oauth/signing-keys/rotate", "Rotate OAuth signing keys."),
+      endpoint("POST", "/oauth/signing-keys/{kid}/retire", "Retire one OAuth signing key."),
+      endpoint("POST", "/oauth/signing-keys/{kid}/compromise", "Mark one OAuth signing key as compromised."),
+      endpoint("POST", "/oauth/register", "Register an OAuth client dynamically."),
+      endpoint("GET", "/oauth/register/{client_id}", "Read a dynamically registered OAuth client.")
+    ]
+  },
+  {
+    slug: "clients",
+    label: "Applications and Clients",
+    description: "Public client discovery plus administrative OAuth client lifecycle, secrets, configuration, URIs, identity-provider connections, API audiences, permissions, and role assignments.",
+    endpoints: [
+      endpoint("GET", "/client", "Resolve public client context.", publicApi),
+      endpoint("GET", "/client/console", "Resolve console client context.", publicApi),
+      endpoint("GET", "/clients/", "List OAuth clients."),
+      endpoint("GET", "/clients/{client_uuid}", "Read one OAuth client."),
+      endpoint("POST", "/clients/{client_uuid}/rotate-secret", "Rotate a confidential client secret."),
+      endpoint("GET", "/clients/{client_uuid}/config", "Read generated client configuration."),
+      endpoint("POST", "/clients/", "Create an OAuth client."),
+      endpoint("PUT", "/clients/{client_uuid}", "Update an OAuth client."),
+      endpoint("PUT", "/clients/{client_uuid}/status", "Change client status."),
+      endpoint("DELETE", "/clients/{client_uuid}", "Delete an OAuth client."),
+      endpoint("GET", "/clients/{client_uuid}/uris", "List redirect, logout, and origin URI records."),
+      endpoint("POST", "/clients/{client_uuid}/uris", "Create a client URI record."),
+      endpoint("PUT", "/clients/{client_uuid}/uris/{client_uri_uuid}", "Update a client URI record."),
+      endpoint("DELETE", "/clients/{client_uuid}/uris/{client_uri_uuid}", "Delete a client URI record."),
+      endpoint("GET", "/clients/{client_uuid}/identity_providers", "List identity-provider connections for a client."),
+      endpoint("POST", "/clients/{client_uuid}/identity_providers", "Connect an identity provider to a client."),
+      endpoint("PUT", "/clients/{client_uuid}/identity_providers/{client_identity_provider_uuid}", "Update a client identity-provider connection."),
+      endpoint("DELETE", "/clients/{client_uuid}/identity_providers/{client_identity_provider_uuid}", "Remove a client identity-provider connection."),
+      endpoint("GET", "/clients/{client_uuid}/apis", "List APIs assigned to a client."),
+      endpoint("POST", "/clients/{client_uuid}/apis", "Assign APIs to a client."),
+      endpoint("DELETE", "/clients/{client_uuid}/apis/{api_uuid}", "Remove an API assignment from a client."),
+      endpoint("GET", "/clients/{client_uuid}/apis/{api_uuid}/permissions", "List API permissions assigned to a client."),
+      endpoint("POST", "/clients/{client_uuid}/apis/{api_uuid}/permissions", "Assign API permissions to a client."),
+      endpoint("DELETE", "/clients/{client_uuid}/apis/{api_uuid}/permissions/{permission_uuid}", "Remove an API permission from a client."),
+      endpoint("GET", "/clients/{client_uuid}/roles", "List roles assigned to a client."),
+      endpoint("POST", "/clients/{client_uuid}/roles", "Assign a role to a client."),
+      endpoint("DELETE", "/clients/{client_uuid}/roles/{role_uuid}", "Remove a role from a client.")
+    ]
+  },
+  {
+    slug: "identity-providers",
+    label: "Identity Providers",
+    description: "Provider trust configuration, connection testing, federation token exchange, home-realm discovery, SAML SSO, SAML metadata, and SAML single logout.",
+    endpoints: [
+      endpoint("GET", "/identity_providers/", "List identity providers."),
+      endpoint("GET", "/identity_providers/{identity_provider_uuid}", "Read one identity provider."),
+      endpoint("POST", "/identity_providers/", "Create an identity provider."),
+      endpoint("PUT", "/identity_providers/{identity_provider_uuid}", "Update an identity provider."),
+      endpoint("PUT", "/identity_providers/{identity_provider_uuid}/status", "Change identity-provider status."),
+      endpoint("DELETE", "/identity_providers/{identity_provider_uuid}", "Delete an identity provider."),
+      endpoint("POST", "/identity_providers/test", "Test an identity-provider configuration before saving it."),
+      endpoint("POST", "/federation/token", "Exchange an upstream OIDC token for Maintainerd Auth tokens.", publicApi),
+      endpoint("POST", "/federation/oauth2/callback", "Exchange an upstream OAuth2 authorization code.", publicApi),
+      endpoint("GET", "/federation/hrd", "Discover the correct provider from an email domain.", publicApi),
+      endpoint("GET", "/federation/saml/initiate", "Start SAML SP-initiated sign-in.", publicApi),
+      endpoint("POST", "/federation/saml/acs/{provider_identifier}", "Receive a SAML response at the assertion consumer service.", publicApi),
+      endpoint("POST", "/federation/saml/exchange", "Exchange a SAML authorization code for tokens.", publicApi),
+      endpoint("GET", "/federation/saml/metadata/{provider_identifier}", "Read service-provider SAML metadata XML.", publicApi),
+      endpoint("GET", "/federation/saml/logout", "Start SAML logout with a browser redirect.", publicApi),
+      endpoint("POST", "/federation/saml/logout", "Start SAML logout from a posted request.", publicApi),
+      endpoint("GET", "/federation/saml/slo/{provider_identifier}", "Handle SAML single logout with GET binding.", publicApi),
+      endpoint("POST", "/federation/saml/slo/{provider_identifier}", "Handle SAML single logout with POST binding.", publicApi)
+    ]
+  },
+  {
+    slug: "registration-flows",
+    label: "Registration Flows",
+    description: "Registration-flow configuration APIs for self-registration rules, invite-based onboarding behavior, default roles, status, and lifecycle.",
+    endpoints: [
+      endpoint("GET", "/registration_flows/", "List registration flows."),
+      endpoint("GET", "/registration_flows/{registration_flow_uuid}", "Read one registration flow."),
+      endpoint("POST", "/registration_flows/", "Create a registration flow."),
+      endpoint("PUT", "/registration_flows/{registration_flow_uuid}", "Update a registration flow."),
+      endpoint("PATCH", "/registration_flows/{registration_flow_uuid}/status", "Change registration-flow status."),
+      endpoint("DELETE", "/registration_flows/{registration_flow_uuid}", "Delete a registration flow."),
+      endpoint("POST", "/registration_flows/{registration_flow_uuid}/roles", "Assign roles to a registration flow."),
+      endpoint("GET", "/registration_flows/{registration_flow_uuid}/roles", "List roles assigned to a registration flow."),
+      endpoint("DELETE", "/registration_flows/{registration_flow_uuid}/roles/{role_uuid}", "Remove a role from a registration flow.")
+    ]
+  },
+  {
+    slug: "invites",
+    label: "Users and Invites",
+    description: "Invitation management APIs plus the public invite context endpoint used before invited-user registration.",
+    endpoints: [
+      endpoint("GET", "/invite/", "List invitations."),
+      endpoint("GET", "/invite/{invite_uuid}", "Read one invitation."),
+      endpoint("POST", "/invite/", "Send an invitation."),
+      endpoint("POST", "/invite/{invite_uuid}/resend", "Resend an invitation."),
+      endpoint("DELETE", "/invite/{invite_uuid}", "Revoke an invitation."),
+      endpoint("GET", "/invite", "Read public invitation context from an invite token.", publicApi)
+    ]
+  },
+  {
+    slug: "iam",
+    label: "IAM",
+    description: "Resource APIs, permissions, roles, policies, services, policy bindings, policy history, policy bundles, and service-to-service authorization decisions.",
+    endpoints: [
+      endpoint("GET", "/apis/", "List API resource definitions."),
+      endpoint("GET", "/apis/{api_uuid}", "Read one API resource definition."),
+      endpoint("POST", "/apis/", "Create an API resource definition."),
+      endpoint("PUT", "/apis/{api_uuid}", "Update an API resource definition."),
+      endpoint("PUT", "/apis/{api_uuid}/status", "Change API resource status."),
+      endpoint("DELETE", "/apis/{api_uuid}", "Delete an API resource definition."),
+      endpoint("GET", "/permissions/", "List permissions."),
+      endpoint("GET", "/permissions/{permission_uuid}", "Read one permission."),
+      endpoint("POST", "/permissions/", "Create a permission."),
+      endpoint("PUT", "/permissions/{permission_uuid}", "Update a permission."),
+      endpoint("PUT", "/permissions/{permission_uuid}/status", "Change permission status."),
+      endpoint("DELETE", "/permissions/{permission_uuid}", "Delete a permission."),
+      endpoint("GET", "/roles/", "List roles."),
+      endpoint("GET", "/roles/{role_uuid}", "Read one role."),
+      endpoint("POST", "/roles/", "Create a role."),
+      endpoint("PUT", "/roles/{role_uuid}", "Update a role."),
+      endpoint("PUT", "/roles/{role_uuid}/status", "Change role status."),
+      endpoint("DELETE", "/roles/{role_uuid}", "Delete a role."),
+      endpoint("GET", "/roles/{role_uuid}/permissions", "List permissions assigned to a role."),
+      endpoint("POST", "/roles/{role_uuid}/permissions", "Assign permissions to a role."),
+      endpoint("DELETE", "/roles/{role_uuid}/permissions/{permission_uuid}", "Remove a permission from a role."),
+      endpoint("GET", "/policies/", "List policies."),
+      endpoint("GET", "/policies/{policy_uuid}", "Read one policy."),
+      endpoint("GET", "/policies/{policy_uuid}/services", "List services using a policy."),
+      endpoint("GET", "/policies/{policy_uuid}/history", "List policy version history."),
+      endpoint("GET", "/policies/{policy_uuid}/history/{version_number}", "Read one policy history version."),
+      endpoint("POST", "/policies/", "Create a policy."),
+      endpoint("PUT", "/policies/{policy_uuid}", "Update a policy."),
+      endpoint("PUT", "/policies/{policy_uuid}/status", "Change policy status."),
+      endpoint("DELETE", "/policies/{policy_uuid}", "Delete a policy."),
+      endpoint("GET", "/services/me/policy-bundle", "Read the calling service principal policy bundle."),
+      endpoint("GET", "/services/", "List services."),
+      endpoint("GET", "/services/{service_uuid}", "Read one service."),
+      endpoint("POST", "/services/", "Create a service."),
+      endpoint("PUT", "/services/{service_uuid}", "Update a service."),
+      endpoint("PUT", "/services/{service_uuid}/status", "Change service status."),
+      endpoint("DELETE", "/services/{service_uuid}", "Delete a service."),
+      endpoint("POST", "/services/{service_uuid}/policies/{policy_uuid}", "Assign a policy to a service."),
+      endpoint("DELETE", "/services/{service_uuid}/policies/{policy_uuid}", "Remove a policy from a service."),
+      endpoint("POST", "/authorize/", "Evaluate an authorization decision.")
+    ]
+  },
+  {
+    slug: "mfa",
+    label: "MFA",
+    description: "Multi-factor authentication APIs for status, step-up, TOTP, backup codes, WebAuthn passkeys, SMS, email OTP, self reset, and administrator resets.",
+    endpoints: [
+      endpoint("GET", "/mfa/status", "Read enrolled MFA methods and available challenges.", publicApi),
+      endpoint("POST", "/mfa/webauthn/auth/begin", "Begin a WebAuthn assertion for step-up.", publicApi),
+      endpoint("POST", "/mfa/webauthn/auth/finish", "Finish a WebAuthn assertion for step-up.", publicApi),
+      endpoint("POST", "/mfa/step-up/challenge", "Issue a step-up challenge.", publicApi),
+      endpoint("POST", "/mfa/step-up/send-sms", "Send an SMS step-up challenge.", publicApi),
+      endpoint("POST", "/mfa/step-up/send-email-otp", "Send an email OTP step-up challenge.", publicApi),
+      endpoint("POST", "/mfa/step-up/verify", "Verify a step-up challenge.", publicApi),
+      endpoint("POST", "/mfa/totp/enroll", "Begin TOTP enrollment.", publicApi),
+      endpoint("POST", "/mfa/totp/verify", "Finish TOTP enrollment.", publicApi),
+      endpoint("DELETE", "/mfa/totp", "Disable TOTP.", publicApi),
+      endpoint("GET", "/mfa/backup-codes/count", "Read remaining backup-code count.", publicApi),
+      endpoint("POST", "/mfa/backup-codes/regenerate", "Regenerate backup codes.", publicApi),
+      endpoint("POST", "/mfa/webauthn/register/begin", "Begin WebAuthn passkey registration.", publicApi),
+      endpoint("POST", "/mfa/webauthn/register/finish", "Finish WebAuthn passkey registration.", publicApi),
+      endpoint("DELETE", "/mfa/webauthn/{credential_uuid}", "Delete a WebAuthn credential.", publicApi),
+      endpoint("GET", "/mfa/webauthn/{credential_uuid}/download", "Download credential information for a WebAuthn passkey.", publicApi),
+      endpoint("POST", "/mfa/sms/enroll", "Begin SMS MFA enrollment.", publicApi),
+      endpoint("POST", "/mfa/sms/verify", "Finish SMS MFA enrollment.", publicApi),
+      endpoint("DELETE", "/mfa/sms", "Disable SMS MFA.", publicApi),
+      endpoint("POST", "/mfa/email-otp/enroll", "Begin email OTP enrollment.", publicApi),
+      endpoint("POST", "/mfa/email-otp/verify", "Finish email OTP enrollment.", publicApi),
+      endpoint("DELETE", "/mfa/email-otp", "Disable email OTP MFA.", publicApi),
+      endpoint("POST", "/mfa/reset", "Reset the authenticated user's MFA factors.", publicApi),
+      endpoint("POST", "/mfa/admin/users/{user_uuid}/reset", "Reset all MFA factors for a user."),
+      endpoint("POST", "/mfa/admin/users/{user_uuid}/reset/{method}", "Reset one MFA method for a user.")
+    ]
+  },
+  {
+    slug: "security-controls",
+    label: "Security Controls",
+    description: "Tenant security configuration APIs for MFA policy, password policy, session policy, threat controls, lockout rules, registration controls, token policy, and IP restriction rules.",
+    endpoints: [
+      endpoint("GET", "/security-settings/mfa", "Read MFA security settings."),
+      endpoint("PUT", "/security-settings/mfa", "Update MFA security settings."),
+      endpoint("GET", "/security-settings/password", "Read password policy settings."),
+      endpoint("PUT", "/security-settings/password", "Update password policy settings."),
+      endpoint("GET", "/security-settings/session", "Read session policy settings."),
+      endpoint("PUT", "/security-settings/session", "Update session policy settings."),
+      endpoint("GET", "/security-settings/threat", "Read threat protection settings."),
+      endpoint("PUT", "/security-settings/threat", "Update threat protection settings."),
+      endpoint("GET", "/security-settings/lockout", "Read lockout policy settings."),
+      endpoint("PUT", "/security-settings/lockout", "Update lockout policy settings."),
+      endpoint("GET", "/security-settings/registration", "Read registration policy settings."),
+      endpoint("PUT", "/security-settings/registration", "Update registration policy settings."),
+      endpoint("GET", "/security-settings/token", "Read token policy settings."),
+      endpoint("PUT", "/security-settings/token", "Update token policy settings."),
+      endpoint("GET", "/ip-restriction-rules/", "List IP restriction rules."),
+      endpoint("GET", "/ip-restriction-rules/{ip_restriction_rule_uuid}", "Read one IP restriction rule."),
+      endpoint("POST", "/ip-restriction-rules/", "Create an IP restriction rule."),
+      endpoint("PUT", "/ip-restriction-rules/{ip_restriction_rule_uuid}", "Update an IP restriction rule."),
+      endpoint("PATCH", "/ip-restriction-rules/{ip_restriction_rule_uuid}/status", "Change IP restriction rule status."),
+      endpoint("DELETE", "/ip-restriction-rules/{ip_restriction_rule_uuid}", "Delete an IP restriction rule.")
+    ]
+  },
+  {
+    slug: "branding-messaging",
+    label: "Branding and Messaging",
+    description: "Branding records, active theme control, public branding lookup, email and SMS templates, and delivery-provider configuration.",
+    endpoints: [
+      endpoint("GET", "/branding/", "List branding configurations."),
+      endpoint("POST", "/branding/", "Create branding configuration."),
+      endpoint("PUT", "/branding/{branding_uuid}", "Update branding configuration."),
+      endpoint("PATCH", "/branding/{branding_uuid}/restore", "Restore system branding values."),
+      endpoint("PATCH", "/branding/{branding_uuid}/activate", "Activate a branding configuration."),
+      endpoint("DELETE", "/branding/{branding_uuid}", "Delete branding configuration."),
+      endpoint("GET", "/public/branding", "Read public branding for the request tenant.", publicApi),
+      endpoint("GET", "/public/branding/{branding_id}/logo", "Serve a public branding logo asset.", publicApi),
+      endpoint("GET", "/email_templates/", "List email templates."),
+      endpoint("GET", "/email_templates/{email_template_uuid}", "Read one email template."),
+      endpoint("PUT", "/email_templates/{email_template_uuid}", "Update one email template."),
+      endpoint("PATCH", "/email_templates/{email_template_uuid}/status", "Change email template status."),
+      endpoint("GET", "/sms_templates/", "List SMS templates."),
+      endpoint("GET", "/sms_templates/{sms_template_uuid}", "Read one SMS template."),
+      endpoint("PUT", "/sms_templates/{sms_template_uuid}", "Update one SMS template."),
+      endpoint("PATCH", "/sms_templates/{sms_template_uuid}/status", "Change SMS template status."),
+      endpoint("GET", "/email-config/", "Read email delivery configuration."),
+      endpoint("GET", "/email-config/status", "Read email delivery provider status."),
+      endpoint("PUT", "/email-config/", "Update email delivery configuration."),
+      endpoint("GET", "/sms-config/", "Read SMS delivery configuration."),
+      endpoint("GET", "/sms-config/status", "Read SMS delivery provider status."),
+      endpoint("PUT", "/sms-config/", "Update SMS delivery configuration.")
+    ]
+  },
+  {
+    slug: "events-webhooks",
+    label: "Events and Webhooks",
+    description: "Webhook receiver configuration, subscriptions, delivery history, replay, auth event history, event type configuration, event routes, and management audit logs.",
+    endpoints: [
+      endpoint("GET", "/webhook-endpoints/", "List webhook endpoints."),
+      endpoint("GET", "/webhook-endpoints/{webhook_endpoint_uuid}", "Read one webhook endpoint."),
+      endpoint("POST", "/webhook-endpoints/", "Create a webhook endpoint."),
+      endpoint("PUT", "/webhook-endpoints/{webhook_endpoint_uuid}", "Update a webhook endpoint."),
+      endpoint("DELETE", "/webhook-endpoints/{webhook_endpoint_uuid}", "Delete a webhook endpoint."),
+      endpoint("PATCH", "/webhook-endpoints/{webhook_endpoint_uuid}/status", "Change webhook endpoint status."),
+      endpoint("GET", "/webhook-endpoints/{webhook_endpoint_uuid}/subscriptions", "List subscriptions for a webhook endpoint."),
+      endpoint("POST", "/webhook-endpoints/{webhook_endpoint_uuid}/subscriptions", "Add subscriptions to a webhook endpoint."),
+      endpoint("DELETE", "/webhook-endpoints/{webhook_endpoint_uuid}/subscriptions", "Remove subscriptions from a webhook endpoint."),
+      endpoint("GET", "/webhook-endpoints/{webhook_endpoint_uuid}/deliveries", "List delivery history for a webhook endpoint."),
+      endpoint("POST", "/webhook-replay/", "Replay a webhook delivery."),
+      endpoint("GET", "/auth-events/", "List authentication, authorization, and security events."),
+      endpoint("GET", "/auth-events/count", "Count auth events by filters."),
+      endpoint("GET", "/auth-events/export", "Export auth events."),
+      endpoint("GET", "/auth-events/{auth_event_uuid}", "Read one auth event."),
+      endpoint("GET", "/event-types/", "List available event types."),
+      endpoint("GET", "/tenant-event-types/", "Read event types enabled for the tenant."),
+      endpoint("PUT", "/tenant-event-types/", "Enable or disable a tenant event type."),
+      endpoint("GET", "/event-routes/", "List event routes."),
+      endpoint("GET", "/event-routes/{event_route_uuid}", "Read one event route."),
+      endpoint("POST", "/event-routes/", "Create an event route."),
+      endpoint("PUT", "/event-routes/{event_route_uuid}", "Update an event route."),
+      endpoint("DELETE", "/event-routes/{event_route_uuid}", "Delete an event route."),
+      endpoint("GET", "/management-audit-log/", "List management audit log entries."),
+      endpoint("GET", "/management-audit-log/{audit_log_uuid}", "Read one management audit log entry.")
+    ]
+  },
+  {
+    slug: "workload-identity-federation",
+    label: "Workload Identity Federation",
+    description: "Configuration APIs for trusted workload identity federation providers used by services and automation.",
+    endpoints: [
+      endpoint("GET", "/workload-identity-federations/", "List workload identity federation providers."),
+      endpoint("GET", "/workload-identity-federations/{workload_identity_federation_uuid}", "Read one workload identity federation provider."),
+      endpoint("POST", "/workload-identity-federations/", "Create a workload identity federation provider."),
+      endpoint("PUT", "/workload-identity-federations/{workload_identity_federation_uuid}", "Update a workload identity federation provider."),
+      endpoint("DELETE", "/workload-identity-federations/{workload_identity_federation_uuid}", "Delete a workload identity federation provider.")
+    ]
+  },
+  {
+    slug: "dashboard",
+    label: "Dashboard",
+    description: "Aggregate operational summary used by the management console dashboard.",
+    endpoints: [
+      endpoint("GET", "/dashboard/summary", "Read dashboard summary metrics.")
+    ]
+  }
+];
+
+export const apiEndpointCount = apiGroups.reduce((total, group) => total + group.endpoints.length, 0);
