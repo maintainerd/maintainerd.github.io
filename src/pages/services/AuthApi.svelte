@@ -1,5 +1,5 @@
 <script>
-  import PageHero from "$lib/components/PageHero.svelte";
+  import PageHero from "@/components/ui/PageHero.svelte";
 
   const endpointFamilies = [
     { method: "POST", methodKind: "post", title: "Setup", summary: "Bootstrap platform setup, create the initial tenant, and prepare the Auth service for use." },

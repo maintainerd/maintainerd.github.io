@@ -1,18 +1,18 @@
 <script>
   import { onMount } from "svelte";
-  import Footer from "$lib/components/Footer.svelte";
-  import Header from "$lib/components/Header.svelte";
-  import AboutPage from "$lib/pages/AboutPage.svelte";
-  import AuthApiPage from "$lib/pages/AuthApiPage.svelte";
-  import AuthDocsPage from "$lib/pages/AuthDocsPage.svelte";
-  import BlogPage from "$lib/pages/BlogPage.svelte";
-  import CommunityPage from "$lib/pages/CommunityPage.svelte";
-  import HomePage from "$lib/pages/HomePage.svelte";
-  import NotFoundPage from "$lib/pages/NotFoundPage.svelte";
-  import ServiceDetailPage from "$lib/pages/ServiceDetailPage.svelte";
-  import ServicesPage from "$lib/pages/ServicesPage.svelte";
-  import { findService } from "$lib/data/services.js";
-  import { location, startRouter } from "$lib/router.js";
+  import Footer from "@/components/layout/Footer.svelte";
+  import Header from "@/components/layout/Header.svelte";
+  import AboutPage from "@/pages/About.svelte";
+  import AuthApiPage from "@/pages/services/AuthApi.svelte";
+  import AuthDocsPage from "@/pages/services/AuthDocs.svelte";
+  import BlogPage from "@/pages/Blog.svelte";
+  import CommunityPage from "@/pages/Community.svelte";
+  import HomePage from "@/pages/Home.svelte";
+  import NotFoundPage from "@/pages/NotFound.svelte";
+  import ServiceDetailPage from "@/pages/services/ServiceDetail.svelte";
+  import ServicesPage from "@/pages/services/Services.svelte";
+  import { findService } from "@/data/services.js";
+  import { location, startRouter } from "@/utils/router.js";
 
   let current = { path: "/", hash: "" };
 

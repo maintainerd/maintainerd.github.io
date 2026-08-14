@@ -1,6 +1,6 @@
 <script>
-  import PageHero from "$lib/components/PageHero.svelte";
-  import { externalCategories, maintainerdServices } from "$lib/data/services.js";
+  import PageHero from "@/components/ui/PageHero.svelte";
+  import { externalCategories, maintainerdServices } from "@/data/services.js";
 
   let activeCategory = "all";
 

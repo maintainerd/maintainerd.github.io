@@ -1,6 +1,6 @@
 <script>
-  import Terminal from "$lib/components/Terminal.svelte";
-  import { maintainerdServices } from "$lib/data/services.js";
+  import Terminal from "@/components/ui/Terminal.svelte";
+  import { maintainerdServices } from "@/data/services.js";
 
   const auth = maintainerdServices.find((service) => service.slug === "auth");
 </script>

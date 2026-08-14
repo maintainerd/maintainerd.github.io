@@ -1,7 +1,7 @@
 <script>
-  import PageHero from "$lib/components/PageHero.svelte";
-  import Terminal from "$lib/components/Terminal.svelte";
-  import { serviceNav } from "$lib/data/services.js";
+  import PageHero from "@/components/ui/PageHero.svelte";
+  import Terminal from "@/components/ui/Terminal.svelte";
+  import { serviceNav } from "@/data/services.js";
 
   export let service;
 </script>

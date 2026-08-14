@@ -1,9 +1,9 @@
 <script>
   import { onMount, tick } from "svelte";
   import { marked } from "marked";
-  import PageHero from "$lib/components/PageHero.svelte";
-  import { loadDocContent } from "$lib/data/doc-content.js";
-  import { docAnchors, docsGroups, docsSections, findDocSection } from "$lib/data/docs.js";
+  import PageHero from "@/components/ui/PageHero.svelte";
+  import { docAnchors, docsGroups, docsSections, findDocSection } from "@/data/authDocs.js";
+  import { loadDocContent } from "@/utils/docContent.js";
 
   export let hash = "";
 
