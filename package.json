@@ -1,0 +1,25 @@
+{
+  "name": "maintainerd-github-io",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "svelte-kit sync && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "check": "svelte-kit sync && vite build"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@sveltejs/kit": "^2.70.2",
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "svelte": "^5.0.0",
+    "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "marked": "^14.1.3"
+  },
+  "overrides": {
+    "cookie": "^0.7.2"
+  }
+}
