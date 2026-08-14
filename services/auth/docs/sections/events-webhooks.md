@@ -6,7 +6,19 @@ Use this section when an external application needs to receive notifications fro
 
 Auth sends integration events through a transactional outbox. That means the event is written with the business change, then a background relay delivers it to subscribed webhook endpoints and, when configured, to RabbitMQ. Delivery is at least once and unordered, so receivers must deduplicate and fetch current state when they need full details.
 
-Auth events and management audit logs are separate from integration events. Audit concepts are documented in [Audit events](#audit). Deployment-level broker setup is documented in [Deployment](#deployment).
+Integration events are not audit logs and they are not full data exports. They are compact, signed notifications designed for system-to-system workflows. Audit concepts are documented in [Audit events](#audit). Deployment-level broker setup is documented in [Deployment](#deployment).
+
+## Webhooks, Broker Events, And Audit Logs
+
+Auth has three event-related concepts that serve different jobs:
+
+| Feature | Purpose | Audience | Delivery |
+|---|---|---|---|
+| Integration events | Tell external systems that Auth state changed. | Application developers and platform integrators. | HTTPS webhooks and optional RabbitMQ messages. |
+| Webhook delivery history | Show whether a webhook endpoint received an integration event. | Operators investigating integrations. | Console records inside Auth. |
+| Audit events | Record security and administration activity for review. | Security, compliance, and administrators. | Audit views and retention workflows. |
+
+Use integration events when another application must take action. Use audit events when a person needs to review who did what.
 
 ## What Events Are For
 
@@ -24,22 +36,41 @@ Events are signals, not the source of truth. The payload is intentionally thin. 
 
 ## Where To Find It
 
-In the console, open the tenant, then open **Events** or **Webhooks**.
+In the console, open the tenant that owns the integration, then open **Events** or **Webhooks**.
 
 The area usually contains:
 
-- Event type catalog.
-- Tenant event type settings.
-- Webhook endpoint list.
-- Create webhook endpoint.
-- Endpoint detail.
-- Endpoint status controls.
-- Subscription controls.
-- Delivery history.
-- Delivery replay.
-- Broker route configuration when RabbitMQ delivery is used.
+- Event type catalog: the list of event names Auth can emit for the tenant.
+- Tenant event type settings: tenant-level switches that enable or disable event emission.
+- Webhook endpoint list: the HTTPS receivers configured for the tenant.
+- Create webhook endpoint: the form for registering a receiver URL and delivery behavior.
+- Endpoint detail: the endpoint URL, status, retry policy, timeout, and subscription mode.
+- Endpoint status controls: active and inactive states, plus quarantine handling after repeated failures.
+- Subscription controls: the exact event types an endpoint receives when it is not subscribed to everything.
+- Delivery history: the attempt log for endpoint deliveries.
+- Delivery replay: a recovery tool for sending an existing event again.
+- Broker route configuration: RabbitMQ routing for tenants that consume events through a broker.
 
 Only administrators with webhook and event-management permissions should configure this area. Normal end users do not create webhook endpoints.
+
+## The Usual Setup Flow
+
+A clean production setup normally follows this order:
+
+1. Create or select the tenant that owns the integration.
+2. Confirm the tenant's event type catalog is available.
+3. Build the downstream HTTPS receiver.
+4. Add signature verification to the receiver before any business logic.
+5. Add durable deduplication keyed by `event_id`.
+6. Decide which event types the receiver needs.
+7. Create the webhook endpoint in Auth.
+8. Store the signing secret returned by Auth.
+9. Subscribe the endpoint to selected event types.
+10. Trigger one safe change that emits a selected event.
+11. Confirm delivery history shows the expected response.
+12. Add monitoring for failed, pending, and dead-letter deliveries.
+
+Do not start by enabling every event type. Start with the smallest set the receiving system can actually process.
 
 ## How Delivery Works
 
@@ -58,6 +89,10 @@ One Auth change can produce one integration event. The delivery path is:
 
 The original operation does not wait for every external receiver. Webhook and broker delivery happen in the background so Auth can remain responsive while downstream systems process events.
 
+The write gate exists to avoid creating integration-event noise that has nowhere to go. An event is normally written only when the event type is active, the tenant has not disabled that type, and the tenant has at least one active listener. A listener can be a webhook endpoint or an enabled broker route.
+
+Webhook delivery and broker delivery are independent arms of the same outbox row. A temporary RabbitMQ failure should not cause successful webhook fan-out to run again just because the broker arm still needs to publish. Each arm records completion separately, and the outbox row is fully published after both required arms are complete.
+
 ## Delivery Guarantees
 
 Auth provides at-least-once delivery. A receiver can receive the same event more than once because of retries, replay, process restarts, network timeouts, or delivery uncertainty.
@@ -73,43 +108,20 @@ Receivers should:
 - Return success only after the event has been safely stored or processed.
 - Avoid relying on event order as the only correctness mechanism.
 
-## Setup Overview
-
-Set up webhooks in this order:
-
-1. Decide which tenant owns the event configuration.
-2. Decide which downstream system should receive events.
-3. Build an HTTPS endpoint in that downstream system.
-4. Implement signature verification using the raw request body.
-5. Implement deduplication using `event_id`.
-6. Decide which event types the receiver needs.
-7. Create the webhook endpoint in Auth.
-8. Store the signing secret returned at creation time.
-9. Subscribe the endpoint to selected events, or enable `subscribe_all` when the receiver intentionally handles every event.
-10. Trigger a safe test change.
-11. Review delivery history.
-12. Replay a delivery when testing or recovery requires it.
-13. Configure RabbitMQ routes only when broker-based consumption is required.
-
-Do not subscribe a receiver to every event unless it is designed to process every event category. Narrow subscriptions reduce noise, operational load, and accidental data coupling.
-
 ## Required Administrative Access
 
 Webhook and event configuration is tenant-scoped.
 
-Typical setup requires permission to:
+The permissions used by the console are:
 
-- View event types.
-- Enable or disable tenant event types.
-- Create webhook endpoints.
-- Edit webhook endpoints.
-- Activate, deactivate, or delete webhook endpoints.
-- Add or remove endpoint subscriptions.
-- View delivery history.
-- Replay deliveries.
-- Create or edit broker routes when RabbitMQ is used.
+| Permission | Allows |
+|---|---|
+| `webhook-endpoint:read` | View event types, tenant event settings, webhook endpoints, endpoint subscriptions, delivery history, and broker routes. |
+| `webhook-endpoint:create` | Create webhook endpoints and broker routes. |
+| `webhook-endpoint:update` | Edit webhook endpoints, rotate signing secrets, activate or deactivate endpoints, change subscriptions, enable or disable tenant event types, update broker routes, and replay deliveries. |
+| `webhook-endpoint:delete` | Delete webhook endpoints and broker routes. |
 
-These permissions are commonly grouped under webhook endpoint administration. Use least privilege so operators who only investigate deliveries do not also rotate secrets or change subscriptions.
+Use least privilege. A support operator who only investigates failed deliveries usually needs `webhook-endpoint:read`, not update or delete access. Operators who rotate secrets, replay deliveries, or change subscriptions need `webhook-endpoint:update`.
 
 ## Event Types
 
@@ -126,15 +138,15 @@ An event type has:
 
 Current event categories:
 
-```text
-USER
-IAM
-TENANT
-CLIENT
-SESSION
-API
-SERVICE
-```
+| Category | Covers | Typical Receivers |
+|---|---|---|
+| `USER` | User lifecycle, role assignment, and linked identities. | User sync, CRM, provisioning, security automation. |
+| `IAM` | Roles, permissions, policies, and service-policy links. | Authorization cache, API gateways, policy sync workers. |
+| `TENANT` | Tenant lifecycle, members, and ownership changes. | Billing, provisioning, support, account lifecycle workflows. |
+| `CLIENT` | OAuth/OIDC application client lifecycle and secrets. | Client inventory, compliance checks, application automation. |
+| `SESSION` | Session and token revocation. | Security automation, session dashboards, token denylist sync. |
+| `API` | Protected API records and status changes. | API gateways, authorization policy stores. |
+| `SERVICE` | Service principals or service records. | Service inventory, policy sync, platform automation. |
 
 Current event type catalog:
 
@@ -191,6 +203,8 @@ Tenant event type settings are the tenant-level master switches for event emissi
 
 If an event type is disabled for the tenant, Auth should not persist or deliver that event for the tenant. This is different from a webhook subscription. Tenant event settings decide whether Auth emits the event at all. Webhook subscriptions decide which endpoints receive emitted events.
 
+Event types are enabled by default unless the tenant has an explicit disabled setting for that event type. In practice, this means a new tenant can emit catalog events once it has an active listener, but an administrator can turn off noisy or unwanted event types per tenant.
+
 Use tenant event settings when:
 
 - A tenant does not use a category of integration events.
@@ -199,6 +213,8 @@ Use tenant event settings when:
 - Operators need to prevent an event from reaching both webhook and broker listeners.
 
 After changing tenant event settings, trigger a small safe change and review delivery history to confirm the intended behavior.
+
+Example: disabling `user.updated` for a tenant prevents Auth from writing future `user.updated` outbox rows for that tenant. It does not delete old delivery-history records, and it does not stop other user events such as `user.created` unless those are disabled too.
 
 ## Create A Webhook Endpoint
 
@@ -228,9 +244,11 @@ Initial status:    active
 
 Use one endpoint per receiving system. Create separate endpoints when systems have different owners, secrets, retry behavior, subscriptions, or incident response paths.
 
+Each tenant can have up to 50 webhook endpoints. This keeps one tenant from creating an unbounded number of outbound delivery targets.
+
 ## Webhook Endpoint Fields
 
-URL is the HTTPS address Auth delivers to. It must be reachable from the Auth deployment and must not point to private, loopback, link-local, multicast, or otherwise blocked network destinations.
+URL is the HTTPS address Auth delivers to. It must be reachable from the Auth deployment and must not point to private, loopback, link-local, multicast, unspecified, benchmarking, CGNAT, NAT64, or other blocked network destinations. Auth also validates the destination again at delivery time and on redirects.
 
 Description explains who owns the receiver and what it does. Use a clear operational label, such as `Provisioning worker`, `Billing tenant sync`, or `Security event bridge`.
 
@@ -240,13 +258,23 @@ Subscribe all controls whether the endpoint receives all emitted event types. Us
 
 Subscriptions list the exact event types the endpoint receives when `subscribe_all` is disabled.
 
-Maximum retries controls how many retries Auth attempts after the first delivery attempt. For example, a value of `3` means Auth can try up to four total attempts: the first attempt plus three retries.
+Maximum retries controls how many retries Auth attempts after the first delivery attempt. The default is `3`, the minimum is `0`, and the maximum is `10`. For example, a value of `3` means Auth can try up to four total attempts: the first attempt plus three retries.
 
-Timeout seconds controls how long Auth waits for the receiver to respond before treating an attempt as failed.
+Timeout seconds controls how long Auth waits for the receiver to respond before treating an attempt as failed. The default is `30`, the minimum is `1`, and the maximum is `120`.
 
 Signing secret is generated by Auth and returned when the endpoint is created or when the secret is rotated. Store it immediately in the receiver's secret manager. Auth does not show the existing secret again later.
 
 Metadata can store operational labels for the endpoint. Do not store receiver secrets in metadata.
+
+Recommended endpoint settings:
+
+| Scenario | Subscribe All | Max Retries | Timeout Seconds | Notes |
+|---|---:|---:|---:|---|
+| User sync worker | No | 3-5 | 10-30 | Subscribe only to user and role assignment events. |
+| Authorization cache invalidator | No | 3 | 5-10 | Keep the receiver fast; invalidate cache and return success. |
+| Audit or analytics collector | Yes, only if intentionally broad | 5-10 | 10-30 | Store first, process asynchronously. |
+| Critical provisioning workflow | No | 5-10 | 30-60 | Alert on dead letters and replay after outages. |
+| Slow downstream processor | No | 3 | 5-10 | Accept quickly, enqueue internally, and process after responding. |
 
 ## Subscribe To Events
 
@@ -272,6 +300,13 @@ Choose events based on what the receiver actually needs:
 
 If the receiver needs full entity data, it should use the event identifiers to fetch the current record from Auth or its own application database.
 
+Subscriptions are checked at delivery time for each active endpoint:
+
+- If `subscribe_all` is enabled, the endpoint receives every emitted event for the tenant.
+- If `subscribe_all` is disabled, the endpoint receives only the event types listed in its subscriptions.
+- Subscriptions are tenant-isolated. An endpoint cannot subscribe to another tenant's event type.
+- Removing a subscription stops future fan-out for that event type. It does not remove old delivery history.
+
 ## Delivery Headers
 
 Each webhook delivery includes headers that identify the event and allow the receiver to verify the signature.
@@ -292,9 +327,9 @@ Use `X-Maintainerd-Event-Id` as the deduplication key. Use `X-Maintainerd-Delive
 
 Webhook deliveries use the same thin envelope as broker events.
 
-Example structure:
+Example delivery body:
 
-```text
+```json
 {
   "event_id": "9c8e0b3e-2c7b-4fc3-8e13-6c6b083e8f21",
   "event_type": "user.updated",
@@ -313,22 +348,24 @@ Example structure:
 
 Fields:
 
-| Field | Meaning |
-|---|---|
-| `event_id` | Stable UUID for the event. Use it for deduplication. |
-| `event_type` | Canonical event type, such as `client.secret_rotated`. |
-| `event_version` | Event schema version. Current catalog starts at `1`. |
-| `tenant_id` | Tenant UUID that owns the event. Receivers should filter by it when they process multiple tenants. |
-| `actor_user_id` | User UUID for the user who triggered the change when Auth can identify one. It can be empty for system or service actions. |
-| `subject_uuid` | UUID of the changed resource. |
-| `subject_type` | Resource type, such as `user`, `tenant`, `client`, `role`, `permission`, `api`, or `service`. |
-| `changed_fields` | Names of fields that changed. Values are not included. |
-| `payload` | Optional event metadata. It should not contain personal data, secrets, or full resource records. |
-| `occurred_at` | Time the event occurred. |
-| `trace_id` | Trace correlation value when available. |
-| `request_id` | Request correlation value when available. |
+| Field | Type | Meaning |
+|---|---|---|
+| `event_id` | UUID string | Stable ID for the event. Use it for deduplication. Retries and replays keep the same event ID. |
+| `event_type` | String | Canonical event type, such as `client.secret_rotated`. Use it to route receiver logic. |
+| `event_version` | Number | Event schema version. Current catalog starts at `1`. |
+| `tenant_id` | UUID string | Public tenant UUID that owns the event. Receivers that handle multiple tenants should filter by this field. |
+| `actor_user_id` | UUID string or `null` | Public user UUID for the user who triggered the change when Auth can identify one. It is `null` for system or service actions. |
+| `subject_uuid` | UUID string or `null` | Public UUID of the resource that changed. Some system events may not have a single subject. |
+| `subject_type` | String | Resource family, such as `user`, `tenant`, `client`, `role`, `permission`, `policy`, `api`, or `service`. |
+| `changed_fields` | String array | Field names that changed. Values are not included. Empty means the event does not expose field-level detail. |
+| `payload` | Object | Optional event metadata. It should not contain personal data, secrets, credentials, or full resource records. |
+| `occurred_at` | ISO-8601 timestamp | Time Auth recorded the event. |
+| `trace_id` | String | Trace correlation value when available. It may be empty. |
+| `request_id` | String | Request correlation value when available. It may be empty. |
 
 The payload is intentionally not a full object snapshot. For example, `user.updated` tells the receiver which user changed and which field names changed. It does not send the user's new email, status value, profile, roles, tokens, provider credentials, or secrets.
+
+Auth must not expose internal database integer IDs in webhook or broker payloads. Public identifier fields use UUID strings. If a receiver ever sees a numeric `tenant_id`, `actor_user_id`, or resource identifier in an external event payload, treat it as a defect and stop relying on that payload until it is fixed.
 
 ## Verify The Signature
 
@@ -352,14 +389,40 @@ Receiver requirements:
 - Compare signatures using a constant-time comparison.
 - Deduplicate by `event_id` after signature verification.
 
-Example Node.js receiver:
+Example receiver storage table:
+
+```sql
+CREATE TABLE maintainerd_webhook_events (
+  event_id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL,
+  event_type TEXT NOT NULL,
+  payload JSONB NOT NULL,
+  stored_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE maintainerd_webhook_jobs (
+  job_id BIGSERIAL PRIMARY KEY,
+  event_id UUID NOT NULL REFERENCES maintainerd_webhook_events(event_id),
+  job_type TEXT NOT NULL,
+  subject_uuid UUID,
+  tenant_id UUID NOT NULL,
+  status TEXT NOT NULL DEFAULT 'queued',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
+Example Node.js receiver using Express and PostgreSQL:
 
 ```js
 import crypto from "node:crypto";
 import express from "express";
+import pg from "pg";
 
 const app = express();
+const { Pool } = pg;
+const db = new Pool({ connectionString: process.env.DATABASE_URL });
 const endpointSecret = process.env.MAINTAINERD_WEBHOOK_SECRET;
+const expectedTenantId = process.env.MAINTAINERD_TENANT_ID;
 
 app.use("/maintainerd/auth-events", express.raw({ type: "application/json" }));
 
@@ -398,20 +461,82 @@ app.post("/maintainerd/auth-events", async (req, res) => {
     return res.sendStatus(401);
   }
 
-  const event = JSON.parse(req.body.toString("utf8"));
-
-  if (await alreadyProcessed(event.event_id)) {
-    return res.sendStatus(204);
+  let event;
+  try {
+    event = JSON.parse(req.body.toString("utf8"));
+  } catch {
+    return res.sendStatus(400);
   }
 
-  await storeEventIdempotently(event.event_id, event);
-  await processEvent(event);
+  if (event.tenant_id !== expectedTenantId) {
+    return res.sendStatus(403);
+  }
+
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+    const result = await client.query(
+      `INSERT INTO maintainerd_webhook_events
+         (event_id, tenant_id, event_type, payload)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (event_id) DO NOTHING`,
+      [event.event_id, event.tenant_id, event.event_type, event]
+    );
+
+    if (result.rowCount === 0) {
+      await client.query("ROLLBACK");
+      return res.sendStatus(204);
+    }
+
+    await processEvent(client, event);
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("failed to store Maintainerd webhook event", error);
+    return res.sendStatus(500);
+  } finally {
+    client.release();
+  }
 
   return res.sendStatus(204);
 });
+
+async function processEvent(client, event) {
+  switch (event.event_type) {
+    case "user.created":
+    case "user.updated":
+    case "user.status_changed":
+      await enqueueUserSync(client, event, event.subject_uuid);
+      break;
+    case "role.permissions_changed":
+    case "iam.policy.updated":
+      await enqueueAuthorizationCacheRefresh(client, event, event.tenant_id);
+      break;
+    default:
+      break;
+  }
+}
+
+async function enqueueUserSync(client, event, subjectUuid) {
+  await client.query(
+    `INSERT INTO maintainerd_webhook_jobs
+       (event_id, job_type, subject_uuid, tenant_id)
+     VALUES ($1, 'sync_user', $2, $3)`,
+    [event.event_id, subjectUuid, event.tenant_id]
+  );
+}
+
+async function enqueueAuthorizationCacheRefresh(client, event, tenantId) {
+  await client.query(
+    `INSERT INTO maintainerd_webhook_jobs
+       (event_id, job_type, tenant_id)
+     VALUES ($1, 'refresh_authorization_cache', $2)`,
+    [event.event_id, tenantId]
+  );
+}
 ```
 
-Store the secret outside the application source code. Rotate it from the Auth console if it may have been exposed.
+Store the endpoint secret outside the application source code. Rotate it from the Auth console if it may have been exposed. The route above must be reachable through the HTTPS URL registered on the webhook endpoint.
 
 ## Process Events Safely
 
@@ -429,6 +554,19 @@ Webhook receivers should follow this processing pattern:
 10. Return a success status only after the event is safely handled.
 
 Do not trust `changed_fields` as authorization. It is a synchronization hint. Authorization decisions should use validated Auth tokens, service credentials, permissions, and policies. API protection is covered in [Protect an API](#protect-api).
+
+Receiver response rules:
+
+| Receiver Result | What To Return | Why |
+|---|---|---|
+| Signature is invalid | `401` or `403` | Auth should not treat the delivery as accepted. |
+| Tenant is not expected | `403` | The receiver should reject events outside its configured tenant set. |
+| Event was already processed | `204` | Duplicate delivery is safe and should not retry. |
+| Event was stored and queued | `200`, `202`, or `204` | Auth treats any final status lower than 300 as success. |
+| Receiver is temporarily unavailable | `500`, `502`, `503`, or timeout | Auth should retry according to endpoint settings. |
+| Event cannot ever be processed by this receiver | `400` or another non-2xx status | Auth retries until attempts are exhausted, then dead-letters. Use this only when retrying is acceptable operationally. |
+
+For slow work, store the event and enqueue a job, then return success. Do not keep the webhook request open while performing long external calls.
 
 ## Delivery History
 
@@ -452,7 +590,7 @@ Useful fields:
 Final status values:
 
 - `pending`: Auth will retry when the next retry time is reached.
-- `success`: The receiver returned a status lower than 300.
+- `success`: The receiver returned a final status lower than 300.
 - `dead_letter`: Auth exhausted attempts or the event could no longer be delivered.
 
 Use delivery history to answer:
@@ -464,6 +602,18 @@ Use delivery history to answer:
 - Did the endpoint become quarantined?
 - Which event ID should the receiver use for deduplication?
 
+## Endpoint Lifecycle
+
+Webhook endpoints move through these operational states:
+
+| Status | Meaning | New Deliveries |
+|---|---|---|
+| `active` | The endpoint is enabled and can receive matching events. | Yes |
+| `inactive` | An administrator disabled the endpoint. | No |
+| `quarantined` | Auth disabled the endpoint after sustained failures. | No |
+
+Reactivating an inactive or quarantined endpoint clears the consecutive failure counter. After reactivation, replay only the events that the receiver actually needs to recover.
+
 ## Retry, Replay, And Quarantine
 
 Retries happen automatically for failed deliveries while attempts remain.
@@ -472,21 +622,34 @@ Retry behavior:
 
 - The first attempt happens when the relay fans out the event.
 - Additional attempts are scheduled in delivery history.
-- Backoff uses jitter and is capped.
 - Timeout is controlled per endpoint.
 - Max retries is controlled per endpoint.
+- Retry backoff uses jitter and is capped at about one minute.
+- The background retry worker checks pending retries periodically, so a retry may not fire at the exact second shown in delivery history.
 
 Replay is a manual recovery tool. Use it when a receiver had a temporary outage, a downstream processor failed after accepting the delivery, or a developer wants to retest handling for an existing event.
 
-Replay sends the same event ID again. Receivers must handle this as a duplicate unless their recovery process intentionally reprocesses it.
+Replay sends the same event ID again and creates a new delivery-history record marked as replay. Receivers must handle this as a duplicate unless their recovery process intentionally reprocesses it.
 
 Quarantine protects Auth and receivers from repeated failures. After sustained dead-lettered deliveries, Auth marks the endpoint as quarantined and stops sending new deliveries to it. Fix the receiver, then reactivate the endpoint and replay any required events.
+
+Auth quarantines an endpoint after 10 consecutive dead-lettered deliveries. A successful delivery resets the consecutive failure counter.
 
 ## RabbitMQ Event Routing
 
 RabbitMQ is optional. Use it when downstream systems prefer broker consumption instead of HTTPS webhooks.
 
-To enable broker delivery, operators configure:
+Use RabbitMQ when:
+
+- Multiple consumers need the same event stream.
+- Consumers are already built around queues.
+- A receiver should not expose an HTTPS webhook endpoint.
+- Downstream processing is asynchronous and fan-out belongs in the broker.
+- Operations wants queue depth, dead-letter queues, and broker-side routing controls.
+
+Use webhooks when one external system needs a direct HTTPS callback and can own signature verification.
+
+To enable broker delivery, operators configure the broker connection:
 
 ```env
 RABBITMQ_URL=amqps://maintainerd-auth:secret@rabbitmq.example.internal:5671/
@@ -508,6 +671,33 @@ tenant_member.*
 iam.#
 #
 ```
+
+Broker messages use:
+
+| Message Property | Value |
+|---|---|
+| Exchange | `maintainerd-auth.events` |
+| Exchange type | Durable topic exchange |
+| Routing key | Event type, such as `user.updated` |
+| Content type | `application/json` |
+| Message ID | Event ID |
+| Type | Event type |
+| Delivery mode | Persistent |
+
+Tenant broker routes decide which event types Auth publishes to RabbitMQ for a tenant. A configured broker connection alone is not enough; the selected tenant also needs an enabled broker route for the event type.
+
+Recommended broker setup:
+
+1. Configure `RABBITMQ_URL` with an `amqps://` URL.
+2. Give Auth credentials that can declare the `maintainerd-auth.events` exchange and publish persistent messages.
+3. Create consumer queues owned by downstream systems.
+4. Bind each queue to the routing keys it needs.
+5. In Auth, enable broker routes for the tenant and event types that should publish to RabbitMQ.
+6. Have consumers deduplicate by `event_id`.
+7. Have consumers filter by `tenant_id` when a queue receives events for multiple tenants.
+8. Monitor unroutable messages, queue depth, publish failures, and consumer dead-letter queues.
+
+Auth uses publisher confirms. A broker publish is treated as complete only after the broker acknowledges it. If RabbitMQ is unavailable or the broker does not confirm the publish, the broker arm remains incomplete and the outbox row can be claimed again later.
 
 Broker delivery still uses the same event envelope and at-least-once behavior. Consumers should deduplicate by `event_id`, filter by `tenant_id`, and fetch current state when needed.
 
