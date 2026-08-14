@@ -6,21 +6,25 @@ Use this for local evaluation. For production, keep the same surface model, but 
 
 ## What You Will Run
 
-- `xreyc/maintainerd-auth:latest`: the all-in-one Auth image.
-- PostgreSQL: persistent Auth database.
-- Redis: cache, rate-limit, session, and short-lived state support.
-- nginx: local HTTPS reverse proxy for the browser-facing hostnames.
-- A generated `.env`: local JWT keys, encryption key, HMAC key, database settings, hostnames, and cookie settings.
-- A generated self-signed TLS certificate for the local `.maintainerd.local` hostnames.
+| Component | Purpose |
+|---|---|
+| `xreyc/maintainerd-auth:latest` | The all-in-one Auth image. |
+| PostgreSQL | Persistent Auth database. |
+| Redis | Cache, rate-limit, session, and short-lived state support. |
+| nginx | HTTPS reverse proxy for the browser-facing hostnames used by the quickstart. |
+| Generated `.env` | JWT keys, encryption key, HMAC key, database settings, hostnames, and cookie settings. |
+| Generated TLS certificate | Self-signed certificate for the quickstart `.maintainerd.local` hostnames. |
 
 The Auth image itself serves the backend, admin console, hosted identity UI, workers, probes, metrics, and optional gRPC listener. nginx only gives the local quickstart clean HTTPS hostnames.
 
 ## Prerequisites
 
-- Docker with Compose support.
-- `openssl`.
-- Permission to add local hostnames to your hosts file.
-- A browser where you can accept a one-time self-signed certificate warning.
+| Requirement | Why You Need It |
+|---|---|
+| Docker with Compose support | Runs Auth, PostgreSQL, Redis, and nginx together. |
+| `openssl` | Generates local key material and the quickstart TLS certificate. |
+| Permission to edit the hosts file | Maps the quickstart hostnames to your machine. |
+| Browser certificate approval | The quickstart certificate is self-signed, so the browser asks for one-time approval. |
 
 On Linux and macOS, the hosts file is usually `/etc/hosts`. On Windows, it is usually `C:\Windows\System32\drivers\etc\hosts`.
 
@@ -84,10 +88,12 @@ EOF
 
 These names map the browser and nginx to your local Docker stack:
 
-- `console.auth.maintainerd.local`: admin console.
-- `identity.auth.maintainerd.local`: hosted identity UI.
-- `console-api.auth.maintainerd.local`: internal management API behind nginx.
-- `identity-api.auth.maintainerd.local`: public identity API and OIDC issuer behind nginx.
+| Hostname | What It Opens |
+|---|---|
+| `console.auth.maintainerd.local` | Admin console. |
+| `identity.auth.maintainerd.local` | Hosted identity UI. |
+| `console-api.auth.maintainerd.local` | Internal management API behind nginx. |
+| `identity-api.auth.maintainerd.local` | Public identity API and OIDC issuer behind nginx. |
 
 ## 5. Start Auth
 
@@ -129,30 +135,36 @@ After setup, use the admin console to configure messaging, security, identity pr
 
 ## Local URLs
 
-- Setup wizard: `https://console.auth.maintainerd.local/setup/tenant`
-- Admin console: `https://console.auth.maintainerd.local`
-- Hosted identity UI: `https://identity.auth.maintainerd.local`
-- Public identity API: `https://identity-api.auth.maintainerd.local`
+| URL | Purpose |
+|---|---|
+| `https://console.auth.maintainerd.local/setup/tenant` | Setup wizard. |
+| `https://console.auth.maintainerd.local` | Admin console. |
+| `https://identity.auth.maintainerd.local` | Hosted identity UI. |
+| `https://identity-api.auth.maintainerd.local` | Public identity API and OIDC issuer. |
 
 ## Verify The Runtime
 
 Use the browser and Docker logs for the quickstart verification path:
 
-- Open the console host and confirm the setup wizard loads.
-- Complete the tenant and admin setup screens.
-- Confirm the hosted identity UI can start a sign-in flow.
-- Confirm the Auth container is healthy in Docker.
-- Confirm nginx is routing the console and identity hosts.
+| Check | Expected Result |
+|---|---|
+| Open the console host. | The setup wizard loads. |
+| Complete tenant and admin setup. | The first tenant is active and the admin can sign in. |
+| Open the hosted identity UI. | A sign-in flow can start. |
+| Check the Auth container. | Docker reports the container is running and healthy. |
+| Check nginx routing. | Console and identity hostnames resolve through nginx. |
 
 Use the API reference for exact health, discovery, and JWKS request details when you need command-line probes.
 
 If you need to inspect the private in-container ports from Docker, the Auth container serves:
 
-- `3000`: embedded admin console.
-- `3001`: embedded hosted identity UI.
-- `8080`: internal management API.
-- `8081`: public identity API and OIDC issuer.
-- `8082`: management health and Prometheus metrics.
+| Port | Surface |
+|---:|---|
+| `3000` | Embedded admin console. |
+| `3001` | Embedded hosted identity UI. |
+| `8080` | Internal management API. |
+| `8081` | Public identity API and OIDC issuer. |
+| `8082` | Management health and Prometheus metrics. |
 
 The quickstart does not publish those ports directly. nginx is the entry point.
 
@@ -160,14 +172,16 @@ The quickstart does not publish those ports directly. nginx is the entry point.
 
 After the setup wizard, a useful first pass is:
 
-1. Configure email before testing registration, invites, reset password, magic links, and email verification.
-2. Configure SMS before testing SMS login or SMS MFA.
-3. Review password, MFA, session, lockout, registration, and threat controls.
-4. Create an OAuth client for your app.
-5. Add redirect and post-logout redirect URIs.
-6. Optionally create an external identity provider and attach it to that client.
-7. Start an OAuth login request with that app's `client_id`.
-8. Register services, APIs, permissions, roles, and policies if your app has protected APIs.
+| Order | Task | Why It Comes Early |
+|---:|---|---|
+| 1 | Configure email. | Registration, invites, reset password, magic links, and email verification depend on it. |
+| 2 | Configure SMS if you need it. | SMS login and SMS MFA need provider configuration before testing. |
+| 3 | Review password, MFA, session, lockout, registration, and threat controls. | These settings change how users can sign in and recover accounts. |
+| 4 | Create an OAuth client for your app. | External applications need a registered client before redirecting users to Auth. |
+| 5 | Add redirect and post-logout redirect URIs. | OAuth and logout only work for registered URLs. |
+| 6 | Add an external identity provider if needed and attach it to the client. | Provider login options appear only when the provider is connected to the client. |
+| 7 | Start an OAuth login request with the app's `client_id`. | This proves the client, provider, redirect, and hosted identity flow are connected. |
+| 8 | Register services, APIs, permissions, roles, and policies if your app has protected APIs. | The app needs authorization data before enforcing protected resource access. |
 
 Use **External app setup**, **Federated login per client**, and **Protect an API** for the next guide-level workflows.
 
@@ -220,12 +234,14 @@ If you reset volumes, rerun setup from the browser after starting the stack agai
 
 For production:
 
-- Use real DNS and trusted TLS certificates.
-- Keep the internal management API and management port private.
-- Leave `APP_ENV` unset or set `APP_ENV=production` explicitly. Auth defaults to production mode when `APP_ENV` is not provided.
-- Use `DB_SSLMODE=require` or stricter.
-- Replace sample passwords.
-- Source secrets from a provider such as files, AWS Secrets Manager, AWS SSM, Vault, Azure Key Vault, or GCP Secret Manager.
-- Keep `COOKIE_SECURE=true`.
-- Configure observability before traffic: logs, traces, metrics, health checks, and alerts.
-- Pin a specific `xreyc/maintainerd-auth` image version instead of `latest`.
+| Area | Production Expectation |
+|---|---|
+| DNS and TLS | Use real DNS and trusted TLS certificates. |
+| Private surfaces | Keep the internal management API and management port private. |
+| Runtime environment | Leave `APP_ENV` unset or set `APP_ENV=production` explicitly. Auth defaults to production behavior when `APP_ENV` is not provided. |
+| Database transport | Use `DB_SSLMODE=require` or stricter. |
+| Credentials | Replace sample passwords. |
+| Secret storage | Source secrets from a provider such as files, AWS Secrets Manager, AWS SSM, Vault, Azure Key Vault, or GCP Secret Manager. |
+| Cookies | Keep `COOKIE_SECURE=true`. |
+| Observability | Configure logs, traces, metrics, health checks, and alerts before traffic. |
+| Image tag | Pin a specific `xreyc/maintainerd-auth` image version instead of `latest`. |

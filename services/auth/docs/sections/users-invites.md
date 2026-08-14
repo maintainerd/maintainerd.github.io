@@ -18,15 +18,17 @@ The users list helps administrators find and review accounts.
 
 Common columns:
 
-- Email: the user's contact or login email.
-- Username: optional tenant-local identifier.
-- Phone: optional phone number for SMS, MFA, or recovery.
-- Status: whether the account can be used.
-- Email verified: whether the user proved email ownership.
-- Phone verified: whether the user proved phone ownership.
-- MFA: whether factors are enrolled.
-- Created: when the account was created.
-- Updated or last active: when the account last changed or signed in.
+| Column | What It Means |
+|---|---|
+| Email | User's contact or login email. |
+| Username | Optional tenant-local identifier. |
+| Phone | Optional phone number for SMS, MFA, or recovery. |
+| Status | Whether the account can be used. |
+| Email verified | Whether the user proved email ownership. |
+| Phone verified | Whether the user proved phone ownership. |
+| MFA | Whether factors are enrolled. |
+| Created | When the account was created. |
+| Updated or last active | When the account last changed or signed in. |
 
 The list should not show passwords, password hashes, MFA secrets, backup codes, provider tokens, refresh tokens, access tokens, or session cookies.
 
@@ -36,16 +38,18 @@ Open a user to see account-specific information.
 
 Common sections:
 
-- Account: email, username, phone, status, verification, timestamps, and metadata.
-- Security: password state, MFA summary, lockout state, and recovery state.
-- Roles: product or API roles assigned to the user.
-- Tenant membership: whether the user can administer the tenant.
-- Profiles: display and personal information.
-- Linked identities: external provider accounts attached to this user.
-- Sessions: active or recent sign-in sessions.
-- Devices: remembered or trusted device records.
-- Consents: OAuth clients the user approved.
-- Erasure: deletion or anonymization lifecycle state.
+| Section | What It Shows |
+|---|---|
+| Account | Email, username, phone, status, verification, timestamps, and metadata. |
+| Security | Password state, MFA summary, lockout state, and recovery state. |
+| Roles | Product or API roles assigned to the user. |
+| Tenant membership | Whether the user can administer the tenant. |
+| Profiles | Display and personal information. |
+| Linked identities | External provider accounts attached to this user. |
+| Sessions | Active or recent sign-in sessions. |
+| Devices | Remembered or trusted device records. |
+| Consents | OAuth clients the user approved. |
+| Erasure | Deletion or anonymization lifecycle state. |
 
 Keep authorization and administration visually separate. A user can have application roles without being a tenant member.
 
@@ -53,37 +57,29 @@ Keep authorization and administration visually separate. A user can have applica
 
 Status controls whether the account can participate in Auth flows.
 
-Pending means the user exists but has not completed required onboarding, verification, first password setup, or invite acceptance.
-
-Active means the user can sign in when tenant, client, provider, MFA, rate-limit, and policy checks pass.
-
-Disabled means an administrator or lifecycle process has blocked the account.
-
-Locked means the account is temporarily blocked because of failed login attempts or risk controls.
-
-Deleted or erased means the account has been removed or anonymized according to lifecycle rules.
+| Status | Meaning |
+|---|---|
+| Pending | User exists but has not completed required onboarding, verification, first password setup, or invite acceptance. |
+| Active | User can sign in when tenant, client, provider, MFA, rate-limit, and policy checks pass. |
+| Disabled | Administrator or lifecycle process has blocked the account. |
+| Locked | Account is temporarily blocked because of failed login attempts or risk controls. |
+| Deleted or erased | Account has been removed or anonymized according to lifecycle rules. |
 
 Changing status is sensitive. Disabling a user should block new login, token refresh, and self-service actions.
 
 ## User Actions
 
-Create user creates an account directly. Use it for bootstrap, migration, or controlled provisioning. For normal onboarding, prefer invites.
-
-Edit user changes account fields such as email, username, phone, status, or metadata.
-
-Set password creates or replaces a local Auth password. It should usually require the user to change the password on next login.
-
-Force password change marks the account so the next successful login must rotate the password before normal access.
-
-Verify email or phone marks a contact method as proven. Prefer user-driven verification unless an administrator has strong evidence.
-
-Unlock clears temporary lockout. It should not reset password or MFA unless those actions are performed separately.
-
-Assign roles grants product or API permissions.
-
-Revoke sessions signs the user out from one or more sessions.
-
-Start erasure begins deletion or anonymization workflow.
+| Action | What It Does | Guidance |
+|---|---|---|
+| Create user | Creates an account directly. | Use for bootstrap, migration, or controlled provisioning. For normal onboarding, prefer invites. |
+| Edit user | Changes account fields such as email, username, phone, status, or metadata. | Review downstream identity impact before saving. |
+| Set password | Creates or replaces a local Auth password. | Usually require the user to change the password on next login. |
+| Force password change | Marks the account so the next successful login must rotate the password. | Use after administrator-set passwords or suspected compromise. |
+| Verify email or phone | Marks a contact method as proven. | Prefer user-driven verification unless an administrator has strong evidence. |
+| Unlock | Clears temporary lockout. | Does not reset password or MFA unless those actions are performed separately. |
+| Assign roles | Grants product or API permissions. | Grant least privilege. |
+| Revoke sessions | Signs the user out from one or more sessions. | Use after account risk, password changes, or device loss. |
+| Start erasure | Begins deletion or anonymization workflow. | Confirm lifecycle and retention requirements first. |
 
 ## Invites List
 
@@ -91,47 +87,41 @@ The invites list shows onboarding invitations.
 
 Common columns:
 
-- Email: who is invited.
-- Type: user invite, member invite, or product-specific invite.
-- Status: pending, accepted, expired, revoked, or canceled.
-- Role or access: what the user will receive after acceptance.
-- Expires: when the invite stops working.
-- Invited by: which administrator created it.
-- Created: when it was issued.
+| Column | What It Means |
+|---|---|
+| Email | Who is invited. |
+| Type | User invite, member invite, or product-specific invite. |
+| Status | Pending, accepted, expired, revoked, or canceled. |
+| Role or access | What the user will receive after acceptance. |
+| Expires | When the invite stops working. |
+| Invited by | Which administrator created it. |
+| Created | When it was issued. |
 
 Invites are useful because they preserve intent before the person signs up.
 
 ## Invite Detail Fields
 
-Email decides who can accept the invite when recipient matching is enforced.
-
-Tenant decides where the invite is valid.
-
-Role or access decides what default access is granted after registration.
-
-Registration flow decides what onboarding steps run.
-
-Expiration limits how long the invite can be used.
-
-Status tells whether the invite can still be accepted.
-
-Accepted by links the invite to the user who completed it.
-
-Reason or note helps administrators understand why the invite was created.
+| Field | What It Controls |
+|---|---|
+| Email | Who can accept the invite when recipient matching is enforced. |
+| Tenant | Where the invite is valid. |
+| Role or access | What default access is granted after registration. |
+| Registration flow | Which onboarding steps run. |
+| Expiration | How long the invite can be used. |
+| Status | Whether the invite can still be accepted. |
+| Accepted by | Which user completed the invite. |
+| Reason or note | Why the invite was created. |
 
 ## Invite Actions
 
-Create invite sends or creates a new onboarding path.
-
-Resend invite sends the invitation again without changing who it is for.
-
-Revoke invite makes the invite unusable before expiration.
-
-Cancel invite marks it intentionally withdrawn.
-
-View public invite state lets the hosted identity UI show safe invite context before registration.
-
-Accept invite happens in the hosted identity UI, not the admin console.
+| Action | What It Does |
+|---|---|
+| Create invite | Sends or creates a new onboarding path. |
+| Resend invite | Sends the invitation again without changing who it is for. |
+| Revoke invite | Makes the invite unusable before expiration. |
+| Cancel invite | Marks it intentionally withdrawn. |
+| View public invite state | Lets the hosted identity UI show safe invite context before registration. |
+| Accept invite | Happens in the hosted identity UI, not the admin console. |
 
 ## Admin-Created User Vs Invite
 

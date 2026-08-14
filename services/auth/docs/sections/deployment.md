@@ -8,13 +8,15 @@ Use this page as the deployment runbook. It is intentionally broader than a copy
 
 A healthy Auth deployment should give you:
 
-- A public hosted identity app for login, registration, MFA, consent, password reset, account recovery, profile, sessions, trusted devices, and account self-service.
-- A public identity API and OAuth/OIDC issuer used by browsers, external applications, SDKs, and relying parties.
-- A private management API used by the admin console and trusted operators.
-- A private management port used by infrastructure for readiness, liveness, metrics, and OpenAPI retrieval.
-- A PostgreSQL database that persists tenants, users, clients, policies, roles, MFA state, sessions, OAuth state, audit history, events, and webhooks.
-- A Redis instance for distributed rate limits, cache, token/session revocation, OAuth short-lived state, OTP throttling, and multi-replica coordination.
-- Optional outbound delivery dependencies for SMTP, SMS, webhooks, RabbitMQ event routing, OpenTelemetry, and Core-controlled gRPC.
+| Outcome | What It Provides |
+|---|---|
+| Public hosted identity app | Login, registration, MFA, consent, password reset, account recovery, profile, sessions, trusted devices, and account self-service. |
+| Public identity API and OAuth/OIDC issuer | Browser, external application, SDK, and relying-party identity flows. |
+| Private management API | Console and trusted-operator administration. |
+| Private management port | Readiness, liveness, metrics, and OpenAPI retrieval for infrastructure. |
+| PostgreSQL database | Durable tenants, users, clients, policies, roles, MFA state, sessions, OAuth state, audit history, events, and webhooks. |
+| Redis instance | Distributed rate limits, cache, token/session revocation, OAuth short-lived state, OTP throttling, and multi-replica coordination. |
+| Optional outbound dependencies | SMTP, SMS, webhooks, RabbitMQ event routing, OpenTelemetry, and Core-controlled gRPC. |
 
 ## Runtime Shape
 
@@ -22,19 +24,19 @@ The container image contains the backend and both browser apps. In production yo
 
 The process listens on these HTTP ports:
 
-```text
-:8080  internal management API
-:8081  public identity API and OAuth/OIDC issuer
-:8082  management port for /healthz, /readyz, /livez, /metrics, /openapi.json
-:3000  embedded admin console
-:3001  embedded hosted identity app
-```
+| Port | Surface | Exposure |
+|---:|---|---|
+| `8080` | Internal management API | Private |
+| `8081` | Public identity API and OAuth/OIDC issuer | Public |
+| `8082` | Management port for health, readiness, liveness, metrics, and OpenAPI JSON | Private |
+| `3000` | Embedded admin console | Private |
+| `3001` | Embedded hosted identity app | Public |
 
 The optional gRPC listener is separate:
 
-```text
-:50051  optional gRPC runtime and control-plane surface
-```
+| Port | Surface | Exposure |
+|---:|---|---|
+| `50051` | Optional gRPC runtime and control-plane surface | Private |
 
 Expose only the browser-facing and public identity surfaces that your deployment actually needs. Keep `:8080`, `:8082`, and `:50051` private unless your architecture has a very specific internal route for them.
 
@@ -60,12 +62,14 @@ services:
 
 The image already includes:
 
-- The Go backend binary.
-- The built admin console SPA.
-- The built hosted identity SPA.
-- Runtime CA certificates.
-- `tini` as PID 1 so shutdown signals are forwarded and child processes are reaped.
-- A container healthcheck that checks the internal API, public API, console, and identity app.
+| Included In The Image | Purpose |
+|---|---|
+| Go backend binary | Serves APIs, workers, telemetry, and optional gRPC. |
+| Built admin console SPA | Serves the private administrator UI. |
+| Built hosted identity SPA | Serves the public end-user identity UI. |
+| Runtime CA certificates | Allows outbound TLS verification. |
+| `tini` as PID 1 | Forwards shutdown signals and reaps child processes. |
+| Container healthcheck | Checks the internal API, public API, console, and identity app. |
 
 The image does not include PostgreSQL, Redis, RabbitMQ, SMTP, SMS providers, a TLS certificate, or a reverse proxy. Those are supplied by your platform.
 
@@ -73,22 +77,26 @@ The image does not include PostgreSQL, Redis, RabbitMQ, SMTP, SMS providers, a T
 
 Before Auth starts, provide:
 
-- PostgreSQL 17 or another compatible PostgreSQL deployment.
-- Redis 7 or another compatible Redis deployment.
-- DNS records for the system console host, system identity host, internal API host, and public issuer host.
-- TLS termination for all browser and public API hostnames.
-- A secret source for required credentials.
-- Persistent storage for PostgreSQL.
-- Network policy or firewall rules that separate public, internal, and management surfaces.
+| Required Service Or Control | Why Auth Needs It |
+|---|---|
+| PostgreSQL 17 or compatible PostgreSQL | Durable identity, tenant, OAuth, authorization, event, and audit storage. |
+| Redis 7 or compatible Redis | Shared cache, rate limits, challenge state, revocation, and multi-replica coordination. |
+| DNS records | Browser, API, tenant, and issuer hostnames must resolve predictably. |
+| TLS termination | HTTPS is required for browser security, cookies, OAuth redirects, and WebAuthn. |
+| Secret source | Required credentials and key material must be supplied safely. |
+| Persistent PostgreSQL storage | Auth state must survive container restarts and rollouts. |
+| Network policy or firewall rules | Public, internal, management, and service surfaces need separate exposure. |
 
 Optional platform services:
 
-- SMTP relay for verification, invite, password reset, magic-link, and notification email.
-- SMS provider configuration for SMS login and SMS MFA.
-- RabbitMQ if tenant event routes should publish to a broker.
-- An OpenTelemetry collector for traces and logs.
-- Prometheus scraping for `/metrics`.
-- Core plus gRPC mTLS certificates when Auth is controlled by the Maintainerd ecosystem.
+| Optional Service | Enables |
+|---|---|
+| SMTP relay | Verification, invites, password reset, magic links, and notification email. |
+| SMS provider | SMS login, SMS OTP, phone verification, and SMS MFA. |
+| RabbitMQ | Broker delivery for tenant event routes. |
+| OpenTelemetry collector | Trace and log export. |
+| Prometheus scraping | Metrics collection from the management surface. |
+| Core plus gRPC mTLS certificates | Maintainerd ecosystem provisioning and service-to-service control. |
 
 ## Required Environment
 
@@ -144,6 +152,13 @@ Use full origins. Do not include `/api/v1` in these values.
 
 These hostnames have different jobs: public issuer/API, private management API, hosted identity UI, and admin console UI. Tenant frontend hosts are derived by prepending the tenant DNS slug to the system frontend hostnames.
 
+| Variable | Example | Role |
+|---|---|---|
+| `APP_FRONTEND_CONSOLE_HOSTNAME` | `https://console.auth.example.com` | Admin console origin. |
+| `APP_FRONTEND_IDENTITY_HOSTNAME` | `https://identity.auth.example.com` | Hosted identity origin. |
+| `APP_PRIVATE_HOSTNAME` | `https://console-api.auth.example.com` | Internal management API origin. |
+| `APP_PUBLIC_HOSTNAME` | `https://identity-api.auth.example.com` | Public identity API and OAuth/OIDC issuer origin. |
+
 Because tenant routing depends on the incoming `Host` header, configure your reverse proxy to preserve the original host.
 
 For the full system-vs-tenant URL model and field meanings, see [Hostnames & tenant URLs](#surfaces-hostnames).
@@ -152,13 +167,13 @@ For the full system-vs-tenant URL model and field meanings, see [Hostnames & ten
 
 A typical production proxy layout is:
 
-```text
-console.auth.example.com       -> auth:3000
-identity.auth.example.com      -> auth:3001
-console-api.auth.example.com   -> auth:8080
-identity-api.auth.example.com  -> auth:8081
-auth-management.internal       -> auth:8082
-```
+| Hostname | Upstream | Exposure |
+|---|---|---|
+| `console.auth.example.com` | `auth:3000` | Private unless operators intentionally access it through a public edge. |
+| `identity.auth.example.com` | `auth:3001` | Public. |
+| `console-api.auth.example.com` | `auth:8080` | Private. |
+| `identity-api.auth.example.com` | `auth:8081` | Public. |
+| `auth-management.internal` | `auth:8082` | Private. |
 
 The public internet normally needs:
 

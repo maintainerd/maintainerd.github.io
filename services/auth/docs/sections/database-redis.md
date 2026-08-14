@@ -8,24 +8,28 @@ Auth connects to both dependencies before it starts serving traffic. Readiness s
 
 PostgreSQL stores durable Auth state:
 
-- Tenants, tenant members, tenant settings, lifecycle state, and maintenance settings.
-- Users, profiles, identities, sessions, consents, trusted devices, account state, and data-erasure requests.
-- Services, APIs, permissions, roles, policies, policy history, and workload identity federation.
-- OAuth clients, redirect/origin configuration, grants, authorization codes, refresh tokens, consent challenges, PAR requests, device codes, CIBA requests, broker sessions, token revocations, token exchanges, DPoP nonces, and signing keys.
-- Identity providers, provider domain rules, provider audiences, registration flows, invites, and account-link requests.
-- MFA state such as TOTP secrets, WebAuthn credentials/challenges, backup codes, MFA phones, MFA emails, password history, and lockouts.
-- Branding, email/SMS configuration, email/SMS templates, security settings, IP restriction rules, audit logs, auth events, event routes, webhook endpoints, webhook subscriptions, delivery history, and integration event outbox rows.
+| Data Area | Examples |
+|---|---|
+| Tenant state | Tenants, tenant members, tenant settings, lifecycle state, and maintenance settings. |
+| User state | Users, profiles, identities, sessions, consents, trusted devices, account state, and data-erasure requests. |
+| Authorization state | Services, APIs, permissions, roles, policies, policy history, and workload identity federation. |
+| OAuth state | OAuth clients, redirect/origin configuration, grants, authorization codes, refresh tokens, consent challenges, PAR requests, device codes, CIBA requests, broker sessions, token revocations, token exchanges, DPoP nonces, and signing keys. |
+| Provider and onboarding state | Identity providers, provider domain rules, provider audiences, registration flows, invites, and account-link requests. |
+| MFA state | TOTP secrets, WebAuthn credentials/challenges, backup codes, MFA phones, MFA emails, password history, and lockouts. |
+| Operations and integration state | Branding, email/SMS configuration, templates, security settings, IP restriction rules, audit logs, auth events, event routes, webhook endpoints, subscriptions, delivery history, and integration event outbox rows. |
 
 Redis stores short-lived or performance-sensitive runtime state:
 
-- Global and tenant-aware request rate-limit counters.
-- Credential failure counters and account lockout markers.
-- Cached user context entries used by authorization and middleware.
-- JTI denylist entries for explicitly revoked access tokens.
-- Refresh-token replay payloads for the short overlap window used during refresh rotation.
-- WebAuthn ceremony sessions between begin and finish calls.
-- Cached email and SMS templates.
-- Threat/security helper state that is safe to expire.
+| Runtime State | Why Redis Fits |
+|---|---|
+| Global and tenant-aware request rate-limit counters | Fast shared counters across replicas. |
+| Credential failure counters and account lockout markers | Short-lived abuse-control state. |
+| Cached user context entries | Speeds up authorization and middleware checks. |
+| JTI denylist entries | Fast checks for explicitly revoked access tokens. |
+| Refresh-token replay payloads | Supports the short overlap window used during refresh rotation. |
+| WebAuthn ceremony sessions | Preserves begin/finish ceremony state. |
+| Cached email and SMS templates | Avoids repeated database reads for frequently used templates. |
+| Threat/security helper state | Stores expiring security signals that do not need durable retention. |
 
 Use PostgreSQL for data that must survive restarts. Use Redis for data that should be fast, shared across replicas, and naturally bounded by TTL.
 
@@ -33,19 +37,23 @@ Use PostgreSQL for data that must survive restarts. Use Redis for data that shou
 
 Required PostgreSQL variables:
 
-- `DB_HOST`: PostgreSQL host.
-- `DB_PORT`: PostgreSQL port, usually `5432`.
-- `DB_USER`: PostgreSQL username.
-- `DB_PASSWORD`: required secret-backed password.
-- `DB_NAME`: PostgreSQL database name.
+| Variable | Required | Purpose |
+|---|---|---|
+| `DB_HOST` | Yes | PostgreSQL host. |
+| `DB_PORT` | Yes | PostgreSQL port, usually `5432`. |
+| `DB_USER` | Yes | PostgreSQL username. |
+| `DB_PASSWORD` | Yes | Secret-backed PostgreSQL password. |
+| `DB_NAME` | Yes | PostgreSQL database name. |
 
 Optional PostgreSQL variables:
 
-- `DB_SSLMODE`: optional, default `disable`. Controls PostgreSQL TLS behavior.
-- `DB_MAX_OPEN_CONNS`: optional, default `25`. Maximum open connections in the pool.
-- `DB_MAX_IDLE_CONNS`: optional, default `10`. Maximum idle connections retained by the pool.
-- `DB_CONN_MAX_LIFETIME_SEC`: optional, default `300`. Maximum lifetime for a pooled connection.
-- `DB_STATEMENT_TIMEOUT_MS`: optional, default `30000`. PostgreSQL statement timeout in milliseconds.
+| Variable | Default | Purpose |
+|---|---|---|
+| `DB_SSLMODE` | `disable` | Controls PostgreSQL TLS behavior. |
+| `DB_MAX_OPEN_CONNS` | `25` | Maximum open connections in the pool. |
+| `DB_MAX_IDLE_CONNS` | `10` | Maximum idle connections retained by the pool. |
+| `DB_CONN_MAX_LIFETIME_SEC` | `300` | Maximum lifetime for a pooled connection. |
+| `DB_STATEMENT_TIMEOUT_MS` | `30000` | PostgreSQL statement timeout in milliseconds. |
 
 For the complete environment-variable reference, including secret-provider selection and non-database settings, see [Environment variables](#environment).
 
@@ -99,12 +107,14 @@ The PostgreSQL driver is opened first, then Auth verifies the real database conn
 
 Startup behavior:
 
-- Pool limits are applied before the first ping.
-- Auth retries PostgreSQL connection attempts with exponential backoff.
-- Each ping attempt has a short timeout.
-- If the database remains unavailable, startup fails.
-- GORM is configured with translated database errors so unique and foreign-key violations can map to application-level errors instead of generic 500s.
-- The OpenTelemetry GORM plugin is registered so database work can be traced when telemetry is enabled.
+| Startup Step | Behavior |
+|---|---|
+| Apply pool limits | Limits are set before the first ping. |
+| Retry connection | Auth retries PostgreSQL connection attempts with exponential backoff. |
+| Bound ping time | Each ping attempt has a short timeout. |
+| Fail on unavailable database | If the database remains unavailable, startup fails. |
+| Translate database errors | Unique and foreign-key violations can map to application-level errors instead of generic server errors. |
+| Register telemetry plugin | Database work can be traced when telemetry is enabled. |
 
 ## Migrations
 
@@ -112,12 +122,14 @@ Auth runs database migrations during server startup after PostgreSQL and Redis a
 
 Migration behavior:
 
-- Auth creates `schema_migrations` when it does not exist.
-- Each migration is recorded by version.
-- Already-applied versions are skipped.
-- Pending migrations run in order.
-- A PostgreSQL session-level advisory lock ensures only one instance runs migrations at a time when multiple replicas start against the same database.
-- Startup fails if a migration fails.
+| Migration Behavior | What It Means |
+|---|---|
+| Create `schema_migrations` if missing | Auth can track applied migration versions. |
+| Record each migration by version | Repeat startups know which changes already ran. |
+| Skip already-applied versions | Migrations are not re-applied. |
+| Run pending migrations in order | Schema changes apply predictably. |
+| Use a PostgreSQL advisory lock | Only one replica runs migrations at a time. |
+| Fail startup on migration error | Auth does not serve traffic on a partially migrated schema. |
 
 This means a rolling deployment can start multiple Auth replicas safely against the same database. One replica applies pending migrations while the others wait on the advisory lock and then skip already-applied versions.
 

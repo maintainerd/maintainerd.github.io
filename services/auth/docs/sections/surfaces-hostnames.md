@@ -8,12 +8,14 @@ Use this section when deciding DNS names, reverse-proxy routes, frontend runtime
 
 Auth separates these surfaces:
 
-- Internal management API: operator/admin API used by the console.
-- Public identity API: OAuth/OIDC issuer, hosted login data plane, account self-service, and public client/tenant lookup.
-- Management port: health, readiness, OpenAPI JSON, and Prometheus metrics.
-- Embedded admin console: browser UI for operators.
-- Embedded hosted identity UI: browser UI for end users and OAuth login.
-- Optional gRPC surface: runtime and control-plane machine traffic when enabled.
+| Surface | Audience | Purpose |
+|---|---|---|
+| Internal management API | Console and trusted operators. | Operator/admin API used by the console. |
+| Public identity API | Hosted identity, external applications, and relying parties. | OAuth/OIDC issuer, hosted login data plane, account self-service, and public client/tenant lookup. |
+| Management port | Platform probes and monitoring. | Health, readiness, OpenAPI JSON, and Prometheus metrics. |
+| Embedded admin console | Operators and tenant administrators. | Browser UI for administration. |
+| Embedded hosted identity UI | End users and OAuth browser flows. | Browser UI for login, registration, MFA, consent, recovery, and account self-service. |
+| Optional gRPC surface | Peer services and control-plane automation. | Runtime and control-plane machine traffic when enabled. |
 
 The HTTP API ports are plain process listeners. In production, put TLS termination, DNS, and public/private exposure rules in front of them with a load balancer, ingress, reverse proxy, or platform routing layer.
 
@@ -21,17 +23,21 @@ The HTTP API ports are plain process listeners. In production, put TLS terminati
 
 Default listeners:
 
-- `:8080`: internal management API. Keep this private.
-- `:8081`: public identity API and OAuth/OIDC issuer.
-- `:8082`: management port for probes, `/openapi.json`, and `/metrics`.
-- `:3000`: embedded admin console.
-- `:3001`: embedded hosted identity UI.
+| Port | Surface | Exposure |
+|---:|---|---|
+| `8080` | Internal management API | Private. |
+| `8081` | Public identity API and OAuth/OIDC issuer | Public. |
+| `8082` | Management port for probes, OpenAPI JSON, and metrics | Private. |
+| `3000` | Embedded admin console | Private. |
+| `3001` | Embedded hosted identity UI | Public. |
 
 Configurable listener variables:
 
-- `MANAGEMENT_PORT`: optional, default `8082`. Accepts `8082` or `:8082`.
-- `APP_CONSOLE_PORT`: optional, default `3000`. Accepts `3000` or `:3000`.
-- `APP_IDENTITY_PORT`: optional, default `3001`. Accepts `3001` or `:3001`.
+| Variable | Default | Accepted Shape |
+|---|---|---|
+| `MANAGEMENT_PORT` | `8082` | `8082` or `:8082`. |
+| `APP_CONSOLE_PORT` | `3000` | `3000` or `:3000`. |
+| `APP_IDENTITY_PORT` | `3001` | `3001` or `:3001`. |
 
 The internal API and public API ports are fixed in the current server: internal API on `:8080`, public API on `:8081`.
 
@@ -47,10 +53,12 @@ APP_IDENTITY_PORT=3001
 
 Auth requires four deployment hostnames:
 
-- `APP_PUBLIC_HOSTNAME`: public API/OAuth issuer origin.
-- `APP_PRIVATE_HOSTNAME`: internal management API origin.
-- `APP_FRONTEND_IDENTITY_HOSTNAME`: system-tenant hosted identity UI origin.
-- `APP_FRONTEND_CONSOLE_HOSTNAME`: system-tenant admin console UI origin.
+| Variable | Role |
+|---|---|
+| `APP_PUBLIC_HOSTNAME` | Public API and OAuth/OIDC issuer origin. |
+| `APP_PRIVATE_HOSTNAME` | Internal management API origin. |
+| `APP_FRONTEND_IDENTITY_HOSTNAME` | System-tenant hosted identity UI origin. |
+| `APP_FRONTEND_CONSOLE_HOSTNAME` | System-tenant admin console UI origin. |
 
 Valid shape:
 
@@ -115,13 +123,13 @@ In embedded mode, console browser calls stay on the console origin and identity 
 
 A typical production routing shape is:
 
-```text
-console.auth.example.com        -> auth:3000
-identity.auth.example.com       -> auth:3001
-console-api.auth.example.com    -> auth:8080
-identity-api.auth.example.com   -> auth:8081
-auth-management.internal        -> auth:8082
-```
+| Hostname | Upstream | Exposure |
+|---|---|---|
+| `console.auth.example.com` | `auth:3000` | Private operator access. |
+| `identity.auth.example.com` | `auth:3001` | Public hosted identity. |
+| `console-api.auth.example.com` | `auth:8080` | Private management API. |
+| `identity-api.auth.example.com` | `auth:8081` | Public identity API and issuer. |
+| `auth-management.internal` | `auth:8082` | Private probes and metrics. |
 
 The local quickstart uses the same shape with `.local` hostnames:
 
@@ -150,10 +158,12 @@ Tenant console UI:  https://acme.console.auth.example.com
 
 Auth resolves tenant hosts by comparing the incoming `Host` header to the configured frontend bases:
 
-- Exact match means the system tenant.
-- A single label before the base means a regular tenant slug.
-- Deeper nested hosts are rejected for tenant resolution.
-- Unknown hosts do not resolve to a tenant.
+| Host Match | Meaning |
+|---|---|
+| Exact match to the configured frontend base | System tenant. |
+| A single label before the base | Regular tenant slug. |
+| Deeper nested host | Rejected for tenant resolution. |
+| Unknown host | Does not resolve to a tenant. |
 
 Valid tenant host:
 

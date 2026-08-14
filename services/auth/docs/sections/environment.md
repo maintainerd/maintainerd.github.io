@@ -1,6 +1,6 @@
 # Environment Variables
 
-Auth reads normal runtime settings from environment variables and reads credentials through its configured secret provider. In the default local mode the secret provider is `env`, so secret-backed values are still environment variables. In production, the same secret names can come from Docker secrets, AWS, Vault, GCP, or Azure without changing the application code.
+Auth reads normal runtime settings from environment variables and reads credentials through its configured secret provider. When `SECRET_PROVIDER=env`, secret-backed values are read from process environment variables. In managed deployments, the same secret names can come from Docker secrets, AWS, Vault, GCP, or Azure without changing the application code.
 
 This page is the operator-facing reference for the `maintainerd-auth` service, the embedded console, and the embedded identity app.
 
@@ -8,11 +8,13 @@ This page is the operator-facing reference for the `maintainerd-auth` service, t
 
 At startup Auth:
 
-1. Loads a local `.env` file when one exists.
-2. Selects the secret provider from `SECRET_PROVIDER`.
-3. Loads required host, database, frontend, key, and encryption settings.
-4. Connects to PostgreSQL and Redis.
-5. Starts the REST surfaces, background workers, management port, and optional gRPC listener.
+| Order | Startup Action | Why It Matters |
+|---:|---|---|
+| 1 | Load a `.env` file when one exists. | Allows packaged or Compose-style deployments to provide process configuration. |
+| 2 | Select the secret provider from `SECRET_PROVIDER`. | Decides where secret-backed values are read from. |
+| 3 | Load required host, database, frontend, key, and encryption settings. | Fails fast before serving traffic when critical configuration is missing. |
+| 4 | Connect to PostgreSQL and Redis. | Confirms runtime dependencies before the app accepts requests. |
+| 5 | Start REST surfaces, background workers, management port, and optional gRPC listener. | Makes the configured runtime surfaces available. |
 
 Plain environment variables are used for values that are not credentials, such as hostnames, ports, runtime mode, CORS allowlists, logging, and pool sizes.
 
@@ -24,14 +26,16 @@ Required variables fail startup when missing or empty. Optional variables either
 
 Use these patterns when reading the rest of this page:
 
-- String: a plain value such as `DB_USER=maintainerd`.
-- Origin URL: a full URL with scheme and host, such as `APP_PUBLIC_HOSTNAME=https://identity-api.auth.example.com`.
-- Host and port: a network address such as `REDIS_ADDR=redis.internal:6379`.
-- Boolean: `true` or `false`, such as `REDIS_TLS=true`.
-- Integer seconds or milliseconds: numeric values such as `DB_CONN_MAX_LIFETIME_SEC=300` or `DB_STATEMENT_TIMEOUT_MS=30000`.
-- Go duration: values such as `SETUP_WINDOW_TTL=30m`, `10m`, or `1h`.
-- Comma-separated list: values such as `CORS_ALLOWED_ORIGINS=https://app.example.com,https://admin.example.com`.
-- Secret-backed value: store the logical key in the configured secret provider, such as AWS Secrets Manager secret `maintainerd/prod/auth/db-password` for `DB_PASSWORD`.
+| Value Type | Example | Notes |
+|---|---|---|
+| String | `DB_USER=maintainerd` | Plain non-secret value. |
+| Origin URL | `APP_PUBLIC_HOSTNAME=https://identity-api.auth.example.com` | Use scheme plus host, and include port only when required. |
+| Host and port | `REDIS_ADDR=redis.internal:6379` | Network address without URL scheme. |
+| Boolean | `REDIS_TLS=true` | Use `true` or `false`. |
+| Integer seconds or milliseconds | `DB_CONN_MAX_LIFETIME_SEC=300`, `DB_STATEMENT_TIMEOUT_MS=30000` | Numeric values only. |
+| Go duration | `SETUP_WINDOW_TTL=30m` | Supports values such as `10m`, `30m`, or `1h`. |
+| Comma-separated list | `CORS_ALLOWED_ORIGINS=https://app.example.com,https://admin.example.com` | No JSON array syntax. |
+| Secret-backed value | `DB_PASSWORD` in the configured provider | Store the logical key in the selected secret provider. |
 
 Example production environment using AWS Secrets Manager:
 
@@ -83,23 +87,27 @@ For provider-specific naming rules, rotation guidance, and cloud secret examples
 
 A standalone Auth instance needs these plain variables:
 
-- `APP_ENV`: optional runtime environment, default `production`. These docs assume production behavior; leave this unset or set it to `production` explicitly.
-- `APP_PUBLIC_HOSTNAME`: public API and OAuth issuer origin, for example `https://identity-api.auth.example.com`.
-- `APP_PRIVATE_HOSTNAME`: internal management API origin, for example `https://console-api.auth.example.com`.
-- `APP_FRONTEND_IDENTITY_HOSTNAME`: hosted identity UI origin, for example `https://identity.auth.example.com`.
-- `APP_FRONTEND_CONSOLE_HOSTNAME`: admin console origin, for example `https://console.auth.example.com`.
-- `DB_HOST`: PostgreSQL host.
-- `DB_PORT`: PostgreSQL port.
-- `DB_USER`: PostgreSQL username.
-- `DB_NAME`: PostgreSQL database name.
+| Variable | Required | Purpose |
+|---|---|---|
+| `APP_ENV` | No | Runtime environment. Default is `production`; leave unset or set to `production` explicitly. |
+| `APP_PUBLIC_HOSTNAME` | Yes | Public API and OAuth issuer origin, for example `https://identity-api.auth.example.com`. |
+| `APP_PRIVATE_HOSTNAME` | Yes | Internal management API origin, for example `https://console-api.auth.example.com`. |
+| `APP_FRONTEND_IDENTITY_HOSTNAME` | Yes | Hosted identity UI origin, for example `https://identity.auth.example.com`. |
+| `APP_FRONTEND_CONSOLE_HOSTNAME` | Yes | Admin console origin, for example `https://console.auth.example.com`. |
+| `DB_HOST` | Yes | PostgreSQL host. |
+| `DB_PORT` | Yes | PostgreSQL port. |
+| `DB_USER` | Yes | PostgreSQL username. |
+| `DB_NAME` | Yes | PostgreSQL database name. |
 
 It also needs these secret-backed values:
 
-- `DB_PASSWORD`: PostgreSQL password.
-- `JWT_PRIVATE_KEY`: PEM private key used to sign JWTs.
-- `JWT_PUBLIC_KEY`: PEM public key published through JWKS and used for verification.
-- `APP_ENCRYPTION_KEY`: exactly 32 bytes. Used as the current AES-256 application encryption key.
-- `HMAC_SECRET_KEY`: signing key for signed URLs and short-lived links.
+| Secret | Purpose |
+|---|---|
+| `DB_PASSWORD` | PostgreSQL password. |
+| `JWT_PRIVATE_KEY` | PEM private key used to sign JWTs. |
+| `JWT_PUBLIC_KEY` | PEM public key published through JWKS and used for verification. |
+| `APP_ENCRYPTION_KEY` | Current AES-256 application encryption key; must normalize to exactly 32 bytes. |
+| `HMAC_SECRET_KEY` | Signing key for signed URLs and short-lived links. |
 
 For local quickstart, `examples/quickstart/setup.sh` generates the required key material and appends it to the local `.env`.
 
@@ -107,13 +115,15 @@ For local quickstart, `examples/quickstart/setup.sh` generates the required key 
 
 `SECRET_PROVIDER` selects where Auth reads secret-backed values. Supported values:
 
-- `env`: read secret values directly from environment variables. This is the default and is simplest for the quickstart.
-- `file`: read secret files from `SECRET_FILE_PATH`, default `/run/secrets`.
-- `aws_secrets`: read from AWS Secrets Manager.
-- `aws_ssm`: read from AWS SSM Parameter Store.
-- `vault`: read from HashiCorp Vault KV v2.
-- `gcp`: read from GCP Secret Manager.
-- `azure_kv`: read from Azure Key Vault.
+| Provider | Reads From | Typical Use |
+|---|---|---|
+| `env` | Process environment variables. | Simple deployments and quickstart testing. |
+| `file` | Secret files from `SECRET_FILE_PATH`, default `/run/secrets`. | Docker or Kubernetes secret volume mounts. |
+| `aws_secrets` | AWS Secrets Manager. | AWS deployments with managed secret rotation and access control. |
+| `aws_ssm` | AWS SSM Parameter Store. | AWS deployments already using SSM parameters. |
+| `vault` | HashiCorp Vault KV v2. | Vault-managed infrastructure. |
+| `gcp` | GCP Secret Manager. | Google Cloud deployments. |
+| `azure_kv` | Azure Key Vault. | Azure deployments. |
 
 `SECRET_PREFIX` defaults to `maintainerd/auth`. External providers use it as the namespace or path prefix for Auth secrets.
 

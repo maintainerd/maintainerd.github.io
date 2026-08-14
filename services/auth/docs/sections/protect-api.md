@@ -4,8 +4,10 @@ Use this workflow when an external application owns an API and wants Auth to con
 
 Protecting an API has two parts:
 
-- Authentication proves the caller has a valid Auth-issued access token.
-- Authorization decides whether that caller may perform the requested action on the requested resource.
+| Part | Question It Answers | Failure Result |
+|---|---|---|
+| Authentication | Does the caller have a valid Auth-issued access token? | Treat the request as unauthenticated. |
+| Authorization | May this caller perform this action on this resource? | Treat the request as authenticated but not allowed. |
 
 The API remains responsible for enforcing the decision. Auth issues tokens, publishes signing keys, stores clients and permissions, and can provide central policy decisions. The external API validates the token, checks the required permission, confirms tenant and resource ownership, and rejects requests that do not pass.
 
@@ -15,31 +17,28 @@ For login and token issuance, see [OAuth & OIDC](#oauth-oidc). For client setup,
 
 Use API protection when:
 
-- A web application, single-page application, mobile application, backend service, or integration calls your own backend API.
-- Your API needs to know which tenant, user, service, client, scopes, or permissions are present.
-- You need consistent access rules across application code, backend services, and administrative assignments.
-- The UI should hide actions a user cannot perform, while the API still enforces the same rules server-side.
-- Machine clients need service-to-service access without a human login.
+| Use It When | Why |
+|---|---|
+| A web application, SPA, mobile app, backend service, or integration calls your backend API. | The API needs a trusted caller identity. |
+| Your API needs tenant, user, service, client, scope, or permission context. | Authorization depends on Auth-owned identity and access data. |
+| You need consistent access rules across code, services, and admin assignments. | Auth becomes the shared identity and permission source. |
+| The UI hides actions a user cannot perform. | The API must still enforce the same rule server-side. |
+| Machine clients need service-to-service access without human login. | Backend automation still needs authentication and authorization. |
 
 Do not treat this as a UI-only feature. Buttons, menus, and screens can make the product easier to use, but the protected API must enforce authorization before it reads, changes, or returns protected data.
 
 ## Main Concepts
 
-Resource server is the API that receives protected calls. It validates access tokens and enforces authorization decisions.
-
-Client is the application asking for access. A browser app, backend web app, mobile app, or machine client has its own client record in Auth.
-
-Access token is the credential the client presents to the API. The API should validate access tokens, not ID tokens.
-
-Issuer is the Auth origin that issued the token. The API accepts tokens only from the expected issuer.
-
-Audience identifies the intended API or resource. The API rejects tokens issued for another audience.
-
-Scope describes delegated access requested by the client. Scopes are useful for coarse-grained API access, such as allowing an application to call a projects API.
-
-Permission describes an application action. Permissions are useful for product behavior, such as reading a project, approving an invoice, or inviting a member.
-
-Policy evaluates a caller, action, resource, tenant, and context. Policies are useful when the decision depends on resource ownership, tenant rules, environment, plan, or relationship.
+| Concept | Meaning |
+|---|---|
+| Resource server | API that receives protected calls, validates access tokens, and enforces authorization decisions. |
+| Client | Application asking for access. A browser app, backend web app, mobile app, or machine client has its own client record in Auth. |
+| Access token | Credential the client presents to the API. The API should validate access tokens, not ID tokens. |
+| Issuer | Auth origin that issued the token. The API accepts tokens only from the expected issuer. |
+| Audience | Intended API or resource. The API rejects tokens issued for another audience. |
+| Scope | Delegated access requested by the client, useful for coarse-grained API access. |
+| Permission | Application action, such as reading a project, approving an invoice, or inviting a member. |
+| Policy | Rule evaluation over caller, action, resource, tenant, and context. Useful for ownership, tenant rules, environment, plan, or relationship checks. |
 
 ## Authentication Versus Authorization
 
@@ -57,16 +56,18 @@ Keep those two checks separate in code and in logs. It makes failures easier to 
 
 A standard protected API flow works like this:
 
-1. The application signs in a user or authenticates a machine client through Auth.
-2. Auth issues an access token for the configured API audience and requested scopes.
-3. The application calls the external API and carries the token as a bearer credential.
-4. The API extracts the bearer token before executing business logic.
-5. The API validates the token locally or asks Auth to check token state centrally.
-6. The API resolves tenant, subject, client, audience, scopes, and permissions from trusted token or authorization data.
-7. The API checks whether the caller may perform the requested action.
-8. The API confirms the requested resource belongs to the same tenant or an explicitly allowed cross-tenant relationship.
-9. The API either processes the request or returns the correct denial response.
-10. The API logs the decision with request ID, tenant, subject, client, action, resource, and result.
+| Order | API Flow Step |
+|---:|---|
+| 1 | The application signs in a user or authenticates a machine client through Auth. |
+| 2 | Auth issues an access token for the configured API audience and requested scopes. |
+| 3 | The application calls the external API and carries the token as a bearer credential. |
+| 4 | The API extracts the bearer token before executing business logic. |
+| 5 | The API validates the token locally or asks Auth to check token state centrally. |
+| 6 | The API resolves tenant, subject, client, audience, scopes, and permissions from trusted token or authorization data. |
+| 7 | The API checks whether the caller may perform the requested action. |
+| 8 | The API confirms the requested resource belongs to the same tenant or an explicitly allowed cross-tenant relationship. |
+| 9 | The API processes the request or returns the correct denial response. |
+| 10 | The API logs the decision with request ID, tenant, subject, client, action, resource, and result. |
 
 The bearer credential is normally carried in the `Authorization` header:
 
@@ -80,16 +81,18 @@ Never accept the token only from a query string. Query strings are commonly stor
 
 Set up the protected API in this order:
 
-1. Register the application or machine client that will request tokens.
-2. Register the API as a resource server or service-owned resource in Auth.
-3. Define the audience the API expects.
-4. Define scopes for broad API access.
-5. Define permissions for application actions.
-6. Attach permissions to roles or policies.
-7. Assign roles through users, invites, groups, registration flows, or administrative membership.
-8. Configure which clients may request access to the API.
-9. Configure the external API with issuer, audience, JWKS discovery, and authorization behavior.
-10. Test allowed, denied, expired-token, wrong-audience, and wrong-tenant cases.
+| Order | Setup Step | Result |
+|---:|---|---|
+| 1 | Register the application or machine client that will request tokens. | Auth knows who is asking for access. |
+| 2 | Register the API as a resource server or service-owned resource in Auth. | Auth knows what is being protected. |
+| 3 | Define the audience the API expects. | Tokens can be bound to the intended API. |
+| 4 | Define scopes for broad API access. | Clients can request coarse-grained delegated access. |
+| 5 | Define permissions for application actions. | Roles and policies can represent product actions. |
+| 6 | Attach permissions to roles or policies. | Users or services can receive access through managed assignments. |
+| 7 | Assign roles through users, invites, groups, registration flows, or administrative membership. | Real callers receive the intended access. |
+| 8 | Configure which clients may request access to the API. | Unauthorized clients cannot request that API audience. |
+| 9 | Configure the external API with issuer, audience, JWKS discovery, and authorization behavior. | The API can validate and enforce Auth-issued tokens. |
+| 10 | Test allowed, denied, expired-token, wrong-audience, and wrong-tenant cases. | Integration behavior is proven before users depend on it. |
 
 This page explains the API protection model. The client redirect flow itself is covered in [OAuth & OIDC](#oauth-oidc).
 
@@ -99,13 +102,15 @@ The administrator configuring API protection needs access to the tenant where th
 
 Typical setup requires permission to:
 
-- Create or edit application clients.
-- Create or edit service or resource-server records.
-- Create or edit API audiences, scopes, and permissions.
-- Create or edit roles or policies.
-- Assign roles or membership to users and invited members.
-- Connect clients to allowed identity providers when user login is part of the flow.
-- View audit events when troubleshooting access decisions.
+| Permission Area | Needed For |
+|---|---|
+| Client management | Create or edit application clients. |
+| Service/resource management | Create or edit service or resource-server records. |
+| API and permission management | Create or edit audiences, scopes, and permissions. |
+| Role and policy management | Create or edit roles or policies. |
+| User and membership assignment | Assign roles or membership to users and invited members. |
+| Identity-provider/client connection | Connect clients to allowed providers when user login is part of the flow. |
+| Audit review | Troubleshoot access decisions. |
 
 Use least privilege for ongoing operation. For example, a support administrator may need to view access assignments, while a security administrator or tenant owner should control permission and policy changes.
 

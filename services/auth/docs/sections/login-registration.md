@@ -6,13 +6,15 @@ Login and registration are the hosted identity journeys users see in the browser
 
 Users enter the hosted identity UI when:
 
-- An application sends them to sign in.
-- They open a tenant identity hostname.
-- They accept an invite.
-- They start registration.
-- They reset a password.
-- They complete MFA.
-- They approve consent for an application.
+| Entry Point | Why The User Arrives There |
+|---|---|
+| Application sign-in | An application redirects the user to Auth. |
+| Tenant identity hostname | The user opens the tenant identity experience directly. |
+| Invite acceptance | The user follows an onboarding invite. |
+| Registration | The user starts signup where policy allows it. |
+| Password reset | The user needs account recovery. |
+| MFA challenge | The user must complete a second proof. |
+| Consent | The user approves application access. |
 
 Administrators configure the experience through tenants, clients, identity providers, registration flows, security settings, branding, messaging, and account self-service settings. This page explains the user journey; the detailed configuration pages are [Applications & clients](#clients), [Identity providers](#identity-providers), [Registration flows](#registration-flows), [Messaging](#messaging), and [Security controls](#security).
 
@@ -20,17 +22,19 @@ Administrators configure the experience through tenants, clients, identity provi
 
 The login screen can show:
 
-- Tenant or application branding.
-- Email/password fields.
-- Magic-link option.
-- SMS login option.
-- Social or enterprise provider buttons.
-- SAML SSO option.
-- Registration link when signup is allowed.
-- Forgot-password link.
-- MFA challenge after primary login.
-- Consent screen when an application needs approval.
-- Error or lockout states.
+| Screen Element | Why It Appears |
+|---|---|
+| Tenant or application branding | Branding is configured for the tenant or client. |
+| Email/password fields | Built-in credential login is enabled. |
+| Magic-link option | Email passwordless login is enabled and messaging is configured. |
+| SMS login option | SMS login is enabled and SMS delivery is configured. |
+| Social or enterprise provider buttons | External providers are active and connected to the client. |
+| SAML SSO option | A SAML provider is active and connected to the client. |
+| Registration link | Signup is allowed by tenant, client, and registration flow. |
+| Forgot-password link | Password recovery is enabled for local accounts. |
+| MFA challenge | User or tenant policy requires a second proof. |
+| Consent screen | The application needs user approval. |
+| Error or lockout state | Auth blocked or delayed the flow because a check failed. |
 
 The screen shows a method only when tenant, client, provider, registration, and security policy allow it.
 
@@ -38,32 +42,30 @@ The screen shows a method only when tenant, client, provider, registration, and 
 
 Before rendering the screen, Auth resolves:
 
-- Tenant from hostname or trusted context.
-- Client from the application login request.
-- Tenant status.
-- Client status.
-- Provider connections.
-- Registration policy.
-- Security policy.
-- Branding.
+| Context | How It Affects The Screen |
+|---|---|
+| Tenant from hostname or trusted context | Selects tenant policy, branding, providers, and lifecycle state. |
+| Client from the application login request | Selects redirect, scopes, provider connections, and client status. |
+| Tenant status | Blocks or allows tenant runtime flows. |
+| Client status | Blocks or allows the application flow. |
+| Provider connections | Decides which external provider buttons can appear. |
+| Registration policy | Decides whether signup or invite acceptance is available. |
+| Security policy | Decides password, MFA, lockout, rate-limit, and verification behavior. |
+| Branding | Decides the visual presentation. |
 
 This context decides what the user sees. Backend enforcement must repeat the same checks when the user submits a form or returns from a provider.
 
 ## Login Methods
 
-Email and password lets users sign in with a local Auth-managed credential.
-
-Magic link sends a short-lived email link so users can sign in without a password.
-
-SMS login sends a one-time code to a phone number.
-
-OIDC or OAuth2 login sends users to an external provider such as Google, GitHub, Microsoft, Auth0, Cognito, or GitLab.
-
-SAML login sends users through enterprise SSO.
-
-MFA challenge asks for a second proof after primary login.
-
-Backup-code recovery lets users recover when they lose normal MFA factors.
+| Method | What It Does | Dependency |
+|---|---|---|
+| Email and password | Lets users sign in with a local Auth-managed credential. | Built-in provider and password policy. |
+| Magic link | Sends a short-lived email link so users can sign in without a password. | Email provider, template, and rate limits. |
+| SMS login | Sends a one-time code to a phone number. | SMS provider, template, and phone rules. |
+| OIDC or OAuth2 login | Sends users to an external provider such as Google, GitHub, Microsoft, Auth0, Cognito, or GitLab. | Active provider connected to the client. |
+| SAML login | Sends users through enterprise SSO. | Active SAML provider connected to the client. |
+| MFA challenge | Asks for a second proof after primary login. | MFA enrollment and tenant MFA policy. |
+| Backup-code recovery | Lets users recover when they lose normal MFA factors. | Backup codes and recovery policy. |
 
 Each method has different operational and security cost. Enable only the methods the tenant intends to support.
 
@@ -71,32 +73,29 @@ Each method has different operational and security cost. Enable only the methods
 
 Registration can appear as:
 
-- Public signup.
-- Invite acceptance.
-- Provider-driven signup.
-- Profile completion after first login.
-- Email or phone verification.
-- First password setup.
+| Entry | What It Means |
+|---|---|
+| Public signup | The user can create an account without an invite. |
+| Invite acceptance | The user joins through an invite. |
+| Provider-driven signup | A trusted provider creates or activates the user during login. |
+| Profile completion after first login | The user supplies required profile fields after authentication. |
+| Email or phone verification | The user proves contact ownership. |
+| First password setup | The user sets an initial local password. |
 
 Registration follows the active registration flow for the tenant and client. The available onboarding models and field meanings are documented in [Registration flows](#registration-flows).
 
 ## Fields Users Enter
 
-Email identifies the account for email login, recovery, invite matching, magic links, or verification.
-
-Username is optional and depends on tenant policy.
-
-Password proves access for local Auth accounts.
-
-Phone number is used only when SMS login, phone verification, recovery, or SMS MFA is enabled.
-
-OTP or verification code proves control of email, phone, or an MFA factor.
-
-Provider button starts external login.
-
-Invite link or code proves the user has an onboarding invitation.
-
-Profile fields collect display information after or during registration.
+| Field Or Control | What It Is Used For |
+|---|---|
+| Email | Email login, recovery, invite matching, magic links, or verification. |
+| Username | Optional tenant-local identifier when policy allows it. |
+| Password | Local Auth credential proof. |
+| Phone number | SMS login, phone verification, recovery, or SMS MFA when enabled. |
+| OTP or verification code | Proof of email, phone, or MFA factor control. |
+| Provider button | Starts external login. |
+| Invite link or code | Proves the user has an onboarding invitation. |
+| Profile fields | Collect display information after or during registration. |
 
 ## Recovery Links
 
@@ -114,16 +113,16 @@ Login is a public user flow, but configuration requires administrator permission
 
 Administrators need permissions to:
 
-- Enable or disable login methods.
-- Configure providers.
-- Configure registration flows.
-- Configure password and lockout policy.
-- Configure MFA.
-- Configure messaging.
-- Configure branding.
-- Unlock users.
-- Reset passwords.
-- Revoke sessions.
+| Permission Area | What It Allows |
+|---|---|
+| Login method management | Enable or disable sign-in methods. |
+| Provider management | Configure identity providers. |
+| Registration-flow management | Configure signup and onboarding behavior. |
+| Password and lockout management | Configure credential and failed-attempt policy. |
+| MFA management | Configure factor requirements and recovery behavior. |
+| Messaging management | Configure email and SMS delivery. |
+| Branding management | Configure tenant and hosted identity presentation. |
+| User remediation | Unlock users, reset passwords, and revoke sessions. |
 
 Sensitive administrative changes should be audited and may require step-up MFA.
 

@@ -10,18 +10,20 @@ The first tenant created during setup is the system tenant. Auth creates it as `
 
 The seeded baseline includes:
 
-- The tenant-owned `auth` service and management API model.
-- The enforced permission catalog.
-- The built-in Maintainerd identity provider.
-- System clients and their redirect/logout URI records.
-- The `registered` and `super-admin` roles.
-- Role-permission grants for self-service and administrator access.
-- The owner invitation registration flow.
-- Email and SMS templates.
-- Default security settings.
-- Default branding.
-- Tenant settings.
-- The tenant-scoped event type catalog for integration events and webhooks.
+| Created Item | What It Is Used For |
+|---|---|
+| Tenant-owned `auth` service and management API model | Gives Auth its own registered service/API structure for authorization. |
+| Enforced permission catalog | Defines the operations that can be granted to roles and checked by management routes. |
+| Built-in Maintainerd identity provider | Provides the native sign-in method used before external providers are configured. |
+| System clients and URI records | Allows the seeded console and identity surfaces to complete browser flows. |
+| `registered` and `super-admin` roles | Gives the first admin both normal account access and full tenant administration. |
+| Role-permission grants | Connects seeded roles to self-service and administrator permissions. |
+| Owner invitation registration flow | Supports the initial owner onboarding path. |
+| Email and SMS templates | Provides baseline messaging content for verification, invites, OTP, and recovery flows. |
+| Default security settings | Establishes starting policy for password, MFA, sessions, lockout, registration, and threat controls. |
+| Default branding | Gives the console and hosted identity UI initial tenant presentation. |
+| Tenant settings | Establishes tenant-level operational defaults. |
+| Tenant-scoped event type catalog | Enables integration event and webhook configuration after setup. |
 
 The control-plane policy is not seeded as a standing wildcard. In orchestrated setup, Auth builds the control policy only when the control service is registered, using the actions supplied by the orchestrator.
 
@@ -29,16 +31,23 @@ The control-plane policy is not seeded as a standing wildcard. In orchestrated s
 
 The setup status endpoint returns four booleans:
 
-- `is_tenant_setup`: at least one tenant exists.
-- `is_admin_setup`: the bootstrap super-admin exists.
-- `is_profile_setup`: the bootstrap admin already has a profile.
-- `is_setup_complete`: the system tenant is `active`.
+| Status Field | Meaning | How To Interpret It |
+|---|---|---|
+| `is_tenant_setup` | At least one tenant exists. | The tenant step has run. |
+| `is_admin_setup` | The bootstrap super-admin exists. | The admin step has run. |
+| `is_profile_setup` | The bootstrap admin already has a profile. | Informational for the current console flow. |
+| `is_setup_complete` | The system tenant is `active`. | Setup is locked for normal runtime use. |
 
 `is_profile_setup` is informational for the current console flow. Setup completion requires the tenant and admin, not the admin profile. If the admin has no profile after setup, the hosted identity app can collect it on first sign-in.
 
 ## Setup Modes
 
 Auth has two setup paths.
+
+| Mode | Used By | Surface | When To Use It |
+|---|---|---|---|
+| Standalone setup | Teams running Auth directly. | Console wizard backed by REST setup actions. | Use when Auth is not controlled by Maintainerd Core. |
+| Orchestrated setup | Maintainerd Core or trusted platform automation. | gRPC `SetupService` over the control plane. | Use when Auth is provisioned by a control plane with mTLS and a bootstrap credential. |
 
 ### Standalone Setup
 
@@ -68,13 +77,15 @@ When both the control plane and bootstrap credential are configured, the unauthe
 
 Use this path when Auth is not controlled by Core.
 
-1. Start Auth and wait for readiness.
-2. Open `/setup/tenant` on the console host.
-3. Enter a tenant slug and display name.
-4. Continue to `/setup/admin`.
-5. Enter the first administrator email and a strong password.
-6. Submit the admin form. The console calls `create_admin`, then `complete`.
-7. Sign in through the normal hosted identity flow.
+| Step | Screen Or Action | Result |
+|---:|---|---|
+| 1 | Start Auth and wait for readiness. | The setup wizard can safely talk to the backend. |
+| 2 | Open `/setup/tenant` on the console host. | The tenant setup screen appears. |
+| 3 | Enter a tenant slug and display name. | Auth creates the system tenant and baseline records. |
+| 4 | Continue to `/setup/admin`. | The first administrator screen appears. |
+| 5 | Enter the first administrator email and a strong password. | Auth has enough information to create the owner account. |
+| 6 | Submit the admin form. | The console creates the admin and completes setup. |
+| 7 | Sign in through the normal hosted identity flow. | Auth is now in normal runtime behavior. |
 
 Tenant slugs must be DNS-safe: lowercase letters, numbers, and hyphens, starting and ending with a letter or number. This matters because tenant names become subdomain labels in tenant-aware host routing.
 
@@ -83,6 +94,15 @@ The setup admin is created as an email-verified, active user. Auth assigns the `
 ## REST Setup Surface
 
 The console wizard is backed by setup actions on the management API. Those actions cover setup status, tenant creation, admin creation, optional profile creation, setup completion, and control-service registration.
+
+| Setup Action | Role In Setup |
+|---|---|
+| Setup status | Tells the console which setup step is still valid. |
+| Tenant creation | Creates the system tenant and seeded baseline. |
+| Admin creation | Creates the first owner and super-admin account. |
+| Optional profile creation | Pre-creates the first admin profile for unattended bootstrap flows. |
+| Setup completion | Marks the system tenant active and locks setup. |
+| Control-service registration | Registers the orchestrator service when setup is managed by a control plane. |
 
 This documentation explains the role of those actions instead of duplicating request samples. Use the dedicated API reference for exact paths, request bodies, response schemas, status codes, and generated client behavior.
 
@@ -102,16 +122,18 @@ Core uses `SetupService` because a fresh instance has no users, roles, clients, 
 
 The high-level sequence is:
 
-1. `GetSetupStatus`: inspect current bootstrap state.
-2. `CreateTenant`: create the system tenant and seed the baseline.
-3. `CreateAdmin`: create the first owner and super-admin.
-4. `CreateProfile`: optionally pre-create the admin profile.
-5. `RegisterControlService`: register Core or another orchestrator as a service principal and attach its explicit control policy.
-6. `EnsureControlClient`: create the private-key JWT machine client that Core uses after setup.
-7. `EnsureResourceAPI`: register resource APIs and their permissions.
-8. `EnsureRole`: create a role from already-registered permissions and optionally assign it to the first admin.
-9. `EnsureConsoleClient`: register the browser application used by operators.
-10. `CompleteSetup`: mark the system tenant active and close setup.
+| Order | SetupService Operation | Purpose |
+|---:|---|---|
+| 1 | `GetSetupStatus` | Inspect current bootstrap state. |
+| 2 | `CreateTenant` | Create the system tenant and seed the baseline. |
+| 3 | `CreateAdmin` | Create the first owner and super-admin. |
+| 4 | `CreateProfile` | Optionally pre-create the admin profile. |
+| 5 | `RegisterControlService` | Register Core or another orchestrator as a service principal and attach its explicit control policy. |
+| 6 | `EnsureControlClient` | Create the private-key JWT machine client that Core uses after setup. |
+| 7 | `EnsureResourceAPI` | Register resource APIs and their permissions. |
+| 8 | `EnsureRole` | Create a role from already-registered permissions and optionally assign it to the first admin. |
+| 9 | `EnsureConsoleClient` | Register the browser application used by operators. |
+| 10 | `CompleteSetup` | Mark the system tenant active and close setup. |
 
 The `Ensure*` calls are declarative get-or-create operations. They are designed for machine provisioning where a network response can be lost; the orchestrator can replay the same request and converge on the same records instead of leaving setup half-failed.
 
@@ -119,12 +141,14 @@ The `Ensure*` calls are declarative get-or-create operations. They are designed 
 
 For orchestrated setup:
 
-- Set `CONTROL_PLANE_ENABLED=true`.
-- Provide `SETUP_BOOTSTRAP_TOKEN` through the configured secret provider.
-- Configure `GRPC_TLS_CERT_FILE` and `GRPC_TLS_KEY_FILE`.
-- Configure `GRPC_CLIENT_CA_FILE`.
-- Use a positive `SETUP_WINDOW_TTL`; the default is `30m`.
-- Use `INSTANCE_ROLE=system` for the ecosystem system Auth instance when calling system-only provisioning methods.
+| Requirement | Why It Matters |
+|---|---|
+| `CONTROL_PLANE_ENABLED=true` | Enables the privileged setup and provisioning surface. |
+| `SETUP_BOOTSTRAP_TOKEN` from the configured secret provider | Authenticates bootstrap calls before normal users and service principals exist. |
+| `GRPC_TLS_CERT_FILE` and `GRPC_TLS_KEY_FILE` | Gives the gRPC listener server TLS identity. |
+| `GRPC_CLIENT_CA_FILE` | Lets Auth verify trusted control-plane clients. |
+| Positive `SETUP_WINDOW_TTL` | Limits how long a fresh instance accepts mutating setup calls. The default is `30m`. |
+| `INSTANCE_ROLE=system` for the ecosystem system Auth instance | Required when calling system-only provisioning methods. |
 
 `CONTROL_PLANE_ENABLED=true` implies `GRPC_ENABLED=true` and forces mTLS. The process refuses to start a control plane without server certificate, server key, and client CA configuration.
 
@@ -146,16 +170,18 @@ After setup is locked, mutating setup calls return a conflict such as `setup is 
 
 After setup completes, verify the runtime before configuring application login:
 
-- Check readiness through the deployment probe, such as `/readyz`.
-- Open the console and sign in with the bootstrap admin.
-- Check OIDC discovery on the public identity API: `/.well-known/openid-configuration`.
-- Confirm the seeded built-in identity provider exists.
-- Configure messaging before enabling email verification, password reset, magic links, invite flows, or email MFA.
-- Review security settings for password policy, MFA, lockout, session, token, and threat controls.
-- Create or update clients for your external applications.
-- Connect external identity providers to the specific clients that should show those login options.
-- Configure branding and templates before sending users to hosted login.
-- Enable and test events, webhooks, metrics, tracing, and logs for operations.
+| Check | Why It Matters |
+|---|---|
+| Check readiness through the deployment probe, such as `/readyz`. | Confirms Auth can serve real traffic. |
+| Open the console and sign in with the bootstrap admin. | Confirms the first administrator can operate the tenant. |
+| Check OIDC discovery on the public identity API: `/.well-known/openid-configuration`. | Confirms the public issuer surface is reachable. |
+| Confirm the seeded built-in identity provider exists. | Confirms native sign-in is available before external providers are configured. |
+| Configure messaging before enabling email verification, password reset, magic links, invite flows, or email MFA. | These flows cannot deliver messages until email/SMS is configured. |
+| Review security settings for password policy, MFA, lockout, session, token, and threat controls. | The defaults should match your organization's access policy before users arrive. |
+| Create or update clients for your external applications. | Applications cannot use Auth until they have registered clients. |
+| Connect external identity providers to the specific clients that should show those login options. | Provider buttons appear only for connected clients. |
+| Configure branding and templates before sending users to hosted login. | Users should see the correct tenant identity and message copy. |
+| Enable and test events, webhooks, metrics, tracing, and logs for operations. | Operations and integrations need evidence before traffic begins. |
 
 ## Troubleshooting
 

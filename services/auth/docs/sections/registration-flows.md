@@ -8,16 +8,18 @@ In the console, open Registration flows for the tenant.
 
 You should see:
 
-- Flow list.
-- Flow status.
-- Signup type.
-- Allowed clients.
-- Allowed providers.
-- Invite behavior.
-- Verification requirements.
-- Profile completion requirements.
-- Default role or access behavior.
-- Tenant membership behavior.
+| Area | What It Controls |
+|---|---|
+| Flow list | Existing onboarding paths for the tenant. |
+| Flow status | Whether a flow is draft, active, disabled, or archived. |
+| Signup type | Whether signup is open, invite-based, provider-driven, admin-created, or disabled. |
+| Allowed clients | Which applications can use the flow. |
+| Allowed providers | Which identity providers can create or activate users through the flow. |
+| Invite behavior | Whether an invite is required and how invite acceptance works. |
+| Verification requirements | Whether email or phone must be proven. |
+| Profile completion requirements | Whether profile fields must be completed. |
+| Default role or access behavior | Which conservative initial access a new user receives. |
+| Tenant membership behavior | Whether registration can create administrators; this should normally be disabled for public signup. |
 
 Users experience these settings in the hosted identity UI during signup, invite acceptance, and first login.
 
@@ -27,50 +29,43 @@ The flow list shows which onboarding paths exist.
 
 Common columns:
 
-- Name: administrator-facing flow label.
-- Type: open, invite-based, provider-driven, admin-created, or disabled.
-- Status: draft, active, disabled, or archived.
-- Clients: applications allowed to use the flow.
-- Providers: providers allowed to create or activate users through the flow.
-- Requires verification: whether email or phone must be proven.
-- Requires profile: whether the user must complete profile fields.
-- Updated: when the flow last changed.
+| Column | What It Means |
+|---|---|
+| Name | Administrator-facing flow label. |
+| Type | Open, invite-based, provider-driven, admin-created, or disabled. |
+| Status | Draft, active, disabled, or archived. |
+| Clients | Applications allowed to use the flow. |
+| Providers | Providers allowed to create or activate users through the flow. |
+| Requires verification | Whether email or phone must be proven. |
+| Requires profile | Whether the user must complete profile fields. |
+| Updated | When the flow last changed. |
 
 Only active flows should affect user-facing registration.
 
 ## Flow Detail Fields
 
-Name helps administrators recognize the flow.
-
-Type controls the basic onboarding model.
-
-Status controls whether the flow can be used.
-
-Client scope controls which applications can use the flow.
-
-Provider scope controls which providers can create users through the flow.
-
-Invite requirement controls whether a valid invite is needed.
-
-Verification requirement controls whether email or phone must be verified.
-
-Profile requirement controls whether users must complete profile fields.
-
-Default access controls conservative initial roles or permissions.
-
-Tenant membership controls whether registration can create tenant administrators. This should normally be disabled for public signup.
+| Field | What It Controls |
+|---|---|
+| Name | How administrators recognize the flow. |
+| Type | The basic onboarding model. |
+| Status | Whether the flow can be used. |
+| Client scope | Which applications can use the flow. |
+| Provider scope | Which providers can create users through the flow. |
+| Invite requirement | Whether a valid invite is needed. |
+| Verification requirement | Whether email or phone must be verified. |
+| Profile requirement | Whether users must complete profile fields. |
+| Default access | Conservative initial roles or permissions. |
+| Tenant membership | Whether registration can create tenant administrators. This should normally be disabled for public signup. |
 
 ## Flow Types
 
-Open registration lets users create accounts without an invite. Use it for public products only when abuse controls, verification, and safe default roles are ready.
-
-Invite-based registration requires a valid invite. Use it for private tenants, B2B onboarding, administrator-approved access, and role pre-assignment.
-
-Provider-driven registration lets a trusted identity provider create users during login. Use it for enterprise SSO or controlled domain-based onboarding.
-
-Admin-created onboarding starts from a user created by an administrator. Use it for migration, bootstrap, or support-led account creation.
-
-Disabled registration blocks new signup while still allowing existing users to sign in if other policy allows it.
+| Flow Type | What It Does | When To Use It |
+|---|---|---|
+| Open registration | Lets users create accounts without an invite. | Public products where abuse controls, verification, and safe default roles are ready. |
+| Invite-based registration | Requires a valid invite. | Private tenants, B2B onboarding, administrator-approved access, and role pre-assignment. |
+| Provider-driven registration | Lets a trusted identity provider create users during login. | Enterprise SSO or controlled domain-based onboarding. |
+| Admin-created onboarding | Starts from a user created by an administrator. | Migration, bootstrap, or support-led account creation. |
+| Disabled registration | Blocks new signup while still allowing existing users to sign in if policy allows it. | Tenants that are closed to new users. |
 
 ## How Users Experience Registration
 
@@ -104,13 +99,15 @@ Registration-flow management requires tenant configuration permissions.
 
 Sensitive changes include:
 
-- Enabling public registration.
-- Changing invite requirements.
-- Enabling provider-driven user creation.
-- Changing default roles.
-- Allowing registration to create tenant members.
-- Disabling required verification.
-- Connecting a flow to a production client.
+| Sensitive Change | Risk |
+|---|---|
+| Enabling public registration | Opens account creation to a wider audience. |
+| Changing invite requirements | Can allow users to join without administrator intent. |
+| Enabling provider-driven user creation | Lets upstream providers create local users. |
+| Changing default roles | Can grant too much access to new users. |
+| Allowing registration to create tenant members | Can create administrators through onboarding. |
+| Disabling required verification | Reduces proof of email or phone ownership. |
+| Connecting a flow to a production client | Immediately changes real user onboarding. |
 
 These changes should be audited and may require step-up MFA.
 

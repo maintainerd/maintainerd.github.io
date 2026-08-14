@@ -10,15 +10,17 @@ In the console, open the tenant area for the current tenant.
 
 You should see screens like:
 
-- Tenant overview.
-- Tenant settings.
-- Branding.
-- Security defaults.
-- Messaging.
-- Events and webhooks.
-- Data retention.
-- Members.
-- Member invites or member access.
+| Screen | What You Configure Or Review |
+|---|---|
+| Tenant overview | Tenant identity, slug, status, timestamps, and hostnames. |
+| Tenant settings | Tenant-wide operational controls. |
+| Branding | Logos, colors, names, and hosted identity presentation. |
+| Security defaults | Password, MFA, session, lockout, threat, and step-up behavior. |
+| Messaging | Email and SMS provider behavior. |
+| Events and webhooks | Integration events, endpoints, subscriptions, and delivery behavior. |
+| Data retention | Data lifecycle and retention rules. |
+| Members | Administrators who can operate the tenant. |
+| Member invites or member access | Administrator onboarding and access changes. |
 
 Only users with tenant administration permissions should see these screens.
 
@@ -28,12 +30,14 @@ The tenant overview summarizes the tenant's identity and runtime state.
 
 Common fields:
 
-- Name: the human-readable tenant name shown to administrators and sometimes users.
-- Slug: the stable short identifier used for routing and lookup.
-- Status: whether the tenant can serve login, registration, OAuth, and self-service traffic.
-- Created time: when the tenant was created.
-- Updated time: when tenant metadata or settings last changed.
-- Hostnames: tenant-specific console or identity domains when configured.
+| Field | What It Means |
+|---|---|
+| Name | Human-readable tenant name shown to administrators and sometimes users. |
+| Slug | Stable short identifier used for routing and lookup. |
+| Status | Whether the tenant can serve login, registration, OAuth, and self-service traffic. |
+| Created time | When the tenant was created. |
+| Updated time | When tenant metadata or settings last changed. |
+| Hostnames | Tenant-specific console or identity domains when configured. |
 
 Use the overview before changing deeper settings. It tells you which tenant you are editing and whether it is safe to expect runtime flows to work.
 
@@ -43,10 +47,12 @@ Tenant status controls whether the tenant can be used.
 
 Typical statuses:
 
-- Active: normal runtime traffic can proceed.
-- Suspended: tenant traffic should be blocked because of policy, billing, security, or operations.
-- Inactive: tenant exists but should not serve normal traffic.
-- Deleted or erased: tenant is no longer available except for required records.
+| Status | Meaning |
+|---|---|
+| Active | Normal runtime traffic can proceed. |
+| Suspended | Tenant traffic should be blocked because of policy, billing, security, or operations. |
+| Inactive | Tenant exists but should not serve normal traffic. |
+| Deleted or erased | Tenant is no longer available except for required records. |
 
 Changing status affects login, registration, OAuth, token refresh, account self-service, clients, and provider behavior. Treat it as an operational action, not a display-only field.
 
@@ -54,25 +60,18 @@ Changing status affects login, registration, OAuth, token refresh, account self-
 
 Tenant settings are the controls that apply across the tenant.
 
-Maintenance setting temporarily stops normal user-facing identity flows. Use it when the tenant is being changed, recovered, or investigated.
-
-Rate-limit settings decide how much traffic the tenant can send through sensitive routes such as login, registration, reset, OTP, and API calls.
-
-Audit settings decide what administrative and security-sensitive changes are recorded and how long records are kept.
-
-Email settings decide sender behavior for verification, invites, password reset, magic links, and security notifications.
-
-SMS settings decide provider behavior for SMS login, OTP, MFA, and phone verification.
-
-Branding settings decide logos, colors, names, and copy shown in hosted login, registration, MFA, consent, recovery, invite, and account pages.
-
-Security defaults decide tenant-wide behavior for password policy, MFA, sessions, lockout, trusted devices, and step-up.
-
-IP restriction settings decide which networks are allowed or denied for administrative or runtime access.
-
-Event and webhook settings decide which integration events are emitted and delivered.
-
-Data retention settings decide how long account, event, audit, token, and lifecycle data is kept.
+| Setting Group | What It Controls |
+|---|---|
+| Maintenance | Temporarily stops normal user-facing identity flows while a tenant is changed, recovered, or investigated. |
+| Rate limits | How much traffic the tenant can send through sensitive routes such as login, registration, reset, OTP, and API calls. |
+| Audit | What administrative and security-sensitive changes are recorded and how long records are kept. |
+| Email | Sender behavior for verification, invites, password reset, magic links, and security notifications. |
+| SMS | Provider behavior for SMS login, OTP, MFA, and phone verification. |
+| Branding | Logos, colors, names, and copy shown in hosted login, registration, MFA, consent, recovery, invite, and account pages. |
+| Security defaults | Tenant-wide password policy, MFA, sessions, lockout, trusted devices, and step-up behavior. |
+| IP restrictions | Which networks are allowed or denied for administrative or runtime access. |
+| Events and webhooks | Which integration events are emitted and delivered. |
+| Data retention | How long account, event, audit, token, and lifecycle data is kept. |
 
 ## Member List
 
@@ -80,11 +79,13 @@ The member list shows who can administer the tenant.
 
 Common fields:
 
-- Member name or email: the administrator account.
-- Role: the administration level.
-- Status: invited, active, suspended, or removed.
-- Last activity: useful for reviewing unused access.
-- Joined time: when access became active.
+| Field | What It Means |
+|---|---|
+| Member name or email | The administrator account. |
+| Role | Administration level. |
+| Status | Invited, active, suspended, or removed. |
+| Last activity | Useful for reviewing unused access. |
+| Joined time | When access became active. |
 
 Members should be reviewed regularly. Remove access for people who no longer administer the tenant.
 
@@ -94,11 +95,13 @@ Member roles control console administration.
 
 Common role patterns:
 
-- Owner: can manage high-risk tenant settings and other administrators.
-- Admin: can manage most tenant configuration and users.
-- Operator: can view operations and perform limited support tasks.
-- Security reviewer: can inspect audit and security state.
-- Read-only viewer: can inspect settings without changing them.
+| Role Pattern | Typical Access |
+|---|---|
+| Owner | Can manage high-risk tenant settings and other administrators. |
+| Admin | Can manage most tenant configuration and users. |
+| Operator | Can view operations and perform limited support tasks. |
+| Security reviewer | Can inspect audit and security state. |
+| Read-only viewer | Can inspect settings without changing them. |
 
 Use the least powerful role that lets the person do their job.
 
@@ -108,11 +111,13 @@ Member invites bring administrators into the tenant.
 
 Invite fields:
 
-- Email: who is being invited.
-- Role: what administration access they will receive.
-- Status: pending, accepted, expired, revoked, or canceled.
-- Expiration: when the invite stops working.
-- Invited by: who created it.
+| Field | What It Means |
+|---|---|
+| Email | Who is being invited. |
+| Role | What administration access they will receive. |
+| Status | Pending, accepted, expired, revoked, or canceled. |
+| Expiration | When the invite stops working. |
+| Invited by | Who created it. |
 
 Invite links are bearer secrets. Do not paste them into logs, tickets, or public channels.
 
@@ -152,14 +157,16 @@ Tenant changes require tenant administration permissions. Member changes should 
 
 Sensitive tenant actions should require audit records and may require step-up MFA:
 
-- Changing tenant status.
-- Enabling public registration.
-- Changing security defaults.
-- Changing email or SMS providers.
-- Changing hostnames.
-- Changing retention.
-- Adding owners or administrators.
-- Revoking administrator access.
+| Sensitive Action | Why It Is High Risk |
+|---|---|
+| Changing tenant status | Can block or restore tenant traffic. |
+| Enabling public registration | Can allow new users to create accounts. |
+| Changing security defaults | Can weaken password, MFA, session, lockout, or threat controls. |
+| Changing email or SMS providers | Can affect verification, recovery, invites, and MFA delivery. |
+| Changing hostnames | Can break routing, redirects, cookies, CORS, and WebAuthn. |
+| Changing retention | Can alter audit, event, token, and account data lifecycle. |
+| Adding owners or administrators | Grants console authority. |
+| Revoking administrator access | Can lock people out of tenant operations. |
 
 ## Troubleshooting
 

@@ -10,20 +10,22 @@ In the console, open the tenant, then open **Identity providers**.
 
 The area usually contains:
 
-- Provider list.
-- Create provider.
-- Provider detail.
-- Provider status.
-- Protocol configuration.
-- Credentials and certificates.
-- Scopes or requested attributes.
-- Attribute mapping.
-- Domain routing.
-- Just-in-time provisioning.
-- Account linking.
-- Client connections.
-- Test connection or test login.
-- Security and audit state.
+| Area | What It Controls |
+|---|---|
+| Provider list | Login sources configured for the tenant. |
+| Create provider | Adds a built-in, external, brokered, federated, or protocol-based login source. |
+| Provider detail | Name, type, status, credentials, mapping, routing, and linking behavior. |
+| Provider status | Whether Auth can use the provider for login or account linking. |
+| Protocol configuration | OIDC, OAuth2, SAML, or provider-specific endpoints and behavior. |
+| Credentials and certificates | Client secrets, private keys, signing certificates, or metadata needed to trust the provider. |
+| Scopes or requested attributes | Identity data Auth asks the provider to return. |
+| Attribute mapping | How upstream claims become Auth user fields. |
+| Domain routing | Which email domains route to this provider. |
+| Just-in-time provisioning | Whether provider login can create local Auth users. |
+| Account linking | Whether an upstream identity can attach to an existing Auth user. |
+| Client connections | Which application clients can show or use the provider. |
+| Test connection or test login | Confirms metadata, credentials, callback, and mapping before users rely on it. |
+| Security and audit state | Records sensitive changes and login results for review. |
 
 Provider configuration is administrative. Users see the result as login buttons, SSO choices, account-linking options, invite registration options, or unavailable login methods in the hosted identity UI.
 
@@ -35,13 +37,15 @@ This matters because one application client can support several login methods wi
 
 Identity provider configuration affects:
 
-- Which login methods appear on the hosted identity UI.
-- Whether an upstream login can create a new user.
-- Whether an upstream identity can link to an existing user.
-- Which email domains route users to enterprise SSO.
-- Which claims become Auth user profile fields.
-- Which clients can use the provider.
-- Which audit and security events are created during login.
+| Configuration Area | Runtime Effect |
+|---|---|
+| Login method availability | Decides which provider buttons or SSO options appear on the hosted identity UI. |
+| JIT provisioning | Decides whether an upstream login can create a new user. |
+| Account linking | Decides whether an upstream identity can link to an existing user. |
+| Domain routing | Sends matching email domains toward enterprise SSO. |
+| Attribute mapping | Decides which claims become Auth user profile fields. |
+| Client connections | Decides which applications can use the provider. |
+| Audit and security event behavior | Records provider login, linking, errors, and security outcomes. |
 
 ## Provider List
 
@@ -49,49 +53,38 @@ The provider list shows login sources configured for the selected tenant.
 
 Common columns:
 
-- Name: administrator-facing provider label.
-- Type: built-in, Maintainerd, OIDC, OAuth2, SAML, email, SMS, or passwordless.
-- Status: draft, enabled, disabled, misconfigured, or error.
-- Connected clients: applications allowed to show the provider.
-- Domains: email domains or routing hints associated with the provider.
-- JIT provisioning: whether provider login can create users.
-- Updated: when configuration last changed.
+| Column | What It Means |
+|---|---|
+| Name | Administrator-facing provider label. |
+| Type | Built-in, Maintainerd, OIDC, OAuth2, SAML, email, SMS, or passwordless. |
+| Status | Draft, enabled, disabled, misconfigured, or error. |
+| Connected clients | Applications allowed to show the provider. |
+| Domains | Email domains or routing hints associated with the provider. |
+| JIT provisioning | Whether provider login can create users. |
+| Updated | When configuration last changed. |
 
 A provider can exist without appearing on a login page. It must be enabled, connected to the client, allowed by registration and security policy, and valid for the current tenant.
 
 ## Provider Detail Fields
 
-Name is the label administrators see in the console. It may also appear to users as a login button label, so use a name users recognize, such as `Google`, `Microsoft`, `GitHub`, `Acme SSO`, or `Maintainerd`.
-
-Type decides which protocol and configuration fields apply.
-
-Status controls whether Auth can use the provider for login or account linking.
-
-Client connections decide which application clients can show or use the provider.
-
-Issuer identifies the upstream OIDC provider. It must match the issuer value in tokens and discovery metadata.
-
-Authorization URL, token URL, UserInfo URL, and JWKS URL are used when the provider is OAuth2/OIDC but discovery is not available or not sufficient.
-
-Client ID is the public identifier issued by the upstream provider for Auth.
-
-Client secret is the credential issued by the upstream provider for Auth. Store it as a protected provider secret and never expose it in frontend configuration.
-
-Scopes define which identity data Auth asks from the upstream provider. For OIDC login, use `openid`, then add `email` and `profile` when the provider supports them.
-
-Redirect URI or callback URL is the Auth URL that the upstream provider sends the browser back to after login. Copy the exact value shown in Auth into the upstream provider's app registration.
-
-Attribute mapping decides how upstream claims become Auth user fields.
-
-Domain routing decides whether email domains send users toward this provider before the user manually chooses a login method.
-
-JIT provisioning decides whether a provider login can create a new Auth user.
-
-Account linking decides whether an upstream identity can attach to an existing Auth user.
-
-Allowed audiences are used when Auth accepts upstream tokens or validates provider-specific audiences.
-
-SAML entity ID, SSO URL, SLO URL, and signing certificate are used for SAML providers.
+| Field | What It Controls |
+|---|---|
+| Name | Label administrators see in the console. It may also appear to users as a login button label, so use a recognizable name such as `Google`, `Microsoft`, `GitHub`, `Acme SSO`, or `Maintainerd`. |
+| Type | Protocol and configuration fields that apply. |
+| Status | Whether Auth can use the provider for login or account linking. |
+| Client connections | Which application clients can show or use the provider. |
+| Issuer | Upstream OIDC provider identity. It must match the issuer value in tokens and discovery metadata. |
+| Authorization URL, token URL, UserInfo URL, JWKS URL | OAuth2/OIDC endpoints used when discovery is not available or not sufficient. |
+| Client ID | Public identifier issued by the upstream provider for Auth. |
+| Client secret | Credential issued by the upstream provider for Auth. Store it as a protected provider secret and never expose it in frontend configuration. |
+| Scopes | Identity data Auth asks from the upstream provider. For OIDC login, use `openid`, then add `email` and `profile` when supported. |
+| Redirect URI or callback URL | Auth URL that the upstream provider sends the browser back to after login. Copy the exact value shown in Auth into the upstream provider's app registration. |
+| Attribute mapping | How upstream claims become Auth user fields. |
+| Domain routing | Whether email domains send users toward this provider before manual selection. |
+| JIT provisioning | Whether a provider login can create a new Auth user. |
+| Account linking | Whether an upstream identity can attach to an existing Auth user. |
+| Allowed audiences | Audiences Auth accepts when validating upstream tokens or provider-specific audiences. |
+| SAML entity ID, SSO URL, SLO URL, signing certificate | SAML trust and single sign-on configuration. |
 
 ## Built-In Maintainerd Provider
 
@@ -103,13 +96,15 @@ The built-in provider is different from adding Maintainerd as an external identi
 
 Common controls:
 
-- Password login availability.
-- Email verification behavior.
-- Password reset behavior.
-- Magic-link behavior where enabled.
-- Lockout behavior.
-- MFA requirements.
-- Account recovery behavior.
+| Control | What It Changes |
+|---|---|
+| Password login availability | Whether users can sign in with local Auth credentials. |
+| Email verification behavior | Whether users must prove email ownership. |
+| Password reset behavior | Whether and how users recover local credentials. |
+| Magic-link behavior | Whether email passwordless login is available where enabled. |
+| Lockout behavior | How repeated failed attempts block the account. |
+| MFA requirements | Whether users need a second factor. |
+| Account recovery behavior | How users regain access after losing credentials or factors. |
 
 Typical setup:
 
@@ -130,11 +125,13 @@ Use Maintainerd as an external provider when another organization also runs Main
 
 In this model:
 
-- The upstream organization runs its own Maintainerd Auth.
-- Your Auth tenant creates an external provider that points to the upstream Maintainerd issuer.
-- The upstream Maintainerd Auth creates a client for your Auth deployment.
-- Users authenticate at the upstream organization.
-- Your Auth deployment receives the upstream identity result, maps it to a tenant user, applies local tenant policy, and issues local Auth tokens to your application.
+| Responsibility | Owner |
+|---|---|
+| Run the upstream Maintainerd Auth deployment | Upstream organization. |
+| Create an external provider pointing to the upstream Maintainerd issuer | Your Auth tenant. |
+| Create a client for your Auth deployment | Upstream Maintainerd Auth tenant. |
+| Authenticate users | Upstream organization. |
+| Map upstream identity, apply local policy, and issue local tokens | Your Auth deployment. |
 
 This is still brokered login. Your application continues to integrate with your Auth deployment.
 
@@ -191,14 +188,16 @@ Use a generic OIDC provider for any upstream identity system that publishes OIDC
 
 Information to collect from the upstream provider:
 
-- Issuer URL.
-- Client ID.
-- Client secret or private-key authentication configuration.
-- Redirect URI registered at the provider.
-- Supported scopes.
-- Claim names for subject, email, email verification, name, and groups.
-- JWKS or discovery metadata availability.
-- Logout behavior if single logout is required.
+| Information | Why Auth Needs It |
+|---|---|
+| Issuer URL | Identifies the upstream OIDC authority. |
+| Client ID | Identifies Auth to the upstream provider. |
+| Client secret or private-key authentication configuration | Lets Auth authenticate to the upstream provider. |
+| Redirect URI registered at the provider | Ensures callbacks return to Auth. |
+| Supported scopes | Determines which identity data Auth can request. |
+| Claim names | Maps subject, email, email verification, name, and groups. |
+| JWKS or discovery metadata availability | Lets Auth validate upstream tokens and metadata. |
+| Logout behavior | Required when single logout is part of the integration. |
 
 Upstream provider setup:
 

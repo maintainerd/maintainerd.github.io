@@ -8,11 +8,13 @@ For the quickstart, `SECRET_PROVIDER=env` is usually enough. For production depl
 
 Auth needs these secrets before it can serve traffic:
 
-- `DB_PASSWORD`: PostgreSQL password.
-- `JWT_PRIVATE_KEY`: RSA private key in PEM format. Used to sign access tokens, ID tokens, and other JWTs.
-- `JWT_PUBLIC_KEY`: RSA public key in PEM format. Must match `JWT_PRIVATE_KEY`; it is used for verification and published through JWKS.
-- `APP_ENCRYPTION_KEY`: exactly 32 bytes after normalization. Used as the current AES-256 key for encrypting stored secrets.
-- `HMAC_SECRET_KEY`: non-empty random secret used for signed URLs and signed state values.
+| Secret | Required Shape | What It Protects |
+|---|---|---|
+| `DB_PASSWORD` | PostgreSQL password string. | Database access. |
+| `JWT_PRIVATE_KEY` | RSA private key in PEM format. | Signing access tokens, ID tokens, and other JWTs. |
+| `JWT_PUBLIC_KEY` | Matching RSA public key in PEM format. | Token verification and JWKS publishing. |
+| `APP_ENCRYPTION_KEY` | Exactly 32 bytes after normalization. | AES-256 encryption for stored secrets. |
+| `HMAC_SECRET_KEY` | Non-empty random secret. | Signed URLs and signed state values. |
 
 These values must never be committed to source control, baked into frontend bundles, logged, sent to browsers, or copied into issue trackers.
 
@@ -32,17 +34,21 @@ JWT_PUBLIC_KEY='-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----'
 
 ## Optional Secrets
 
-- `REDIS_PASSWORD`: Redis AUTH password. Leave unset when Redis does not require authentication.
-- `APP_ENCRYPTION_KEYS_PREVIOUS`: comma-separated list of retired 32-byte application encryption keys. These keys are decrypt-only during key rotation.
-- `SETUP_BOOTSTRAP_TOKEN`: bootstrap credential for the gRPC setup service used by Core or another control plane. Standalone deployments usually leave it unset and use the REST setup wizard.
+| Secret | When To Set It | Purpose |
+|---|---|---|
+| `REDIS_PASSWORD` | Redis requires AUTH. | Authenticates Redis connections. |
+| `APP_ENCRYPTION_KEYS_PREVIOUS` | Rotating the application encryption key. | Decrypt-only list of retired 32-byte keys. |
+| `SETUP_BOOTSTRAP_TOKEN` | Using gRPC setup through Core or another control plane. | Authenticates bootstrap before normal principals exist. |
 
 `RABBITMQ_URL` contains a broker password when credentials are embedded in the URL. It is read as an environment variable, but should be handled like a secret operational value.
 
 ## Secret Provider Selection
 
-- `SECRET_PROVIDER`: optional, default `env`. Supported values are `env`, `file`, `aws_secrets`, `aws_ssm`, `vault`, `gcp`, and `azure_kv`.
-- `SECRET_PREFIX`: optional, default `maintainerd/auth`. Used by AWS and Vault providers as the secret namespace or path prefix.
-- `SECRET_STRICT`: optional, default `false`. When `false`, a missing secret in a non-env provider can fall back to the same key in process environment variables. When `true`, the configured provider is authoritative and missing provider values fail startup.
+| Setting | Default | Purpose |
+|---|---|---|
+| `SECRET_PROVIDER` | `env` | Selects `env`, `file`, `aws_secrets`, `aws_ssm`, `vault`, `gcp`, or `azure_kv`. |
+| `SECRET_PREFIX` | `maintainerd/auth` | Namespace or path prefix used by AWS and Vault providers. |
+| `SECRET_STRICT` | `false` | When `false`, a missing secret in a non-env provider can fall back to the same process environment key. When `true`, the configured provider is authoritative and missing values fail startup. |
 
 Use `SECRET_STRICT=false` while migrating a deployment gradually from environment variables to a secret manager. After every required and optional secret has moved into the provider, set `SECRET_STRICT=true`.
 
@@ -50,9 +56,11 @@ Use `SECRET_STRICT=false` while migrating a deployment gradually from environmen
 
 Every provider uses the same normalization rules:
 
-- Leading and trailing whitespace is trimmed.
-- Values prefixed with `base64:` are base64-decoded.
-- Empty required secrets fail startup.
+| Rule | Effect |
+|---|---|
+| Leading and trailing whitespace is trimmed. | File, cloud, and environment secrets behave consistently. |
+| Values prefixed with `base64:` are base64-decoded. | Binary key material can be stored safely as text. |
+| Empty required secrets fail startup. | Auth does not serve traffic with missing critical key material. |
 
 This makes file secrets, cloud secrets, and environment variables behave the same way. It also means a generated binary key can be stored safely as `base64:<encoded-value>`.
 

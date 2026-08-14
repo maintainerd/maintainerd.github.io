@@ -12,12 +12,14 @@ OpenID Connect answers: **Who signed in, and which issuer proved it?**
 
 Auth combines both:
 
-- The application is represented by a client record.
-- The tenant owns users, clients, providers, scopes, policies, consent, and security rules.
-- The hosted identity UI handles login, MFA, registration, account linking, and consent.
-- The public identity API acts as the OAuth/OIDC issuer.
-- Auth signs tokens with its configured signing keys.
-- Applications validate tokens against Auth's issuer and public keys.
+| Part | Role In The Protocol |
+|---|---|
+| Client record | Represents the application requesting access. |
+| Tenant | Owns users, clients, providers, scopes, policies, consent, and security rules. |
+| Hosted identity UI | Handles login, MFA, registration, account linking, and consent. |
+| Public identity API | Acts as the OAuth/OIDC issuer. |
+| Signing keys | Let Auth sign tokens and publish public verification keys. |
+| External application | Validates tokens against Auth's issuer and public keys. |
 
 For client setup fields, see [Applications & clients](#clients). For issuer and hostname planning, see [Hostnames & tenant URLs](#surfaces-hostnames).
 
@@ -25,10 +27,12 @@ For client setup fields, see [Applications & clients](#clients). For issuer and 
 
 Developers usually interact with OAuth/OIDC in four places:
 
-- Application configuration: client ID, redirect URI, logout URI, issuer, scopes, and token handling.
-- Browser login: the application sends the user to Auth's hosted identity UI.
-- Token validation: the application verifies issuer, audience, expiry, signature, and claims.
-- Logout and revocation: the application ends its own session and asks Auth to end or revoke related Auth state when appropriate.
+| Place | Developer Responsibility |
+|---|---|
+| Application configuration | Store client ID, redirect URI, logout URI, issuer, scopes, and token handling settings. |
+| Browser login | Send the user to Auth's hosted identity UI. |
+| Token validation | Verify issuer, audience, expiry, signature, and claims. |
+| Logout and revocation | End the application session and ask Auth to end or revoke related Auth state when appropriate. |
 
 Administrators configure the client and provider options in the console. Developers wire the application to those configured values.
 
@@ -52,16 +56,18 @@ OIDC discovery lets applications find Auth's issuer metadata without hard-coding
 
 Discovery metadata tells applications:
 
-- Issuer.
-- Authorization location.
-- Token exchange location.
-- JWKS location.
-- UserInfo availability.
-- Supported response types.
-- Supported grant types.
-- Supported scopes.
-- Supported signing algorithms.
-- Logout behavior where advertised.
+| Metadata | Why The Application Needs It |
+|---|---|
+| Issuer | Confirms which authority issues tokens. |
+| Authorization location | Tells the app where browser authorization begins. |
+| Token exchange location | Tells the app where codes or credentials are exchanged for tokens. |
+| JWKS location | Tells the app where public verification keys are published. |
+| UserInfo availability | Tells the app whether it can fetch user claims from the userinfo surface. |
+| Supported response types | Shows which authorization responses the issuer supports. |
+| Supported grant types | Shows which OAuth flows the issuer supports. |
+| Supported scopes | Shows which standard scopes the issuer advertises. |
+| Supported signing algorithms | Shows which token signatures clients can expect. |
+| Logout behavior | Shows session-ending behavior where advertised. |
 
 Use discovery in application configuration when the framework supports it. If a library asks for an issuer URL, provide Auth's public issuer origin. If a library asks for metadata or JWKS directly, use the values published by discovery.
 
@@ -73,13 +79,15 @@ JWKS is the public key set applications use to verify JWT signatures.
 
 Applications should:
 
-- Load JWKS from Auth's published metadata.
-- Cache keys according to the application's library behavior.
-- Refresh keys when a token header uses an unknown key ID.
-- Reject tokens signed by unknown keys.
-- Reject tokens with the wrong issuer.
-- Reject tokens with the wrong audience.
-- Reject expired tokens.
+| Validation Behavior | Why It Matters |
+|---|---|
+| Load JWKS from Auth's published metadata | Uses the issuer's current public signing keys. |
+| Cache keys according to library behavior | Avoids unnecessary network calls while still allowing rotation. |
+| Refresh keys when a token header uses an unknown key ID | Handles signing-key rotation. |
+| Reject tokens signed by unknown keys | Prevents accepting forged tokens. |
+| Reject tokens with the wrong issuer | Prevents trusting tokens from another authority. |
+| Reject tokens with the wrong audience | Prevents replaying a token against the wrong API. |
+| Reject expired tokens | Enforces token lifetime. |
 
 Auth signs tokens with the configured JWT signing key. Signing key setup and rotation are covered in [Secrets & keys](#secrets).
 
@@ -87,15 +95,13 @@ Auth signs tokens with the configured JWT signing key. Signing key setup and rot
 
 Auth can issue several token types depending on the client and grant.
 
-Access token represents delegated access to a protected resource. Resource APIs validate access tokens before serving protected data.
-
-ID token is an OIDC token for the application. It describes the authentication event and user identity for the client.
-
-Refresh token lets an application continue a session without sending the user through a full login every time. Refresh tokens require careful storage, rotation, and revocation.
-
-Device code and CIBA state are short-lived flow artifacts used by specialized interaction models.
-
-Authorization code is a short-lived value returned to the application's callback during authorization code flow. The application exchanges it through the token flow.
+| Token Or Artifact | Purpose |
+|---|---|
+| Access token | Represents delegated access to a protected resource. Resource APIs validate access tokens before serving protected data. |
+| ID token | OIDC token for the application. It describes the authentication event and user identity for the client. |
+| Refresh token | Lets an application continue a session without full login. Requires careful storage, rotation, and revocation. |
+| Device code and CIBA state | Short-lived flow artifacts used by specialized interaction models. |
+| Authorization code | Short-lived value returned to the application's callback and exchanged through the token flow. |
 
 Treat tokens and authorization codes as credentials. Do not log them, place them in issue trackers, expose them in analytics, or store them in browser locations that the application does not control.
 
@@ -105,14 +111,16 @@ Claims are token fields that describe the issuer, subject, audience, time bounds
 
 Important concepts:
 
-- Issuer identifies the Auth deployment that issued the token.
-- Subject identifies the user or service principal inside Auth.
-- Audience identifies the intended recipient or resource.
-- Client ID identifies the application that requested the token.
-- Tenant context tells downstream services which tenant the principal belongs to.
-- Expiration limits token lifetime.
-- Scopes describe delegated access requested by the application.
-- Roles, permissions, or policy-related claims should be consumed according to the integration model selected by the service.
+| Claim Concept | What It Identifies |
+|---|---|
+| Issuer | Auth deployment that issued the token. |
+| Subject | User or service principal inside Auth. |
+| Audience | Intended recipient or resource. |
+| Client ID | Application that requested the token. |
+| Tenant context | Tenant the principal belongs to. |
+| Expiration | Token lifetime boundary. |
+| Scopes | Delegated access requested by the application. |
+| Roles, permissions, or policy-related claims | Authorization context consumed according to the service's integration model. |
 
 Applications should not use email as the stable user key. Use the subject and tenant context. Email can change, and the same email can exist in different tenants.
 
@@ -122,9 +130,11 @@ Scopes describe the access an application is asking for.
 
 Common OIDC scopes:
 
-- `openid`: required for OpenID Connect login.
-- `email`: asks for email-related claims when policy allows them.
-- `profile`: asks for profile-related claims when policy allows them.
+| Scope | Meaning |
+|---|---|
+| `openid` | Required for OpenID Connect login. |
+| `email` | Asks for email-related claims when policy allows them. |
+| `profile` | Asks for profile-related claims when policy allows them. |
 
 Application or API-specific scopes should be meaningful to users and administrators. Avoid broad scopes when a narrower scope describes the access accurately.
 
@@ -142,16 +152,18 @@ When protecting an application API, register the resource and permissions in Aut
 
 OAuth/OIDC behavior is not configured only by application code. The client record controls:
 
-- Allowed redirect URIs.
-- Allowed post-logout redirect URIs.
-- Allowed CORS origins.
-- Allowed grant types.
-- Allowed response types.
-- Token endpoint authentication method.
-- Token lifetimes.
-- Consent behavior.
-- Identity provider connections.
-- Sender-constrained token requirements such as DPoP where supported.
+| Client Setting | Protocol Effect |
+|---|---|
+| Allowed redirect URIs | Where Auth may return the browser after authorization. |
+| Allowed post-logout redirect URIs | Where Auth may return the browser after logout. |
+| Allowed CORS origins | Which browser origins may call allowed Auth APIs. |
+| Allowed grant types | Which OAuth flows the client can use. |
+| Allowed response types | Which authorization responses the client can request. |
+| Token endpoint authentication method | How the client proves its identity during token exchange. |
+| Token lifetimes | How long issued tokens remain usable. |
+| Consent behavior | Whether users approve requested access. |
+| Identity provider connections | Which login providers appear for the client. |
+| Sender-constrained token requirements | Whether DPoP or similar proof is required where supported. |
 
 If a flow fails, check the client record before changing application code.
 

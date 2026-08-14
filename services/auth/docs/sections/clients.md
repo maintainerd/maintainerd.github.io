@@ -10,19 +10,21 @@ In the console, open the tenant, then open **Applications** or **Clients**.
 
 The area usually contains:
 
-- Client list.
-- Create client.
-- Client detail.
-- Redirect URI settings.
-- Post-logout redirect URI settings.
-- CORS origin settings.
-- OAuth/OIDC grant and response settings.
-- Token endpoint authentication settings.
-- Client secret or key settings for confidential clients.
-- Identity provider connections.
-- Consent settings.
-- Token lifetime settings.
-- Security options such as DPoP requirements where supported.
+| Screen Or Setting | What It Controls |
+|---|---|
+| Client list | Inventory of applications registered in the tenant. |
+| Create client | Adds a new application boundary. |
+| Client detail | Name, type, status, description, and ownership context. |
+| Redirect URI settings | Login callback URLs allowed for the client. |
+| Post-logout redirect URI settings | Logout return URLs allowed for the client. |
+| CORS origin settings | Browser origins allowed to call permitted Auth APIs. |
+| OAuth/OIDC grant and response settings | Which protocol flows the client can use. |
+| Token endpoint authentication settings | How confidential clients prove their identity. |
+| Client secret or key settings | Credential material for confidential clients. |
+| Identity provider connections | Which providers appear for this application. |
+| Consent settings | Whether and how users approve requested access. |
+| Token lifetime settings | How long issued tokens remain usable. |
+| Security options | Sender-constrained token requirements such as DPoP where supported. |
 
 End users do not manage client records directly. They experience client configuration through hosted login, registration, consent, logout, account self-service, and application redirects.
 
@@ -32,11 +34,13 @@ A tenant can have many clients. Create a separate client when an application nee
 
 Client configuration is evaluated during several flows:
 
-- Hosted login checks the tenant, client status, redirect URI, provider connections, and registration policy.
-- Consent uses client name, logo, policy URL, terms URL, scopes, and consent settings.
-- Logout checks post-logout redirect URIs before returning the browser to an application.
-- Token issuance uses the client type, allowed grant types, token endpoint authentication method, token lifetimes, and sender-constraining requirements.
-- Browser API calls use tenant context and registered CORS origins when cross-origin access is allowed.
+| Flow | Client Settings Used |
+|---|---|
+| Hosted login | Tenant, client status, redirect URI, provider connections, and registration policy. |
+| Consent | Client name, logo, policy URL, terms URL, scopes, and consent settings. |
+| Logout | Post-logout redirect URIs before returning the browser to an application. |
+| Token issuance | Client type, allowed grant types, token endpoint authentication method, token lifetimes, and sender-constraining requirements. |
+| Browser API calls | Tenant context and registered CORS origins when cross-origin access is allowed. |
 
 Auth deployment hostnames are configured separately from application client URLs. For system and tenant URL patterns, see [Hostnames & tenant URLs](#surfaces-hostnames).
 
@@ -46,13 +50,15 @@ The client list is the inventory of applications registered in the selected tena
 
 Common columns:
 
-- Name: administrator-facing application name.
-- Client ID: public identifier used by the application during OAuth/OIDC flows.
-- Type: web, single-page application, mobile, machine-to-machine, or first-party.
-- Status: whether the client can start flows and receive tokens.
-- Redirect count: number of allowed login callback URLs.
-- Provider connections: login providers available to this application.
-- Updated: when the client was last changed.
+| Column | What It Means |
+|---|---|
+| Name | Administrator-facing application name. |
+| Client ID | Public identifier used by the application during OAuth/OIDC flows. |
+| Type | Web, single-page application, mobile, machine-to-machine, or first-party. |
+| Status | Whether the client can start flows and receive tokens. |
+| Redirect count | Number of allowed login callback URLs. |
+| Provider connections | Login providers available to this application. |
+| Updated | When the client was last changed. |
 
 Disable a client when the application should no longer start login, complete token exchange, refresh tokens, or appear as an allowed relying party.
 
@@ -62,15 +68,17 @@ Create one client per application boundary. Do not reuse one client across unrel
 
 Before creating a client, decide:
 
-- Which application owns the client.
-- Which production domain the application uses.
-- Which callback URL receives users after login.
-- Which URL receives users after logout.
-- Whether browser calls need CORS access.
-- Whether the app can protect a client secret.
-- Which identity providers should be shown.
-- Whether users should approve consent.
-- Which token lifetime is appropriate.
+| Decision | Why It Matters |
+|---|---|
+| Which application owns the client | Keeps audit, redirects, provider choices, and token policy scoped to one application boundary. |
+| Which domain the application uses | Determines origins, redirects, CORS, cookies, and user trust. |
+| Which callback URL receives users after login | OAuth redirects must match exactly. |
+| Which URL receives users after logout | Logout redirects must be explicitly allowed. |
+| Whether browser calls need CORS access | Browser JavaScript requires allowed origins for cross-origin calls. |
+| Whether the app can protect a client secret | Decides whether the client is public or confidential. |
+| Which identity providers should be shown | Controls login options for the application. |
+| Whether users should approve consent | Controls user approval and trust prompts. |
+| Which token lifetime is appropriate | Balances user experience, revocation, and token exposure risk. |
 
 For a web application hosted at `https://app.example.com`, typical URL values are:
 
@@ -85,53 +93,36 @@ Redirect and logout URLs must match the real application routes exactly. Do not 
 
 ## Client Detail Fields
 
-Name is the label administrators see in the console. It may also appear to users during login or consent, so use a recognizable product name.
-
-Description explains what the application is for. Use it to distinguish similar applications, such as production console, customer portal, mobile app, or backend worker.
-
-Client ID is the public identifier for the application. Applications can store it in frontend or backend configuration. It is not a secret.
-
-Client secret is used only by confidential clients that can protect secrets server-side. Never place a client secret in a browser app, mobile app package, public repository, or downloadable configuration.
-
-Client type defines the expected security model. Choose the type based on where the application runs and whether it can keep a secret.
-
-Status controls whether Auth accepts new flows for the client. Disabling a client is a safer first response than deleting it when investigating a compromised application.
-
-Application origin is the application's browser origin. It helps administrators understand which product owns the client and may be used by CORS or first-party trust checks.
-
-Redirect URIs are exact HTTPS callback URLs where Auth may send users after login.
-
-Post-logout redirect URIs are exact HTTPS URLs where Auth may send users after logout.
-
-CORS origins are browser origins allowed to call permitted Auth browser-facing APIs when cross-origin access is required.
-
-Grant types decide which OAuth/OIDC flows the client may use.
-
-Response types decide which authorization responses the client may request.
-
-Token endpoint authentication method decides how a confidential client proves its identity during token exchange.
-
-Access-token lifetime controls how long issued access tokens remain usable.
-
-Refresh-token lifetime controls how long the application can continue a user session without a full login.
-
-Consent requirement controls whether users must approve requested access before Auth returns them to the application.
-
-Logo URL, policy URL, and terms URL help users recognize the application during consent or login screens.
-
-Provider connections decide which identity providers appear for this client in the hosted identity UI.
+| Field | What It Controls |
+|---|---|
+| Name | Label administrators see in the console. It may also appear to users during login or consent. |
+| Description | Explains what the application is for, such as customer portal, mobile app, or backend worker. |
+| Client ID | Public identifier for the application. It is not a secret. |
+| Client secret | Credential for confidential clients that can protect secrets server-side. Never place it in browser, mobile, public repository, or downloadable configuration. |
+| Client type | Expected security model based on where the application runs and whether it can keep a secret. |
+| Status | Whether Auth accepts new flows for the client. Disabling is often safer than deleting during investigation. |
+| Application origin | Browser origin for the application and useful ownership context for CORS or first-party checks. |
+| Redirect URIs | Exact HTTPS callback URLs where Auth may send users after login. |
+| Post-logout redirect URIs | Exact HTTPS URLs where Auth may send users after logout. |
+| CORS origins | Browser origins allowed to call permitted Auth browser-facing APIs when cross-origin access is required. |
+| Grant types | OAuth/OIDC flows the client may use. |
+| Response types | Authorization responses the client may request. |
+| Token endpoint authentication method | How a confidential client proves its identity during token exchange. |
+| Access-token lifetime | How long issued access tokens remain usable. |
+| Refresh-token lifetime | How long the application can continue a user session without full login. |
+| Consent requirement | Whether users must approve requested access before Auth returns them to the application. |
+| Logo URL, policy URL, terms URL | User-facing trust information during consent or login screens. |
+| Provider connections | Identity providers that appear for this client in the hosted identity UI. |
 
 ## Client Types
 
-Web application is a server-rendered or backend-owned application. It can protect a client secret because token exchange happens on the server. Use authorization code with PKCE, a server-side session, secure cookies, and exact HTTPS redirect URIs.
-
-Single-page application runs in the browser. It cannot protect a client secret because users can inspect downloaded code. Use authorization code with PKCE, exact HTTPS redirect URIs, and short-lived tokens.
-
-Mobile application runs on a user device. It cannot protect a normal web client secret. Use authorization code with PKCE and platform-appropriate redirect behavior, such as claimed HTTPS app links or supported private schemes.
-
-Machine-to-machine client represents a backend workload instead of a human login application. Use it for service authorization, scheduled jobs, automation, or backend-to-backend access. Do not use a machine client for hosted user login.
-
-First-party system client is reserved for Maintainerd-owned console and hosted identity surfaces. Do not model customer applications as first-party system clients.
+| Client Type | What It Represents | Recommended Pattern |
+|---|---|---|
+| Web application | Server-rendered or backend-owned application. | Authorization code with PKCE, server-side session, secure cookies, exact HTTPS redirect URIs, and protected client secret. |
+| Single-page application | Browser application. | Authorization code with PKCE, exact HTTPS redirect URIs, short-lived tokens, and no client secret. |
+| Mobile application | Native app on a user device. | Authorization code with PKCE and platform-appropriate redirect behavior. |
+| Machine-to-machine client | Backend workload without human login. | Service authorization, scheduled jobs, automation, or backend-to-backend access. |
+| First-party system client | Maintainerd-owned console and hosted identity surfaces. | Reserved for Auth-owned surfaces, not customer applications. |
 
 ## Public And Confidential Clients
 
@@ -143,17 +134,14 @@ Choose public or confidential based on where the secret would live. If the secre
 
 ## Grant Types
 
-Authorization code is the normal human login grant for web, SPA, and mobile clients. Use PKCE for browser and mobile applications, and prefer it for web applications as well.
-
-Refresh token lets an application continue a session without sending the user through a full login every time. Enable it only when the application can store and rotate refresh tokens safely.
-
-Client credentials is for machine-to-machine access. It represents the client itself, not an end user.
-
-Device code is for input-constrained devices where the user completes authorization on a separate browser-capable device.
-
-Token exchange is for controlled delegation between services or token types. Use it only when the relying services and audiences are clearly defined.
-
-CIBA is for backchannel authentication flows where the client starts a login request without a direct browser redirect. Use it only for products that intentionally support that interaction model.
+| Grant Type | Use It For | Caution |
+|---|---|---|
+| Authorization code | Human login for web, SPA, and mobile clients. | Use PKCE for browser and mobile applications, and prefer it for web applications. |
+| Refresh token | Continuing a session without full login every time. | Enable only when the application can store and rotate refresh tokens safely. |
+| Client credentials | Machine-to-machine access. | Represents the client itself, not an end user. |
+| Device code | Input-constrained devices where the user authorizes on another device. | Use only for device-style products. |
+| Token exchange | Controlled delegation between services or token types. | Use only when relying services and audiences are clearly defined. |
+| CIBA | Backchannel authentication without a direct browser redirect. | Use only for products that intentionally support that model. |
 
 Do not enable grants because they are available. Enable only the grants the application actually uses.
 
@@ -171,10 +159,12 @@ Token endpoint authentication applies when the client exchanges a code, refresh 
 
 Common choices:
 
-- None: for public clients that cannot protect a secret.
-- Client secret: for confidential clients that store a secret server-side.
-- Private-key JWT: for confidential clients that authenticate with an asymmetric key instead of a shared secret.
-- Mutual TLS or certificate-bound methods: for deployments that require client certificates for high-trust service traffic.
+| Method | Use It For |
+|---|---|
+| None | Public clients that cannot protect a secret. |
+| Client secret | Confidential clients that store a secret server-side. |
+| Private-key JWT | Confidential clients that authenticate with an asymmetric key instead of a shared secret. |
+| Mutual TLS or certificate-bound methods | Deployments that require client certificates for high-trust service traffic. |
 
 Use the strongest method your application and operating model can support. For production service clients, prefer asymmetric or certificate-based authentication when available.
 
