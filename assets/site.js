@@ -6,6 +6,33 @@ if (navToggle && navLinks) {
     navToggle.setAttribute("aria-expanded", String(isOpen));
   });
 }
+
+const topNav = document.querySelector("[data-top-nav]");
+if (topNav) {
+  const currentPath = window.location.pathname;
+  topNav.querySelectorAll("a[href^='/']").forEach((link) => {
+    const href = link.getAttribute("href") || "";
+    const isCurrent = href !== "/" && (currentPath === href || currentPath.startsWith(href));
+    if (isCurrent) {
+      link.setAttribute("aria-current", "page");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  });
+}
+
+const serviceFilter = document.querySelector("[data-service-filter]");
+if (serviceFilter) {
+  const sections = Array.from(document.querySelectorAll("[data-service-category]"));
+  const applyServiceFilter = () => {
+    const value = serviceFilter.value;
+    sections.forEach((section) => {
+      section.hidden = value !== "all" && section.getAttribute("data-service-category") !== value;
+    });
+  };
+  serviceFilter.addEventListener("change", applyServiceFilter);
+  applyServiceFilter();
+}
 document.querySelectorAll("[data-copy]").forEach((button) => {
   button.addEventListener("click", async () => {
     const text = button.getAttribute("data-copy") || "";
