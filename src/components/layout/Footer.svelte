@@ -1,10 +1,11 @@
+<script>
+  import BrandLogo from "@/components/ui/BrandLogo.svelte";
+</script>
+
 <footer class="footer">
   <div class="footer-inner">
     <div>
-      <a class="brand" href="/">
-        <img src="/assets/maintainerd-mark.svg" alt="" />
-        <span>Maintainerd</span>
-      </a>
+      <BrandLogo />
       <p>Open-source cloud services for teams that want platform capability without surrendering ownership.</p>
     </div>
     <div>

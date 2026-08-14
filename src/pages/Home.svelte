@@ -1,4 +1,7 @@
 <script>
+  import Badge from "@/components/ui/Badge.svelte";
+  import ButtonLink from "@/components/ui/ButtonLink.svelte";
+  import ServiceCard from "@/components/ui/ServiceCard.svelte";
   import Terminal from "@/components/ui/Terminal.svelte";
   import { maintainerdServices } from "@/data/services.js";
 
@@ -25,9 +28,9 @@
           jobs, and more. Adopt a single service or run the whole platform on infrastructure you already control.
         </p>
         <div class="hero-actions">
-          <a class="button primary" href="/services/">Browse services</a>
-          <a class="button secondary" href="/services/auth/docs/">Auth · v0.1.1</a>
-          <a class="button secondary" href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <ButtonLink href="/services/" variant="primary">Browse services</ButtonLink>
+          <ButtonLink href="/services/auth/docs/">Auth · v0.1.1</ButtonLink>
+          <ButtonLink href="https://github.com/maintainerd" external>GitHub</ButtonLink>
         </div>
       </div>
     </div>
@@ -43,7 +46,7 @@
         <div>
           <div class="meta">
             <h3 style="margin:0">Auth</h3>
-            <span class="badge version">{auth.status}</span>
+            <Badge kind="version">{auth.status}</Badge>
           </div>
           <p style="color:var(--muted);margin:0">{auth.description}</p>
           <Terminal title="Container image" command={auth.command} />
@@ -65,14 +68,7 @@
       <p class="section-lede">Independent services that stand alone or connect through Core. Everything past Auth is on the roadmap.</p>
       <div class="service-grid">
         {#each maintainerdServices as service}
-          <a class="service-card" href={service.href || `/services/${service.slug}/`}>
-            <div class="service-kicker">
-              <img class="service-icon" src={service.icon} alt="" />
-              <span class={`badge ${service.statusKind}`}>{service.status}</span>
-            </div>
-            <h3>{service.shortName || service.name}</h3>
-            <p>{service.summary}</p>
-          </a>
+          <ServiceCard {service} href={service.href || `/services/${service.slug}/`} />
         {/each}
       </div>
     </div>

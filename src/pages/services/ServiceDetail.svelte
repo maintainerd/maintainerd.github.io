@@ -1,4 +1,6 @@
 <script>
+  import Badge from "@/components/ui/Badge.svelte";
+  import ButtonLink from "@/components/ui/ButtonLink.svelte";
   import PageHero from "@/components/ui/PageHero.svelte";
   import Terminal from "@/components/ui/Terminal.svelte";
   import { serviceNav } from "@/data/services.js";
@@ -25,11 +27,11 @@
     ]}
   >
     <div class="actions">
-      <a class="button primary" href={`/services/${service.slug}/#start`}>Start here</a>
+      <ButtonLink href={`/services/${service.slug}/#start`} variant="primary">Start here</ButtonLink>
       {#if service.docsHref}
-        <a class="button secondary" href={service.docsHref}>Documentation</a>
+        <ButtonLink href={service.docsHref}>Documentation</ButtonLink>
       {:else}
-        <a class="button secondary" href="/services/auth/docs/">Documentation model</a>
+        <ButtonLink href="/services/auth/docs/">Documentation model</ButtonLink>
       {/if}
     </div>
   </PageHero>
@@ -43,7 +45,7 @@
       {/each}
     </aside>
     <div class="content-flow">
-      <span class={`badge ${service.statusKind}`}>{service.status}</span>
+      <Badge kind={service.statusKind}>{service.status}</Badge>
       <h2>{service.headline}</h2>
       <p class="section-lede">{service.description}</p>
       <Terminal title="Container image" command={service.command} />

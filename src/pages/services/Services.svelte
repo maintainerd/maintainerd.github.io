@@ -1,5 +1,6 @@
 <script>
   import PageHero from "@/components/ui/PageHero.svelte";
+  import ServiceCard from "@/components/ui/ServiceCard.svelte";
   import { externalCategories, maintainerdServices } from "@/data/services.js";
 
   let activeCategory = "all";
@@ -57,18 +58,12 @@
         </div>
         <div class="service-grid">
           {#each maintainerdServices as service}
-            <a class="service-card" href={service.href || `/services/${service.slug}/`}>
-              <div class="service-kicker">
-                <img class="service-icon" src={service.icon} alt="" />
-                <span class={`badge ${service.statusKind}`}>{service.status}</span>
-              </div>
-              <h3>{service.shortName || service.name}</h3>
-              <p>{service.summary}</p>
-              <footer>
-                <span>{service.eyebrow}</span>
-                <span class="text-link">Open {service.docsHref ? "docs" : "service"}</span>
-              </footer>
-            </a>
+            <ServiceCard
+              {service}
+              href={service.href || `/services/${service.slug}/`}
+              footerLeft={service.eyebrow}
+              footerRight={`Open ${service.docsHref ? "docs" : "service"}`}
+            />
           {/each}
         </div>
       </section>
@@ -84,18 +79,14 @@
         </div>
         <div class="service-grid">
           {#each category.services as service}
-            <article class="service-card">
-              <div class="service-kicker">
-                <span class="service-mark">{service.mark}</span>
-                <span class="badge planned">External</span>
-              </div>
-              <h3>{service.name}</h3>
-              <p>{service.summary}</p>
-              <footer>
-                <span>Docker image</span>
-                <span>{service.image}</span>
-              </footer>
-            </article>
+            <ServiceCard
+              {service}
+              mark={service.mark}
+              status="External"
+              statusKind="planned"
+              footerLeft="Docker image"
+              footerRight={service.image}
+            />
           {/each}
         </div>
       </section>

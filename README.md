@@ -38,9 +38,9 @@ For repository settings, use GitHub Pages with GitHub Actions as the publishing 
 - `src/App.svelte` - top-level app and simple route switch
 - `src/main.js` - browser entry point
 - `src/components/layout/` - site-wide layout components such as the header and footer
-- `src/components/ui/` - reusable presentation components such as page heroes and terminal blocks
+- `src/components/ui/` - reusable presentation components such as brand logos, buttons, badges, cards, page heroes, and terminal blocks
 - `src/pages/` - page-level screens, with service-specific pages grouped under `src/pages/services/`
-- `src/data/` - service catalog and Auth documentation navigation data
+- `src/data/` - asset paths, service catalog, and Auth documentation navigation data
 - `src/content/auth-docs/` - Auth documentation markdown sections
 - `src/utils/` - client-side routing and content-loading helpers
 - `static/` - static images, icons, manifest, robots, verification, and `.nojekyll`

@@ -1,4 +1,6 @@
 <script>
+  import BrandLogo from "@/components/ui/BrandLogo.svelte";
+
   export let pathname = "/";
 
   const navItems = [
@@ -15,10 +17,7 @@
 
 <header class="topbar">
   <nav class="nav" aria-label="Primary">
-    <a class="brand" href="/">
-      <img src="/assets/maintainerd-mark.svg" alt="" />
-      <span>Maintainerd</span>
-    </a>
+    <BrandLogo />
     <button
       class="menu-button"
       type="button"
