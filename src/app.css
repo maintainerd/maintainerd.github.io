@@ -179,6 +179,9 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 .api-method { display: inline-flex; min-width: 52px; justify-content: center; margin-right: 10px; padding: 3px 6px; border-radius: 5px; background: var(--green-tint); color: var(--green); font-size: .74rem; font-weight: 700; }
 .api-method.post { background: var(--blue-tint); color: var(--blue-strong); }
 .api-method.delete { background: #fbe9ec; color: #b4283b; }
+.empty-state { max-width: 640px; padding: 28px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.empty-state h2 { margin-bottom: 8px; font-size: 1.3rem; }
+.empty-state p { margin: 0; color: var(--muted); }
 
 /* Footer */
 .footer { border-top: 1px solid var(--line); background: var(--panel); }

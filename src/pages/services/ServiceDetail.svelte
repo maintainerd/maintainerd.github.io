@@ -1,11 +1,14 @@
 <script>
   import Badge from "@/components/ui/Badge.svelte";
   import ButtonLink from "@/components/ui/ButtonLink.svelte";
+  import EmptyState from "@/components/ui/EmptyState.svelte";
   import PageHero from "@/components/ui/PageHero.svelte";
   import Terminal from "@/components/ui/Terminal.svelte";
   import { serviceNav } from "@/data/services.js";
 
   export let service;
+
+  $: hasPublishedReference = Boolean(service.docsHref || service.apiHref);
 </script>
 
 <svelte:head>
@@ -19,45 +22,40 @@
     service
     eyebrow={service.eyebrow}
     title={service.name}
-    lede={service.description}
+    lede={hasPublishedReference ? service.description : ""}
     breadcrumbs={[
       { href: "/", label: "Maintainerd" },
       { href: "/services/", label: "Services" },
       { label: service.name }
     ]}
   >
-    <div class="actions">
-      <ButtonLink href={`/services/${service.slug}/#start`} variant="primary">Start here</ButtonLink>
-      {#if service.docsHref}
-        <ButtonLink href={service.docsHref}>Documentation</ButtonLink>
-      {:else}
-        <ButtonLink href="/services/auth/docs/">Documentation model</ButtonLink>
-      {/if}
-    </div>
+    {#if hasPublishedReference}
+      <div class="actions">
+        <ButtonLink href={`/services/${service.slug}/#start`} variant="primary">Start here</ButtonLink>
+        {#if service.docsHref}
+          <ButtonLink href={service.docsHref}>Documentation</ButtonLink>
+        {/if}
+        {#if service.apiHref}
+          <ButtonLink href={service.apiHref}>API reference</ButtonLink>
+        {/if}
+      </div>
+    {/if}
   </PageHero>
 
-  <section class="section service-layout" id="start">
-    <aside class="side-nav" aria-label="Services">
-      {#each serviceNav as item}
-        <a aria-current={item.href === `/services/${service.slug}/` || item.href === service.docsHref ? "page" : undefined} href={item.href}>
-          {item.label}
-        </a>
-      {/each}
-    </aside>
-    <div class="content-flow">
-      <Badge kind={service.statusKind}>{service.status}</Badge>
-      <h2>{service.headline}</h2>
-      <p class="section-lede">{service.description}</p>
-      <Terminal title="Container image" command={service.command} />
-      <div class="compact-grid">
-        {#each service.features as feature}
-          <article class="capability">
-            <h3>{feature}</h3>
-            <p>Available through the service contract and designed to connect back into Core.</p>
-          </article>
+  {#if hasPublishedReference}
+    <section class="section service-layout" id="start">
+      <aside class="side-nav" aria-label="Services">
+        {#each serviceNav as item}
+          <a aria-current={item.href === `/services/${service.slug}/` || item.href === service.docsHref ? "page" : undefined} href={item.href}>
+            {item.label}
+          </a>
         {/each}
-      </div>
-      {#if service.docsHref || service.apiHref}
+      </aside>
+      <div class="content-flow">
+        <Badge kind={service.statusKind}>{service.status}</Badge>
+        <h2>{service.headline}</h2>
+        <p class="section-lede">{service.description}</p>
+        <Terminal title="Container image" command={service.command} />
         <div class="callout">
           <h3>Documentation</h3>
           <p>
@@ -69,16 +67,14 @@
             {#if service.apiHref}<a href={service.apiHref}>Open API reference</a>{/if}
           </div>
         </div>
-      {:else}
-        <div class="callout">
-          <h3>Docs and API shape</h3>
-          <p>
-            Every Maintainerd service page is ready to grow into the same pattern: overview, installation,
-            configuration, operational guide, API reference, and examples. Auth already has dedicated documentation
-            and API pages.
-          </p>
-        </div>
-      {/if}
-    </div>
-  </section>
+      </div>
+    </section>
+  {:else}
+    <section class="section">
+      <EmptyState
+        title={`${service.shortName || service.name} page is empty for now.`}
+        message="Detailed documentation, API reference, setup notes, and examples will be added when this service is ready."
+      />
+    </section>
+  {/if}
 </main>
