@@ -1,28 +1,60 @@
 <script>
+  import { ChevronDown } from "@lucide/svelte";
   import { onMount, tick } from "svelte";
   import PageHero from "@/components/ui/PageHero.svelte";
   import { defaultGrpcGroupSlug, findGrpcGroupNav, grpcGroupNav, grpcPackage, grpcRpcCount } from "@/data/authGrpc.js";
 
   const baseSlug = "overview";
   const rpcLabel = (count) => `${count} RPC${count === 1 ? "" : "s"}`;
+  const requiredLabel = (value) => (value ? "Required" : "Optional");
+  const slugify = (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const rpcId = (groupSlug, rpc) => `${groupSlug}-${slugify(rpc.name)}`;
 
   let activeSlug = baseSlug;
   let activeGroup = null;
+  let activeRpcId = "";
 
   const normalizeSlug = (slug) => {
     if (slug === baseSlug) return baseSlug;
     const group = findGrpcGroupNav(slug);
-    return group ? group.slug : baseSlug;
+    if (group) return group.slug;
+    return grpcGroupNav.find((item) => slug.startsWith(`${item.slug}-`))?.slug || baseSlug;
   };
 
   const loadActiveGroup = async (slug, shouldScroll = false) => {
     const nextSlug = normalizeSlug(slug);
     activeSlug = nextSlug;
-    activeGroup = nextSlug === baseSlug ? null : findGrpcGroupNav(nextSlug);
+
+    if (nextSlug === baseSlug) {
+      activeGroup = null;
+      activeRpcId = "";
+
+      if (shouldScroll) {
+        await tick();
+        document.getElementById(nextSlug)?.scrollIntoView({ block: "start" });
+      }
+
+      return;
+    }
+
+    activeGroup = findGrpcGroupNav(nextSlug);
+    activeRpcId = activeGroup.rpcs.some((rpc) => rpcId(activeGroup.slug, rpc) === slug) ? slug : "";
 
     if (shouldScroll) {
       await tick();
-      document.getElementById(nextSlug)?.scrollIntoView({ block: "start" });
+      document.getElementById(activeRpcId || nextSlug)?.scrollIntoView({ block: "start" });
+    }
+  };
+
+  const toggleRpc = async (rpc) => {
+    if (!activeGroup) return;
+    const nextRpcId = rpcId(activeGroup.slug, rpc);
+    activeRpcId = activeRpcId === nextRpcId ? "" : nextRpcId;
+    history.replaceState(null, "", `#${activeRpcId || activeGroup.slug}`);
+
+    if (activeRpcId) {
+      await tick();
+      document.getElementById(activeRpcId)?.scrollIntoView({ block: "nearest" });
     }
   };
 
@@ -125,8 +157,16 @@
           </div>
           <div class="endpoint-list">
             {#each activeGroup.rpcs as rpc}
-              <article class="endpoint-card">
-                <div class="endpoint-summary is-static">
+              {@const currentRpcId = rpcId(activeGroup.slug, rpc)}
+              {@const isRpcOpen = activeRpcId === currentRpcId}
+              <article class:is-open={isRpcOpen} class="endpoint-card" id={currentRpcId}>
+                <button
+                  class="endpoint-summary"
+                  type="button"
+                  aria-expanded={isRpcOpen}
+                  aria-controls={`${currentRpcId}-detail`}
+                  onclick={() => toggleRpc(rpc)}
+                >
                   <span class="endpoint-summary-main">
                     <span class="endpoint-line">
                       <span class="api-method rpc">{rpc.name}</span>
@@ -134,9 +174,108 @@
                       <span class="rpc-arrow" aria-hidden="true">→</span>
                       <code>{rpc.response}</code>
                     </span>
-                    <span class="endpoint-summary-text">Detailed contract coming soon.</span>
+                    <span class="endpoint-summary-text">{rpc.details ? rpc.details.overview : "Detailed contract coming soon."}</span>
                   </span>
-                </div>
+                  <span class="accordion-indicator" aria-hidden="true">
+                    <ChevronDown size={18} strokeWidth={2.25} />
+                  </span>
+                </button>
+                {#if rpc.details && isRpcOpen}
+                  <div class="endpoint-detail" id={`${currentRpcId}-detail`}>
+                    <p>{rpc.details.overview}</p>
+                    {#if rpc.details.notes?.length}
+                      <ul class="detail-notes">
+                        {#each rpc.details.notes as note}
+                          <li>{note}</li>
+                        {/each}
+                      </ul>
+                    {/if}
+
+                    {#if rpc.details.requestFields?.length}
+                      <div class="detail-block">
+                        <h3>Request — {rpc.request}</h3>
+                        <div class="detail-table">
+                          <table class="request-table">
+                            <colgroup>
+                              <col class="name-column" />
+                              <col class="value-column" />
+                              <col class="required-column" />
+                              <col class="description-column" />
+                            </colgroup>
+                            <thead>
+                              <tr>
+                                <th>Field</th>
+                                <th>Type</th>
+                                <th>Required</th>
+                                <th>Description</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {#each rpc.details.requestFields as field}
+                                <tr>
+                                  <td data-label="Field"><code>{field.name}</code></td>
+                                  <td data-label="Type">{field.type}</td>
+                                  <td data-label="Required">{requiredLabel(field.required)}</td>
+                                  <td data-label="Description">{field.description}</td>
+                                </tr>
+                              {/each}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    {:else if rpc.request !== "Empty"}
+                      <div class="detail-block">
+                        <h3>Request — {rpc.request}</h3>
+                        <p>The request message carries no fields.</p>
+                      </div>
+                    {/if}
+
+                    {#if rpc.details.responseFields?.length}
+                      <div class="detail-block">
+                        <h3>Response — {rpc.response}</h3>
+                        <div class="detail-table">
+                          <table class="request-table">
+                            <colgroup>
+                              <col class="name-column" />
+                              <col class="value-column" />
+                              <col class="description-column" />
+                            </colgroup>
+                            <thead>
+                              <tr>
+                                <th>Field</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {#each rpc.details.responseFields as field}
+                                <tr>
+                                  <td data-label="Field"><code>{field.name}</code></td>
+                                  <td data-label="Type">{field.type}</td>
+                                  <td data-label="Description">{field.description}</td>
+                                </tr>
+                              {/each}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    {/if}
+
+                    {#if rpc.details.errors?.length}
+                      <div class="detail-block">
+                        <h3>Errors</h3>
+                        <div class="response-list">
+                          {#each rpc.details.errors as error}
+                            <article class="response-card">
+                              <h4>{error.code}</h4>
+                              <p>{error.description}</p>
+                            </article>
+                          {/each}
+                        </div>
+                      </div>
+                    {/if}
+                  </div>
+                {/if}
               </article>
             {/each}
           </div>

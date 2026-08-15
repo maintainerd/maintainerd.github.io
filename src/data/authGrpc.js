@@ -11,16 +11,336 @@ export const grpcGroupNav = [
     "description": "One-time bootstrap RPCs for tenant creation, first administrator, control-service registration, and setup completion.",
     "rpcCount": 10,
     "rpcs": [
-      { "name": "GetSetupStatus", "request": "GetSetupStatusRequest", "response": "GetSetupStatusResponse" },
-      { "name": "CreateTenant", "request": "CreateTenantRequest", "response": "CreateTenantResponse" },
-      { "name": "CreateAdmin", "request": "CreateAdminRequest", "response": "CreateAdminResponse" },
-      { "name": "CreateProfile", "request": "CreateProfileRequest", "response": "CreateProfileResponse" },
-      { "name": "RegisterControlService", "request": "RegisterControlServiceRequest", "response": "RegisterControlServiceResponse" },
-      { "name": "EnsureControlClient", "request": "EnsureControlClientRequest", "response": "EnsureControlClientResponse" },
-      { "name": "EnsureResourceAPI", "request": "EnsureResourceAPIRequest", "response": "EnsureResourceAPIResponse" },
-      { "name": "EnsureRole", "request": "EnsureRoleRequest", "response": "EnsureRoleResponse" },
-      { "name": "EnsureConsoleClient", "request": "EnsureConsoleClientRequest", "response": "EnsureConsoleClientResponse" },
-      { "name": "CompleteSetup", "request": "CompleteSetupRequest", "response": "CompleteSetupResponse" }
+      {
+        "name": "GetSetupStatus",
+        "request": "GetSetupStatusRequest",
+        "response": "GetSetupStatusResponse",
+        "details": {
+          "overview": "Reports the current bootstrap progress of the instance. Read-only and always callable, including after setup has completed.",
+          "notes": [
+            "is_setup_complete is true once the system tenant is active — the same durable fact the setup gate checks on every mutating RPC.",
+            "All four flags are booleans; there is no secret or configuration exposed."
+          ],
+          "requestFields": [],
+          "responseFields": [
+            { "name": "is_tenant_setup", "type": "bool", "description": "True once the system tenant has been created." },
+            { "name": "is_admin_setup", "type": "bool", "description": "True once the first administrator has been created." },
+            { "name": "is_profile_setup", "type": "bool", "description": "True once the administrator's profile has been created." },
+            { "name": "is_setup_complete", "type": "bool", "description": "True once setup is finished and locked." }
+          ],
+          "errors": [
+            { "code": "Internal", "description": "The bootstrap state could not be read from storage." }
+          ]
+        }
+      },
+      {
+        "name": "CreateTenant",
+        "request": "CreateTenantRequest",
+        "response": "CreateTenantResponse",
+        "details": {
+          "overview": "Creates the system tenant that owns the instance. This is the one unauthenticated bootstrap call that mints the tenant every other resource hangs off, so it is replay-guarded: a retry after a lost response returns the same tenant instead of failing or duplicating.",
+          "notes": [
+            "The tenant name is a DNS-safe slug — it becomes the tenant subdomain and is matched against incoming Host headers.",
+            "The response includes the seeded default client and default identity provider identifiers.",
+            "The system tenant becomes the durable, replica-shared fact that setup is complete once it is active."
+          ],
+          "requestFields": [
+            { "name": "name", "type": "string", "required": true, "description": "Tenant name. 3-63 characters: lowercase letters, numbers, and hyphens, starting and ending with an alphanumeric." },
+            { "name": "display_name", "type": "string", "required": true, "description": "Human-readable tenant name. 2-100 characters." },
+            { "name": "description", "type": "string", "required": false, "description": "Description. At most 200 characters." },
+            { "name": "metadata", "type": "TenantMetadata", "required": false, "description": "Tenant display metadata; each field is optional and validated independently." },
+            { "name": "metadata.application_logo_url", "type": "string", "required": false, "description": "Application logo URL. Valid URL, at most 500 characters." },
+            { "name": "metadata.favicon_url", "type": "string", "required": false, "description": "Favicon URL. Valid URL, at most 500 characters." },
+            { "name": "metadata.language", "type": "string", "required": false, "description": "Locale, e.g. en or en-US." },
+            { "name": "metadata.timezone", "type": "string", "required": false, "description": "Timezone label. At most 50 characters." },
+            { "name": "metadata.date_format", "type": "string", "required": false, "description": "Date format preference. At most 20 characters." },
+            { "name": "metadata.time_format", "type": "string", "required": false, "description": "Time format preference. At most 20 characters." },
+            { "name": "metadata.privacy_policy_url", "type": "string", "required": false, "description": "Privacy policy URL. Valid URL, at most 500 characters." },
+            { "name": "metadata.term_of_service_url", "type": "string", "required": false, "description": "Terms of service URL. Valid URL, at most 500 characters." }
+          ],
+          "responseFields": [
+            { "name": "tenant_uuid", "type": "string", "description": "UUID of the created system tenant." },
+            { "name": "name", "type": "string", "description": "Tenant name as stored." },
+            { "name": "display_name", "type": "string", "description": "Tenant display name as stored." },
+            { "name": "default_client_id", "type": "string", "description": "OAuth client identifier of the tenant's seeded default client." },
+            { "name": "default_provider_id", "type": "string", "description": "Identifier of the tenant's seeded default identity provider." }
+          ],
+          "errors": [
+            { "code": "InvalidArgument", "description": "A required field is missing or fails validation (field violations are carried in the BadRequest details)." },
+            { "code": "AlreadyExists", "description": "A tenant already exists in this instance, or setup has completed and is locked." },
+            { "code": "PermissionDenied", "description": "The orchestrated setup window has expired (SETUP_WINDOW_TTL)." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "CreateAdmin",
+        "request": "CreateAdminRequest",
+        "response": "CreateAdminResponse",
+        "details": {
+          "overview": "Creates the instance's first administrator. The new user receives the seeded super-admin role, making them the account that can grant every other access.",
+          "notes": [
+            "The bootstrap creates are replay-guarded: a retry after a lost response returns the same administrator instead of failing.",
+            "The password is validated by the tenant password policy after the credential rules pass."
+          ],
+          "requestFields": [
+            { "name": "username", "type": "string", "required": true, "description": "Username. 3-50 characters: letters, numbers, underscore, hyphen, dot, or @." },
+            { "name": "fullname", "type": "string", "required": false, "description": "Full name for the administrator account." },
+            { "name": "password", "type": "string", "required": true, "description": "Initial password. 8-100 characters." },
+            { "name": "email", "type": "string", "required": true, "description": "Email address. Valid format, at most 100 characters." }
+          ],
+          "responseFields": [
+            { "name": "user_uuid", "type": "string", "description": "UUID of the created administrator." },
+            { "name": "username", "type": "string", "description": "Username as stored." },
+            { "name": "fullname", "type": "string", "description": "Full name as stored." },
+            { "name": "email", "type": "string", "description": "Email address as stored." },
+            { "name": "status", "type": "string", "description": "Account status, e.g. active." }
+          ],
+          "errors": [
+            { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
+            { "code": "AlreadyExists", "description": "An administrator already exists, or setup has completed and is locked." },
+            { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "CreateProfile",
+        "request": "CreateProfileRequest",
+        "response": "CreateProfileResponse",
+        "details": {
+          "overview": "Creates the administrator's profile record — the display identity the account uses across the console and hosted surfaces.",
+          "notes": [
+            "Only first_name is required; every other field is optional and validated independently when present.",
+            "birthdate must be YYYY-MM-DD, country a 2-character ISO code, and gender one of male, female, other, or prefer_not_to_say.",
+            "metadata is a free-form protobuf Struct carried through unchanged."
+          ],
+          "requestFields": [
+            { "name": "first_name", "type": "string", "required": true, "description": "First name. 1-100 characters." },
+            { "name": "middle_name", "type": "string", "required": false, "description": "Middle name. At most 100 characters." },
+            { "name": "last_name", "type": "string", "required": false, "description": "Last name. At most 100 characters." },
+            { "name": "suffix", "type": "string", "required": false, "description": "Name suffix. At most 50 characters." },
+            { "name": "display_name", "type": "string", "required": false, "description": "Display name. At most 100 characters." },
+            { "name": "birthdate", "type": "string", "required": false, "description": "Birthdate in YYYY-MM-DD format." },
+            { "name": "gender", "type": "string", "required": false, "description": "One of male, female, other, prefer_not_to_say." },
+            { "name": "bio", "type": "string", "required": false, "description": "Biography. At most 1000 characters." },
+            { "name": "phone", "type": "string", "required": false, "description": "Phone number. At most 20 characters." },
+            { "name": "email", "type": "string", "required": false, "description": "Email address. Valid format, at most 255 characters." },
+            { "name": "address", "type": "string", "required": false, "description": "Street address. At most 500 characters." },
+            { "name": "city", "type": "string", "required": false, "description": "City. At most 100 characters." },
+            { "name": "country", "type": "string", "required": false, "description": "2-character ISO country code, e.g. US or PH." },
+            { "name": "timezone", "type": "string", "required": false, "description": "Timezone label. At most 50 characters." },
+            { "name": "language", "type": "string", "required": false, "description": "Language preference. At most 10 characters." },
+            { "name": "profile_url", "type": "string", "required": false, "description": "Profile URL. Valid URL, at most 1000 characters." },
+            { "name": "metadata", "type": "google.protobuf.Struct", "required": false, "description": "Free-form profile metadata." }
+          ],
+          "responseFields": [
+            { "name": "profile_uuid", "type": "string", "description": "UUID of the created profile." },
+            { "name": "first_name", "type": "string", "description": "First name as stored." },
+            { "name": "display_name", "type": "string", "description": "Display name as resolved (empty when not set)." }
+          ],
+          "errors": [
+            { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
+            { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
+            { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "RegisterControlService",
+        "request": "RegisterControlServiceRequest",
+        "response": "RegisterControlServiceResponse",
+        "details": {
+          "overview": "Registers the orchestrator (Maintainerd Core or another ecosystem control plane) as a service principal, and attaches a control policy granting exactly the actions listed in allowed_actions.",
+          "notes": [
+            "allowed_actions is the control policy, supplied explicitly instead of read from a seeded row. Empty means the documented default control set, which excludes user:* and account:*:self.",
+            "policy_name names the orchestrator's own control policy; empty means auth-control. Distinct names keep separate orchestrators' grants separate — an existing policy is returned unchanged rather than widened.",
+            "The response flags already_existed and policy_was_attached so a retry can tell a fresh grant from a replay."
+          ],
+          "requestFields": [
+            { "name": "name", "type": "string", "required": true, "description": "Service name. 2-100 characters: letters, numbers, hyphen, underscore, dot." },
+            { "name": "display_name", "type": "string", "required": true, "description": "Human-readable name. 2-100 characters." },
+            { "name": "description", "type": "string", "required": false, "description": "Description. At most 500 characters." },
+            { "name": "version", "type": "string", "required": false, "description": "Service version. 1-50 characters: letters, numbers, hyphen, underscore, dot." },
+            { "name": "allowed_actions", "type": "repeated string", "required": false, "description": "Permission names the control policy grants. Empty means the documented default control set." },
+            { "name": "policy_name", "type": "string", "required": false, "description": "Name of the control policy. Empty means auth-control." }
+          ],
+          "responseFields": [
+            { "name": "service_uuid", "type": "string", "description": "UUID of the registered service principal." },
+            { "name": "name", "type": "string", "description": "Service name as stored." },
+            { "name": "display_name", "type": "string", "description": "Display name as stored." },
+            { "name": "policy_uuid", "type": "string", "description": "UUID of the control policy." },
+            { "name": "policy_name", "type": "string", "description": "Name of the control policy as stored." },
+            { "name": "already_existed", "type": "bool", "description": "True when the service already existed and was returned unchanged." },
+            { "name": "policy_was_attached", "type": "bool", "description": "True when this call attached the policy to the service." }
+          ],
+          "errors": [
+            { "code": "InvalidArgument", "description": "A required field is missing or fails validation, or allowed_actions names permissions that do not exist." },
+            { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
+            { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "EnsureControlClient",
+        "request": "EnsureControlClientRequest",
+        "response": "EnsureControlClientResponse",
+        "details": {
+          "overview": "Declaratively registers the machine client the orchestrator authenticates as for every call after setup closes. Authentication is private_key_jwt: the orchestrator generates its keypair and sends only its public JWKS, so this service never holds a credential that could impersonate it.",
+          "notes": [
+            "service_name is required: it binds the client to the service principal from RegisterControlService, which is what makes the client's tokens carry the svc claim that the authorization interceptor resolves policies by.",
+            "jwks and jwks_uri are alternatives; send jwks_uri to rotate keys later without re-entering setup.",
+            "Get-or-create semantics make the RPC safely retryable — there is no returned-exactly-once secret to lose.",
+            "audience empty means this instance's own management audience."
+          ],
+          "requestFields": [
+            { "name": "name", "type": "string", "required": true, "description": "Client machine name." },
+            { "name": "display_name", "type": "string", "required": false, "description": "Human-readable client name." },
+            { "name": "service_name", "type": "string", "required": true, "description": "Binds this client to the service principal registered by RegisterControlService." },
+            { "name": "jwks", "type": "string", "required": false, "description": "The orchestrator's public JWK Set, serialized. Alternative to jwks_uri." },
+            { "name": "jwks_uri", "type": "string", "required": false, "description": "HTTPS URL serving the orchestrator's public keys. Alternative to jwks." },
+            { "name": "audience", "type": "string", "required": false, "description": "API identifier tokens for this client are minted for. Empty means the instance's own management audience." }
+          ],
+          "responseFields": [
+            { "name": "client_uuid", "type": "string", "description": "UUID of the control client." },
+            { "name": "client_id", "type": "string", "description": "OAuth client identifier the orchestrator authenticates with." },
+            { "name": "token_endpoint_auth_method", "type": "string", "description": "The authentication method configured for this client (private_key_jwt)." },
+            { "name": "service_uuid", "type": "string", "description": "UUID of the bound service principal." },
+            { "name": "already_existed", "type": "bool", "description": "True when the client already existed and was returned unchanged." }
+          ],
+          "errors": [
+            { "code": "InvalidArgument", "description": "A required field is missing or fails validation (for example, both jwks and jwks_uri empty)." },
+            { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
+            { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "EnsureResourceAPI",
+        "request": "EnsureResourceAPIRequest",
+        "response": "EnsureResourceAPIResponse",
+        "details": {
+          "overview": "Declaratively registers an API this instance protects on the orchestrator's behalf, together with the permissions that API defines. Core is not only a client of Auth — it is also a resource server whose own users are authorized by permissions that live here.",
+          "notes": [
+            "identifier is the API's audience value (aud) in issued tokens.",
+            "Get-or-create: a retry after a lost response returns the same API and permissions.",
+            "service_name references the service principal from RegisterControlService."
+          ],
+          "requestFields": [
+            { "name": "service_name", "type": "string", "required": true, "description": "Name of the service principal the API belongs to." },
+            { "name": "service_display_name", "type": "string", "required": false, "description": "Display name for the service when it must be created." },
+            { "name": "name", "type": "string", "required": true, "description": "API machine name." },
+            { "name": "display_name", "type": "string", "required": false, "description": "Human-readable API name." },
+            { "name": "identifier", "type": "string", "required": true, "description": "The API's audience value (aud) in issued tokens." },
+            { "name": "permissions", "type": "repeated EnsureResourceAPIPermission", "required": false, "description": "Permissions this API defines." },
+            { "name": "permissions[].name", "type": "string", "required": true, "description": "Permission name." },
+            { "name": "permissions[].description", "type": "string", "required": false, "description": "Permission description." }
+          ],
+          "responseFields": [
+            { "name": "service_uuid", "type": "string", "description": "UUID of the owning service principal." },
+            { "name": "api_uuid", "type": "string", "description": "UUID of the registered API." },
+            { "name": "identifier", "type": "string", "description": "The API audience identifier." },
+            { "name": "permission_names", "type": "repeated string", "description": "Names of the permissions registered under the API." },
+            { "name": "already_existed", "type": "bool", "description": "True when the API already existed and was returned unchanged." }
+          ],
+          "errors": [
+            { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
+            { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
+            { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "EnsureRole",
+        "request": "EnsureRoleRequest",
+        "response": "EnsureRoleResponse",
+        "details": {
+          "overview": "Declaratively creates a role carrying the given permissions and optionally grants it to a user — how Core gives its first administrator full access to itself.",
+          "notes": [
+            "assign_to_user_uuid is a UUID rather than a username so it can only name a principal the caller already created in this same setup window.",
+            "Get-or-create and grant semantics: assigned and already_existed let a retry tell a fresh grant from a replay."
+          ],
+          "requestFields": [
+            { "name": "name", "type": "string", "required": true, "description": "Role name." },
+            { "name": "description", "type": "string", "required": false, "description": "Role description." },
+            { "name": "permission_names", "type": "repeated string", "required": false, "description": "Permission names the role carries." },
+            { "name": "assign_to_user_uuid", "type": "string", "required": false, "description": "UUID of the user the role should be granted to." }
+          ],
+          "responseFields": [
+            { "name": "role_uuid", "type": "string", "description": "UUID of the role." },
+            { "name": "name", "type": "string", "description": "Role name as stored." },
+            { "name": "permission_names", "type": "repeated string", "description": "Permission names the role carries." },
+            { "name": "assigned", "type": "bool", "description": "True when the role was granted to the requested user." },
+            { "name": "already_existed", "type": "bool", "description": "True when the role already existed." }
+          ],
+          "errors": [
+            { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
+            { "code": "NotFound", "description": "The user named by assign_to_user_uuid was not found." },
+            { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
+            { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "EnsureConsoleClient",
+        "request": "EnsureConsoleClientRequest",
+        "response": "EnsureConsoleClientResponse",
+        "details": {
+          "overview": "Declaratively registers the browser application Core's operators sign in to, which authenticates against this service over OIDC.",
+          "notes": [
+            "The client is PUBLIC: a single-page app cannot keep a secret, so it uses authorization_code with PKCE (S256) and no credential. No secret is issued or returned.",
+            "domain is the site the app is served from and also decides first-party status.",
+            "Get-or-create: retryable with already_existed in the response."
+          ],
+          "requestFields": [
+            { "name": "name", "type": "string", "required": true, "description": "Client machine name." },
+            { "name": "display_name", "type": "string", "required": false, "description": "Human-readable client name." },
+            { "name": "domain", "type": "string", "required": true, "description": "The site the app is served from; also decides first-party status." },
+            { "name": "redirect_uris", "type": "repeated string", "required": false, "description": "Registered OIDC callback URLs." },
+            { "name": "post_logout_redirect_uris", "type": "repeated string", "required": false, "description": "Registered post-logout return URLs." }
+          ],
+          "responseFields": [
+            { "name": "client_uuid", "type": "string", "description": "UUID of the console client." },
+            { "name": "client_id", "type": "string", "description": "OAuth client identifier the console authenticates with." },
+            { "name": "redirect_uris", "type": "repeated string", "description": "Registered redirect URIs as stored." },
+            { "name": "post_logout_redirect_uris", "type": "repeated string", "description": "Registered post-logout redirect URIs as stored." },
+            { "name": "already_existed", "type": "bool", "description": "True when the client already existed and was returned unchanged." }
+          ],
+          "errors": [
+            { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
+            { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
+            { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "CompleteSetup",
+        "request": "CompleteSetupRequest",
+        "response": "CompleteSetupResponse",
+        "details": {
+          "overview": "Locks setup so no further bootstrap RPCs are accepted. Tenant and administrator setup must both be finished first.",
+          "notes": [
+            "The lock is one-way and durable: an active system tenant is the fact every setup gate checks, so there is no separate close flag to drift.",
+            "The RPC is idempotent — calling it on an already-complete instance returns is_setup_complete=true.",
+            "For orchestrated instances the setup window also expires on a deadline (SETUP_WINDOW_TTL) so an abandoned provision fails closed."
+          ],
+          "requestFields": [],
+          "responseFields": [
+            { "name": "is_setup_complete", "type": "bool", "description": "True once setup is locked." }
+          ],
+          "errors": [
+            { "code": "InvalidArgument", "description": "Tenant and admin setup were not completed before locking." },
+            { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      }
     ]
   },
   {
