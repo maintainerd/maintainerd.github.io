@@ -24,7 +24,7 @@ Use integration events when another application must take action. Use Auth event
 
 This is the current Auth integration-event catalog. These are the event names you use when choosing webhook subscriptions or RabbitMQ routes.
 
-Each event includes a `subject_uuid` when the changed resource has a public UUID. The `subject_type` tells the receiver what kind of record changed. Payloads stay thin; receivers should fetch current state when they need the full record.
+Each event includes a `subject_id` when the changed resource has a public UUID. The `subject_type` tells the receiver what kind of record changed. Payloads stay thin; receivers should fetch current state when they need the full record.
 
 ### User Events
 
@@ -389,7 +389,7 @@ Example delivery body:
   "event_version": 1,
   "tenant_id": "770e8400-e29b-41d4-a716-446655440001",
   "actor_user_id": "880e8400-e29b-41d4-a716-446655440002",
-  "subject_uuid": "1b9d6bcd-8f89-4b98-84a7-f0ef70cc7f8a",
+  "subject_id": "1b9d6bcd-8f89-4b98-84a7-f0ef70cc7f8a",
   "subject_type": "user",
   "changed_fields": ["email", "status"],
   "payload": {},
@@ -408,7 +408,7 @@ Fields:
 | `event_version` | Number | Event schema version. Current catalog starts at `1`. |
 | `tenant_id` | UUID string | Public tenant UUID that owns the event. Receivers that handle multiple tenants should filter by this field. |
 | `actor_user_id` | UUID string or `null` | Public user UUID for the user who triggered the change when Auth can identify one. It is `null` for system or service actions. |
-| `subject_uuid` | UUID string or `null` | Public UUID of the resource that changed. Some system events may not have a single subject. |
+| `subject_id` | UUID string or `null` | Public UUID of the resource that changed. Some system events may not have a single subject. |
 | `subject_type` | String | Resource family, such as `user`, `tenant`, `client`, `role`, `permission`, `policy`, `api`, or `service`. |
 | `changed_fields` | String array | Field names that changed. Values are not included. Empty means the event does not expose field-level detail. |
 | `payload` | Object | Optional event metadata. It should not contain personal data, secrets, credentials, or full resource records. |
@@ -457,7 +457,7 @@ CREATE TABLE maintainerd_webhook_jobs (
   job_id BIGSERIAL PRIMARY KEY,
   event_id UUID NOT NULL REFERENCES maintainerd_webhook_events(event_id),
   job_type TEXT NOT NULL,
-  subject_uuid UUID,
+  subject_id UUID,
   tenant_id UUID NOT NULL,
   status TEXT NOT NULL DEFAULT 'queued',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -559,7 +559,7 @@ async function processEvent(client, event) {
     case "user.created":
     case "user.updated":
     case "user.status_changed":
-      await enqueueUserSync(client, event, event.subject_uuid);
+      await enqueueUserSync(client, event, event.subject_id);
       break;
     case "role.permissions_changed":
     case "iam.policy.updated":
@@ -573,7 +573,7 @@ async function processEvent(client, event) {
 async function enqueueUserSync(client, event, subjectUuid) {
   await client.query(
     `INSERT INTO maintainerd_webhook_jobs
-       (event_id, job_type, subject_uuid, tenant_id)
+       (event_id, job_type, subject_id, tenant_id)
      VALUES ($1, 'sync_user', $2, $3)`,
     [event.event_id, subjectUuid, event.tenant_id]
   );
@@ -823,7 +823,7 @@ Tenant provisioning:
 
 1. Create an endpoint for the provisioning service.
 2. Subscribe to `tenant.created`, `tenant.updated`, `tenant.status_changed`, `tenant.deleted`, and tenant-member events.
-3. Use `tenant_id` and `subject_uuid` as lookup keys.
+3. Use `tenant_id` and `subject_id` as lookup keys.
 4. Make provisioning idempotent so replay does not duplicate work.
 5. Alert on dead-lettered tenant events.
 
