@@ -9406,16 +9406,597 @@ export const grpcGroupNav = [
     "description": "Trusted external OIDC issuers for workload token exchange.",
     "rpcCount": 5,
     "rpcs": [
-      {         "permission": "workload-identity-federation:read",
-"name": "ListWorkloadIdentityFederations", "request": "ListWorkloadIdentityFederationsRequest", "response": "ListWorkloadIdentityFederationsResponse" },
-      {         "permission": "workload-identity-federation:read",
-"name": "GetWorkloadIdentityFederation", "request": "GetWorkloadIdentityFederationRequest", "response": "GetWorkloadIdentityFederationResponse" },
-      {         "permission": "workload-identity-federation:create",
-"name": "CreateWorkloadIdentityFederation", "request": "CreateWorkloadIdentityFederationRequest", "response": "CreateWorkloadIdentityFederationResponse" },
-      {         "permission": "workload-identity-federation:update",
-"name": "UpdateWorkloadIdentityFederation", "request": "UpdateWorkloadIdentityFederationRequest", "response": "UpdateWorkloadIdentityFederationResponse" },
-      {         "permission": "workload-identity-federation:delete",
-"name": "DeleteWorkloadIdentityFederation", "request": "DeleteWorkloadIdentityFederationRequest", "response": "DeleteWorkloadIdentityFederationResponse" }
+      {
+        "permission": "workload-identity-federation:read",
+        "name": "ListWorkloadIdentityFederations",
+        "request": "ListWorkloadIdentityFederationsRequest",
+        "response": "ListWorkloadIdentityFederationsResponse",
+        "details": {
+          "overview": "Lists workload identity federation trust rules in a tenant with filtering and pagination.",
+          "notes": [
+            "Each rule lets an external workload exchange an upstream OIDC token for a tenant-scoped access token without storing long-lived credentials."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the federation belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Filter by the mapped client UUID."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on name."
+            },
+            {
+              "name": "is_active",
+              "type": "optional bool",
+              "required": false,
+              "description": "Filter by active state."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "federations",
+              "type": "repeated WorkloadIdentityFederation",
+              "description": "The matching trust rules."
+            },
+            {
+              "name": "page.total",
+              "type": "int64",
+              "description": "Total matching federations."
+            },
+            {
+              "name": "page.page",
+              "type": "int32",
+              "description": "Current page."
+            },
+            {
+              "name": "page.limit",
+              "type": "int32",
+              "description": "Page size."
+            },
+            {
+              "name": "page.total_pages",
+              "type": "int32",
+              "description": "Total page count."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, federation, or mapped client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "is_active": true,
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "federations": [
+              {
+                "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "github-actions-ci",
+                "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
+                "issuer_url": "https://token.actions.githubusercontent.com",
+                "audience": "maintainerd-auth-ci",
+                "subject_claim": "sub",
+                "subject_pattern": "repo:my-org/my-repo:*",
+                "allowed_scopes": [
+                  "service:read"
+                ],
+                "attribute_mapping": {
+                  "repository": "repo"
+                },
+                "is_active": true,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-10T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "workload-identity-federation:read",
+        "name": "GetWorkloadIdentityFederation",
+        "request": "GetWorkloadIdentityFederationRequest",
+        "response": "GetWorkloadIdentityFederationResponse",
+        "details": {
+          "overview": "Returns one workload identity federation trust rule by UUID in the named tenant.",
+          "notes": [
+            "Federations outside the caller's tenant scope respond as not found."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the federation belongs to."
+            },
+            {
+              "name": "workload_identity_federation_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the federation trust rule."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "federation",
+              "type": "WorkloadIdentityFederation",
+              "description": "The trust rule record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, federation, or mapped client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "federation": {
+              "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "name": "github-actions-ci",
+              "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
+              "issuer_url": "https://token.actions.githubusercontent.com",
+              "audience": "maintainerd-auth-ci",
+              "subject_claim": "sub",
+              "subject_pattern": "repo:my-org/my-repo:*",
+              "allowed_scopes": [
+                "service:read"
+              ],
+              "attribute_mapping": {
+                "repository": "repo"
+              },
+              "is_active": true,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "workload-identity-federation:create",
+        "name": "CreateWorkloadIdentityFederation",
+        "request": "CreateWorkloadIdentityFederationRequest",
+        "response": "CreateWorkloadIdentityFederationResponse",
+        "details": {
+          "overview": "Creates a workload identity federation trust rule in the named tenant. The issuer is probed over OIDC discovery before the rule is persisted.",
+          "notes": [
+            "issuer_url is probed over OIDC discovery before the rule is persisted; an unreachable issuer is rejected.",
+            "Trusting this server's own issuer is rejected to prevent token-refresh loops.",
+            "subject_pattern is the trust boundary: it must be anchored on a whole organisation or namespace segment; a leading or partial-segment wildcard is rejected.",
+            "attribute_mapping destinations cannot override reserved claims like sub, client_id, or svc.",
+            "The mapped client must exist in the tenant and be active.",
+            "Federation names are unique per tenant."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the federation belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the mapped OAuth client. Immutable after creation."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Federation name. 1-100 characters, unique per tenant."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Description. At most 2000 characters."
+            },
+            {
+              "name": "issuer_url",
+              "type": "string",
+              "required": true,
+              "description": "The upstream OIDC issuer. Must be a valid https URL and a reachable OIDC issuer. Trusting this server's own issuer is rejected."
+            },
+            {
+              "name": "audience",
+              "type": "string",
+              "required": true,
+              "description": "Expected audience of the upstream token. 1-512 characters."
+            },
+            {
+              "name": "subject_claim",
+              "type": "string",
+              "required": false,
+              "description": "Claim carrying the workload subject. At most 100 characters. Defaults to sub."
+            },
+            {
+              "name": "subject_pattern",
+              "type": "string",
+              "required": true,
+              "description": "Wildcard pattern the subject must match. 1-512 characters. Must be anchored on a whole organisation or namespace segment; a leading wildcard is rejected."
+            },
+            {
+              "name": "allowed_scopes",
+              "type": "repeated string",
+              "required": false,
+              "description": "Scopes the exchanged token may request. Each at most 128 characters."
+            },
+            {
+              "name": "attribute_mapping",
+              "type": "map<string, string>",
+              "required": false,
+              "description": "Upstream-claim to internal-claim map (at most 16 entries). Destination claims cannot override reserved claims."
+            },
+            {
+              "name": "is_active",
+              "type": "optional bool",
+              "required": false,
+              "description": "Whether the trust rule is live."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "federation",
+              "type": "WorkloadIdentityFederation",
+              "description": "The created trust rule record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, federation, or mapped client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "name": "github-actions-ci",
+            "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
+            "issuer_url": "https://token.actions.githubusercontent.com",
+            "audience": "maintainerd-auth-ci",
+            "subject_claim": "sub",
+            "subject_pattern": "repo:my-org/my-repo:*",
+            "allowed_scopes": [
+              "service:read"
+            ],
+            "attribute_mapping": {
+              "repository": "repo"
+            },
+            "is_active": true
+          },
+          "responseExample": {
+            "federation": {
+              "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "name": "github-actions-ci",
+              "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
+              "issuer_url": "https://token.actions.githubusercontent.com",
+              "audience": "maintainerd-auth-ci",
+              "subject_claim": "sub",
+              "subject_pattern": "repo:my-org/my-repo:*",
+              "allowed_scopes": [
+                "service:read"
+              ],
+              "attribute_mapping": {
+                "repository": "repo"
+              },
+              "is_active": true,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "workload-identity-federation:update",
+        "name": "UpdateWorkloadIdentityFederation",
+        "request": "UpdateWorkloadIdentityFederationRequest",
+        "response": "UpdateWorkloadIdentityFederationResponse",
+        "details": {
+          "overview": "Updates a workload identity federation trust rule in the named tenant. The mapped client cannot be changed.",
+          "notes": [
+            "issuer_url is probed over OIDC discovery before the rule is persisted; an unreachable issuer is rejected.",
+            "Trusting this server's own issuer is rejected to prevent token-refresh loops.",
+            "subject_pattern is the trust boundary: it must be anchored on a whole organisation or namespace segment; a leading or partial-segment wildcard is rejected.",
+            "attribute_mapping destinations cannot override reserved claims like sub, client_id, or svc.",
+            "The issuer is re-probed only when issuer_url changes."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the federation belongs to."
+            },
+            {
+              "name": "workload_identity_federation_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the federation trust rule."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Federation name. 1-100 characters, unique per tenant."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Description. At most 2000 characters."
+            },
+            {
+              "name": "issuer_url",
+              "type": "string",
+              "required": true,
+              "description": "The upstream OIDC issuer. Must be a valid https URL and a reachable OIDC issuer. Trusting this server's own issuer is rejected."
+            },
+            {
+              "name": "audience",
+              "type": "string",
+              "required": true,
+              "description": "Expected audience of the upstream token. 1-512 characters."
+            },
+            {
+              "name": "subject_claim",
+              "type": "string",
+              "required": false,
+              "description": "Claim carrying the workload subject. At most 100 characters. Defaults to sub."
+            },
+            {
+              "name": "subject_pattern",
+              "type": "string",
+              "required": true,
+              "description": "Wildcard pattern the subject must match. 1-512 characters. Must be anchored on a whole organisation or namespace segment; a leading wildcard is rejected."
+            },
+            {
+              "name": "allowed_scopes",
+              "type": "repeated string",
+              "required": false,
+              "description": "Scopes the exchanged token may request. Each at most 128 characters."
+            },
+            {
+              "name": "attribute_mapping",
+              "type": "map<string, string>",
+              "required": false,
+              "description": "Upstream-claim to internal-claim map (at most 16 entries). Destination claims cannot override reserved claims."
+            },
+            {
+              "name": "is_active",
+              "type": "optional bool",
+              "required": false,
+              "description": "Whether the trust rule is live."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "federation",
+              "type": "WorkloadIdentityFederation",
+              "description": "The updated trust rule record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, federation, or mapped client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "name": "github-actions-ci",
+            "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline (updated)",
+            "issuer_url": "https://token.actions.githubusercontent.com",
+            "audience": "maintainerd-auth-ci",
+            "subject_claim": "sub",
+            "subject_pattern": "repo:my-org/my-repo:*",
+            "allowed_scopes": [
+              "service:read"
+            ],
+            "attribute_mapping": {
+              "repository": "repo"
+            },
+            "is_active": false
+          },
+          "responseExample": {
+            "federation": {
+              "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "name": "github-actions-ci",
+              "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
+              "issuer_url": "https://token.actions.githubusercontent.com",
+              "audience": "maintainerd-auth-ci",
+              "subject_claim": "sub",
+              "subject_pattern": "repo:my-org/my-repo:*",
+              "allowed_scopes": [
+                "service:read"
+              ],
+              "attribute_mapping": {
+                "repository": "repo"
+              },
+              "is_active": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "workload-identity-federation:delete",
+        "name": "DeleteWorkloadIdentityFederation",
+        "request": "DeleteWorkloadIdentityFederationRequest",
+        "response": "DeleteWorkloadIdentityFederationResponse",
+        "details": {
+          "overview": "Soft-deletes a workload identity federation trust rule. Deleting instantly revokes the affected workload's ability to exchange upstream tokens.",
+          "notes": [],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the federation belongs to."
+            },
+            {
+              "name": "workload_identity_federation_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the federation trust rule."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "federation",
+              "type": "WorkloadIdentityFederation",
+              "description": "The deleted trust rule record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, federation, or mapped client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "federation": {
+              "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "name": "github-actions-ci",
+              "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
+              "issuer_url": "https://token.actions.githubusercontent.com",
+              "audience": "maintainerd-auth-ci",
+              "subject_claim": "sub",
+              "subject_pattern": "repo:my-org/my-repo:*",
+              "allowed_scopes": [
+                "service:read"
+              ],
+              "attribute_mapping": {
+                "repository": "repo"
+              },
+              "is_active": true,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
     ]
   },
   {
