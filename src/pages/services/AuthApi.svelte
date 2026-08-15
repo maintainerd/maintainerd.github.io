@@ -153,7 +153,7 @@
                     <div class="detail-block">
                       <h3>Headers</h3>
                       <div class="detail-table">
-                        <table>
+                        <table class="header-table">
                           <thead>
                             <tr>
                               <th>Name</th>
@@ -181,7 +181,7 @@
                       <p>{endpoint.details.requestBody.description}</p>
                       {#if endpoint.details.requestBody.fields.length}
                         <div class="detail-table">
-                          <table>
+                          <table class="request-table">
                             <thead>
                               <tr>
                                 <th>Field</th>
