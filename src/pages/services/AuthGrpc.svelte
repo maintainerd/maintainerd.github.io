@@ -9,6 +9,7 @@
   const requiredLabel = (value) => (value ? "Required" : "Optional");
   const slugify = (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const rpcId = (groupSlug, rpc) => `${groupSlug}-${slugify(rpc.name)}`;
+  const formatExample = (value) => (typeof value === "string" ? value : JSON.stringify(value, null, 2));
 
   const protoLinks = (group) => {
     if (!group.proto) return null;
@@ -295,6 +296,22 @@
                             </article>
                           {/each}
                         </div>
+                      </div>
+                    {/if}
+
+                    {#if rpc.details.requestExample !== undefined}
+                      <div class="detail-block">
+                        <h3>Request Example</h3>
+                        <p>Sample {rpc.request} in proto3 JSON.</p>
+                        <pre><code>{formatExample(rpc.details.requestExample)}</code></pre>
+                      </div>
+                    {/if}
+
+                    {#if rpc.details.responseExample !== undefined}
+                      <div class="detail-block">
+                        <h3>Response Example</h3>
+                        <p>Sample {rpc.response} in proto3 JSON.</p>
+                        <pre><code>{formatExample(rpc.details.responseExample)}</code></pre>
                       </div>
                     {/if}
                   </div>

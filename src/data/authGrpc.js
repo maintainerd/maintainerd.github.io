@@ -32,7 +32,14 @@ export const grpcGroupNav = [
             { "name": "is_profile_setup", "type": "bool", "description": "True once the administrator's profile has been created." },
             { "name": "is_setup_complete", "type": "bool", "description": "True once setup is finished and locked." }
           ],
-          "errors": [
+                    "requestExample": {},
+          "responseExample": {
+            "is_tenant_setup": true,
+            "is_admin_setup": false,
+            "is_profile_setup": false,
+            "is_setup_complete": false
+          },
+"errors": [
             { "code": "Internal", "description": "The bootstrap state could not be read from storage." }
           ]
         }
@@ -69,7 +76,24 @@ export const grpcGroupNav = [
             { "name": "default_client_id", "type": "string", "description": "OAuth client identifier of the tenant's seeded default client." },
             { "name": "default_provider_id", "type": "string", "description": "Identifier of the tenant's seeded default identity provider." }
           ],
-          "errors": [
+          "requestExample": {
+            "name": "acme",
+            "display_name": "Acme Inc.",
+            "description": "The system tenant for the Acme deployment.",
+            "metadata": {
+              "application_logo_url": "https://cdn.acme.example/logo.png",
+              "language": "en-US",
+              "timezone": "Asia/Manila"
+            }
+          },
+          "responseExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "name": "acme",
+            "display_name": "Acme Inc.",
+            "default_client_id": "console-acme",
+            "default_provider_id": "maintainerd-acme"
+          },
+"errors": [
             { "code": "InvalidArgument", "description": "A required field is missing or fails validation (field violations are carried in the BadRequest details)." },
             { "code": "AlreadyExists", "description": "A tenant already exists in this instance, or setup has completed and is locked." },
             { "code": "PermissionDenied", "description": "The orchestrated setup window has expired (SETUP_WINDOW_TTL)." },
@@ -100,7 +124,20 @@ export const grpcGroupNav = [
             { "name": "email", "type": "string", "description": "Email address as stored." },
             { "name": "status", "type": "string", "description": "Account status, e.g. active." }
           ],
-          "errors": [
+                    "requestExample": {
+            "username": "admin",
+            "fullname": "Acme Administrator",
+            "password": "CorrectHorseBatteryStaple!1",
+            "email": "admin@acme.example"
+          },
+          "responseExample": {
+            "user_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "username": "admin",
+            "fullname": "Acme Administrator",
+            "email": "admin@acme.example",
+            "status": "active"
+          },
+"errors": [
             { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
             { "code": "AlreadyExists", "description": "An administrator already exists, or setup has completed and is locked." },
             { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
@@ -143,7 +180,33 @@ export const grpcGroupNav = [
             { "name": "first_name", "type": "string", "description": "First name as stored." },
             { "name": "display_name", "type": "string", "description": "Display name as resolved (empty when not set)." }
           ],
-          "errors": [
+                    "requestExample": {
+            "first_name": "Acme",
+            "middle_name": "A.",
+            "last_name": "Administrator",
+            "suffix": "",
+            "display_name": "Acme Admin",
+            "birthdate": "1990-01-25",
+            "gender": "prefer_not_to_say",
+            "bio": "Instance administrator",
+            "phone": "+15551234567",
+            "email": "admin@acme.example",
+            "address": "1 Acme Way",
+            "city": "Manila",
+            "country": "PH",
+            "timezone": "Asia/Manila",
+            "language": "en-US",
+            "profile_url": "https://acme.example/team/admin",
+            "metadata": {
+              "department": "platform"
+            }
+          },
+          "responseExample": {
+            "profile_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "first_name": "Acme",
+            "display_name": "Acme Admin"
+          },
+"errors": [
             { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
             { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
             { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
@@ -179,7 +242,30 @@ export const grpcGroupNav = [
             { "name": "already_existed", "type": "bool", "description": "True when the service already existed and was returned unchanged." },
             { "name": "policy_was_attached", "type": "bool", "description": "True when this call attached the policy to the service." }
           ],
-          "errors": [
+                    "requestExample": {
+            "name": "maintainerd-core",
+            "display_name": "Maintainerd Core",
+            "description": "The platform control plane orchestrating this instance.",
+            "version": "1.0.0",
+            "allowed_actions": [
+              "tenant:read",
+              "tenant:create",
+              "tenant:update",
+              "service:read",
+              "service:create"
+            ],
+            "policy_name": "core-control"
+          },
+          "responseExample": {
+            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "name": "maintainerd-core",
+            "display_name": "Maintainerd Core",
+            "policy_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_name": "core-control",
+            "already_existed": false,
+            "policy_was_attached": true
+          },
+"errors": [
             { "code": "InvalidArgument", "description": "A required field is missing or fails validation, or allowed_actions names permissions that do not exist." },
             { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
             { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
@@ -214,7 +300,21 @@ export const grpcGroupNav = [
             { "name": "service_uuid", "type": "string", "description": "UUID of the bound service principal." },
             { "name": "already_existed", "type": "bool", "description": "True when the client already existed and was returned unchanged." }
           ],
-          "errors": [
+                    "requestExample": {
+            "name": "maintainerd-core",
+            "display_name": "Maintainerd Core",
+            "service_name": "maintainerd-core",
+            "jwks_uri": "https://core.acme.example/.well-known/jwks.json",
+            "audience": "maintainerd-auth"
+          },
+          "responseExample": {
+            "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "core-maintainerd-core",
+            "token_endpoint_auth_method": "private_key_jwt",
+            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "already_existed": false
+          },
+"errors": [
             { "code": "InvalidArgument", "description": "A required field is missing or fails validation (for example, both jwks and jwks_uri empty)." },
             { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
             { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
@@ -250,7 +350,34 @@ export const grpcGroupNav = [
             { "name": "permission_names", "type": "repeated string", "description": "Names of the permissions registered under the API." },
             { "name": "already_existed", "type": "bool", "description": "True when the API already existed and was returned unchanged." }
           ],
-          "errors": [
+                    "requestExample": {
+            "service_name": "maintainerd-core",
+            "service_display_name": "Maintainerd Core",
+            "name": "core-api",
+            "display_name": "Core API",
+            "identifier": "maintainerd-core-api",
+            "permissions": [
+              {
+                "name": "projects:read",
+                "description": "Read projects"
+              },
+              {
+                "name": "projects:write",
+                "description": "Create and update projects"
+              }
+            ]
+          },
+          "responseExample": {
+            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "identifier": "maintainerd-core-api",
+            "permission_names": [
+              "projects:read",
+              "projects:write"
+            ],
+            "already_existed": false
+          },
+"errors": [
             { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
             { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
             { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
@@ -281,7 +408,26 @@ export const grpcGroupNav = [
             { "name": "assigned", "type": "bool", "description": "True when the role was granted to the requested user." },
             { "name": "already_existed", "type": "bool", "description": "True when the role already existed." }
           ],
-          "errors": [
+                    "requestExample": {
+            "name": "core-admin",
+            "description": "Full access to the core control plane",
+            "permission_names": [
+              "projects:read",
+              "projects:write"
+            ],
+            "assign_to_user_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "role_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "name": "core-admin",
+            "permission_names": [
+              "projects:read",
+              "projects:write"
+            ],
+            "assigned": true,
+            "already_existed": false
+          },
+"errors": [
             { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
             { "code": "NotFound", "description": "The user named by assign_to_user_uuid was not found." },
             { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
@@ -315,7 +461,29 @@ export const grpcGroupNav = [
             { "name": "post_logout_redirect_uris", "type": "repeated string", "description": "Registered post-logout redirect URIs as stored." },
             { "name": "already_existed", "type": "bool", "description": "True when the client already existed and was returned unchanged." }
           ],
-          "errors": [
+                    "requestExample": {
+            "name": "core-console",
+            "display_name": "Core Console",
+            "domain": "console.acme.example",
+            "redirect_uris": [
+              "https://console.acme.example/auth/callback"
+            ],
+            "post_logout_redirect_uris": [
+              "https://console.acme.example/logout"
+            ]
+          },
+          "responseExample": {
+            "client_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "console-core-console",
+            "redirect_uris": [
+              "https://console.acme.example/auth/callback"
+            ],
+            "post_logout_redirect_uris": [
+              "https://console.acme.example/logout"
+            ],
+            "already_existed": false
+          },
+"errors": [
             { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
             { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
             { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
@@ -338,7 +506,11 @@ export const grpcGroupNav = [
           "responseFields": [
             { "name": "is_setup_complete", "type": "bool", "description": "True once setup is locked." }
           ],
-          "errors": [
+                    "requestExample": {},
+          "responseExample": {
+            "is_setup_complete": true
+          },
+"errors": [
             { "code": "InvalidArgument", "description": "Tenant and admin setup were not completed before locking." },
             { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
             { "code": "Internal", "description": "An unexpected storage or service error occurred." }
@@ -376,7 +548,21 @@ export const grpcGroupNav = [
             { "name": "tenant.created_at", "type": "google.protobuf.Timestamp", "description": "Creation time." },
             { "name": "tenant.updated_at", "type": "google.protobuf.Timestamp", "description": "Last update time." }
           ],
-          "errors": [
+                    "requestExample": {},
+          "responseExample": {
+            "tenant": {
+              "tenant_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "system",
+              "display_name": "System",
+              "description": "The platform system tenant.",
+              "status": "active",
+              "is_system": true,
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-01T09:00:00Z"
+            }
+          },
+"errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "NotFound", "description": "The system tenant does not exist yet (setup not completed)." },
             { "code": "Internal", "description": "An unexpected storage or service error occurred." }
@@ -412,7 +598,39 @@ export const grpcGroupNav = [
             { "name": "page.limit", "type": "int32", "description": "Page size." },
             { "name": "page.total_pages", "type": "int32", "description": "Total page count." }
           ],
-          "errors": [
+                    "requestExample": {
+            "status": [
+              "active"
+            ],
+            "pagination": {
+              "page": 1,
+              "limit": 20,
+              "sort_by": "created_at",
+              "sort_order": "desc"
+            }
+          },
+          "responseExample": {
+            "tenants": [
+              {
+                "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "acme",
+                "display_name": "Acme Inc.",
+                "description": "Acme tenant",
+                "status": "active",
+                "is_system": false,
+                "metadata": {},
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-10T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          },
+"errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "InvalidArgument", "description": "Filter or pagination validation failed." },
             { "code": "Internal", "description": "An unexpected storage or service error occurred." }
@@ -434,7 +652,23 @@ export const grpcGroupNav = [
           "responseFields": [
             { "name": "tenant", "type": "Tenant", "description": "The tenant record." }
           ],
-          "errors": [
+                    "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "tenant": {
+              "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+              "name": "acme",
+              "display_name": "Acme Inc.",
+              "description": "Acme tenant",
+              "status": "active",
+              "is_system": false,
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          },
+"errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "InvalidArgument", "description": "tenant_uuid is missing or not a valid UUID." },
             { "code": "PermissionDenied", "description": "The caller is not the system tenant and requested another tenant's record." },
@@ -463,7 +697,26 @@ export const grpcGroupNav = [
           "responseFields": [
             { "name": "tenant", "type": "Tenant", "description": "The created tenant record." }
           ],
-          "errors": [
+                    "requestExample": {
+            "name": "beta",
+            "display_name": "Beta Program",
+            "description": "Beta program tenant",
+            "status": "active"
+          },
+          "responseExample": {
+            "tenant": {
+              "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "name": "beta",
+              "display_name": "Beta Program",
+              "description": "Beta program tenant",
+              "status": "active",
+              "is_system": false,
+              "metadata": {},
+              "created_at": "2026-08-15T09:00:00Z",
+              "updated_at": "2026-08-15T09:00:00Z"
+            }
+          },
+"errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller is not a member of the system tenant." },
             { "code": "InvalidArgument", "description": "A required field is missing or fails validation, including reserved names." },
@@ -492,7 +745,27 @@ export const grpcGroupNav = [
           "responseFields": [
             { "name": "tenant", "type": "Tenant", "description": "The updated tenant record." }
           ],
-          "errors": [
+                    "requestExample": {
+            "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "name": "beta",
+            "display_name": "Beta Program",
+            "description": "Beta program tenant (updated)",
+            "status": "active"
+          },
+          "responseExample": {
+            "tenant": {
+              "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "name": "beta",
+              "display_name": "Beta Program",
+              "description": "Beta program tenant (updated)",
+              "status": "active",
+              "is_system": false,
+              "metadata": {},
+              "created_at": "2026-08-15T09:00:00Z",
+              "updated_at": "2026-08-15T09:30:00Z"
+            }
+          },
+"errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller is neither a system-tenant principal nor a manager of the target tenant." },
             { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
@@ -519,7 +792,24 @@ export const grpcGroupNav = [
           "responseFields": [
             { "name": "tenant", "type": "Tenant", "description": "The updated tenant record." }
           ],
-          "errors": [
+                    "requestExample": {
+            "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "status": "suspended"
+          },
+          "responseExample": {
+            "tenant": {
+              "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "name": "beta",
+              "display_name": "Beta Program",
+              "description": "Beta program tenant (updated)",
+              "status": "suspended",
+              "is_system": false,
+              "metadata": {},
+              "created_at": "2026-08-15T09:00:00Z",
+              "updated_at": "2026-08-15T10:00:00Z"
+            }
+          },
+"errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller cannot manage the target tenant." },
             { "code": "InvalidArgument", "description": "tenant_uuid or status is missing or invalid." },
@@ -545,7 +835,23 @@ export const grpcGroupNav = [
           "responseFields": [
             { "name": "tenant", "type": "Tenant", "description": "The deleted tenant record." }
           ],
-          "errors": [
+                    "requestExample": {
+            "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "tenant": {
+              "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "name": "beta",
+              "display_name": "Beta Program",
+              "description": "Beta program tenant (updated)",
+              "status": "suspended",
+              "is_system": false,
+              "metadata": {},
+              "created_at": "2026-08-15T09:00:00Z",
+              "updated_at": "2026-08-15T10:10:00Z"
+            }
+          },
+"errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller is not a system-tenant principal or administrator." },
             { "code": "InvalidArgument", "description": "tenant_uuid is missing or invalid, or the target is the system tenant." },
@@ -585,7 +891,46 @@ export const grpcGroupNav = [
             { "name": "members[].user.status", "type": "string", "description": "User account status." },
             { "name": "page", "type": "PageMetadata", "description": "Pagination metadata." }
           ],
-          "errors": [
+                    "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role": "admin",
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "members": [
+              {
+                "tenant_member_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "role": "admin",
+                "user": {
+                  "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                  "username": "admin",
+                  "fullname": "Acme Administrator",
+                  "email": "admin@acme.example",
+                  "phone": "+15551234567",
+                  "is_email_verified": true,
+                  "is_phone_verified": false,
+                  "is_profile_completed": true,
+                  "is_account_completed": true,
+                  "status": "active",
+                  "metadata": {},
+                  "created_at": "2026-08-01T09:00:00Z",
+                  "updated_at": "2026-08-01T09:00:00Z"
+                },
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          },
+"errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller cannot manage the target tenant." },
             { "code": "InvalidArgument", "description": "tenant_uuid or the role filter is invalid." },
@@ -614,7 +959,35 @@ export const grpcGroupNav = [
           "responseFields": [
             { "name": "member", "type": "TenantMember", "description": "The created membership record." }
           ],
-          "errors": [
+                    "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "role": "member"
+          },
+          "responseExample": {
+            "member": {
+              "tenant_member_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "role": "member",
+              "user": {
+                "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "username": "admin",
+                "fullname": "Acme Administrator",
+                "email": "admin@acme.example",
+                "phone": "+15551234567",
+                "is_email_verified": true,
+                "is_phone_verified": false,
+                "is_profile_completed": true,
+                "is_account_completed": true,
+                "status": "active",
+                "metadata": {},
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "created_at": "2026-08-15T09:00:00Z",
+              "updated_at": "2026-08-15T09:00:00Z"
+            }
+          },
+"errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller cannot manage the tenant, or is not a system-tenant administrator while assigning the owner role." },
             { "code": "InvalidArgument", "description": "A required field is missing or the role is invalid." },
@@ -643,7 +1016,35 @@ export const grpcGroupNav = [
           "responseFields": [
             { "name": "member", "type": "TenantMember", "description": "The updated membership record." }
           ],
-          "errors": [
+                    "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_member_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "role": "admin"
+          },
+          "responseExample": {
+            "member": {
+              "tenant_member_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "role": "admin",
+              "user": {
+                "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "username": "admin",
+                "fullname": "Acme Administrator",
+                "email": "admin@acme.example",
+                "phone": "+15551234567",
+                "is_email_verified": true,
+                "is_phone_verified": false,
+                "is_profile_completed": true,
+                "is_account_completed": true,
+                "status": "active",
+                "metadata": {},
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "created_at": "2026-08-15T09:00:00Z",
+              "updated_at": "2026-08-15T09:30:00Z"
+            }
+          },
+"errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller cannot manage the tenant, or is not a system-tenant administrator while assigning the owner role." },
             { "code": "InvalidArgument", "description": "A required field is missing or the role is invalid." },
@@ -669,7 +1070,14 @@ export const grpcGroupNav = [
           "responseFields": [
             { "name": "removed", "type": "bool", "description": "Always true on success." }
           ],
-          "errors": [
+                    "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_member_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "removed": true
+          },
+"errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller cannot manage the target tenant." },
             { "code": "InvalidArgument", "description": "tenant_uuid or tenant_member_uuid is missing or invalid." },
