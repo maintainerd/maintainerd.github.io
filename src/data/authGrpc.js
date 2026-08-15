@@ -7120,18 +7120,620 @@ export const grpcGroupNav = [
     "description": "Permission definitions scoped to API resources.",
     "rpcCount": 6,
     "rpcs": [
-      {         "permission": "permission:read",
-"name": "ListPermissions", "request": "ListPermissionsRequest", "response": "ListPermissionsResponse" },
-      {         "permission": "permission:read",
-"name": "GetPermission", "request": "GetPermissionRequest", "response": "GetPermissionResponse" },
-      {         "permission": "permission:create",
-"name": "CreatePermission", "request": "CreatePermissionRequest", "response": "CreatePermissionResponse" },
-      {         "permission": "permission:update",
-"name": "UpdatePermission", "request": "UpdatePermissionRequest", "response": "UpdatePermissionResponse" },
-      {         "permission": "permission:update",
-"name": "SetPermissionStatus", "request": "SetPermissionStatusRequest", "response": "SetPermissionStatusResponse" },
-      {         "permission": "permission:delete",
-"name": "DeletePermission", "request": "DeletePermissionRequest", "response": "DeletePermissionResponse" }
+      {
+        "permission": "permission:read",
+        "name": "ListPermissions",
+        "request": "ListPermissionsRequest",
+        "response": "ListPermissionsResponse",
+        "details": {
+          "overview": "Lists permissions in a tenant with filtering and pagination. Each permission carries its owning API projection.",
+          "notes": [
+            "api_uuid and role_uuid filters resolve by UUID; unknown or cross-tenant references answer NotFound.",
+            "The legacy client_uuid filter is unsupported."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the permission belongs to."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on name."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on description."
+            },
+            {
+              "name": "api_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Filter by owning API UUID."
+            },
+            {
+              "name": "role_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Filter by role assignment."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Unsupported legacy filter."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": false,
+              "description": "Exact status match: active or inactive."
+            },
+            {
+              "name": "is_system",
+              "type": "optional bool",
+              "required": false,
+              "description": "Filter by system flag."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "permissions",
+              "type": "repeated Permission",
+              "description": "The matching permission records."
+            },
+            {
+              "name": "page.total",
+              "type": "int64",
+              "description": "Total matching permissions."
+            },
+            {
+              "name": "page.page",
+              "type": "int32",
+              "description": "Current page."
+            },
+            {
+              "name": "page.limit",
+              "type": "int32",
+              "description": "Page size."
+            },
+            {
+              "name": "page.total_pages",
+              "type": "int32",
+              "description": "Total page count."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, permission, or owning API does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "permissions": [
+              {
+                "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "name": "invoices:read",
+                "description": "Read invoices",
+                "api": {
+                  "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                  "name": "billing",
+                  "display_name": "Billing API",
+                  "description": "Billing and invoicing endpoints",
+                  "identifier": "api-9d1d5b4d3a7e",
+                  "status": "active",
+                  "is_system": false,
+                  "created_at": "2026-08-01T09:00:00Z",
+                  "updated_at": "2026-08-01T09:00:00Z"
+                },
+                "status": "active",
+                "is_system": false,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-10T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "permission:read",
+        "name": "GetPermission",
+        "request": "GetPermissionRequest",
+        "response": "GetPermissionResponse",
+        "details": {
+          "overview": "Returns one permission by UUID in the named tenant.",
+          "notes": [
+            "Permissions outside the caller's tenant scope respond as not found."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the permission belongs to."
+            },
+            {
+              "name": "permission_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the permission."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "permission",
+              "type": "Permission",
+              "description": "The permission record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, permission, or owning API does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "permission": {
+              "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "invoices:read",
+              "description": "Read invoices",
+              "api": {
+                "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "billing",
+                "display_name": "Billing API",
+                "description": "Billing and invoicing endpoints",
+                "identifier": "api-9d1d5b4d3a7e",
+                "status": "active",
+                "is_system": false,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "status": "active",
+              "is_system": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "permission:create",
+        "name": "CreatePermission",
+        "request": "CreatePermissionRequest",
+        "response": "CreatePermissionResponse",
+        "details": {
+          "overview": "Creates a permission under an API resource. The permission name is the authorization token: it must match the strict segment format and cannot start with a reserved namespace.",
+          "notes": [
+            "Name format: 2 to 4 lowercase colon-separated segments, e.g. invoices:read or users:read:own.",
+            "Reserved first-segment namespaces (user, role, api, service, tenant, and others) are rejected.",
+            "Permissions cannot be added to a system API.",
+            "The api association is immutable after creation."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the permission belongs to."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Permission name, 3-50 characters: 2-4 lowercase colon-separated segments, unique per tenant, no reserved namespace."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Description. At most 200 characters."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            },
+            {
+              "name": "api_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the owning API resource. Immutable after creation."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "permission",
+              "type": "Permission",
+              "description": "The created permission record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, permission, or owning API does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "name": "invoices:read",
+            "description": "Read invoices",
+            "status": "active",
+            "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "permission": {
+              "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "invoices:read",
+              "description": "Read invoices",
+              "api": {
+                "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "billing",
+                "display_name": "Billing API",
+                "description": "Billing and invoicing endpoints",
+                "identifier": "api-9d1d5b4d3a7e",
+                "status": "active",
+                "is_system": false,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "status": "active",
+              "is_system": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "permission:update",
+        "name": "UpdatePermission",
+        "request": "UpdatePermissionRequest",
+        "response": "UpdatePermissionResponse",
+        "details": {
+          "overview": "Updates a permission's name, description, and status. Renaming a permission re-points every existing role grant at a different guard.",
+          "notes": [
+            "System permissions cannot be updated.",
+            "The API association cannot be changed."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the permission belongs to."
+            },
+            {
+              "name": "permission_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the permission."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Permission name, 3-50 characters: 2-4 lowercase colon-separated segments, unique per tenant, no reserved namespace."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Description. At most 200 characters."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "permission",
+              "type": "Permission",
+              "description": "The updated permission record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, permission, or owning API does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "name": "invoices:read",
+            "description": "Read all invoices",
+            "status": "active"
+          },
+          "responseExample": {
+            "permission": {
+              "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "invoices:read",
+              "description": "Read all invoices",
+              "api": {
+                "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "billing",
+                "display_name": "Billing API",
+                "description": "Billing and invoicing endpoints",
+                "identifier": "api-9d1d5b4d3a7e",
+                "status": "active",
+                "is_system": false,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "status": "active",
+              "is_system": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "permission:update",
+        "name": "SetPermissionStatus",
+        "request": "SetPermissionStatusRequest",
+        "response": "SetPermissionStatusResponse",
+        "details": {
+          "overview": "Updates only a permission's status. Deactivating a permission revokes it everywhere at once.",
+          "notes": [
+            "System permissions cannot be modified."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the permission belongs to."
+            },
+            {
+              "name": "permission_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the permission."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "permission",
+              "type": "Permission",
+              "description": "The updated permission record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, permission, or owning API does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "status": "inactive"
+          },
+          "responseExample": {
+            "permission": {
+              "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "invoices:read",
+              "description": "Read invoices",
+              "api": {
+                "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "billing",
+                "display_name": "Billing API",
+                "description": "Billing and invoicing endpoints",
+                "identifier": "api-9d1d5b4d3a7e",
+                "status": "active",
+                "is_system": false,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "status": "inactive",
+              "is_system": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "permission:delete",
+        "name": "DeletePermission",
+        "request": "DeletePermissionRequest",
+        "response": "DeletePermissionResponse",
+        "details": {
+          "overview": "Soft-deletes a permission. Every role that held the permission loses it.",
+          "notes": [
+            "System permissions cannot be deleted."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the permission belongs to."
+            },
+            {
+              "name": "permission_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the permission."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "permission",
+              "type": "Permission",
+              "description": "The deleted permission record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, permission, or owning API does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "permission": {
+              "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "invoices:read",
+              "description": "Read invoices",
+              "api": {
+                "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "billing",
+                "display_name": "Billing API",
+                "description": "Billing and invoicing endpoints",
+                "identifier": "api-9d1d5b4d3a7e",
+                "status": "active",
+                "is_system": false,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "status": "active",
+              "is_system": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
     ]
   },
   {
