@@ -11,6 +11,13 @@
   const rpcId = (groupSlug, rpc) => `${groupSlug}-${slugify(rpc.name)}`;
   const formatExample = (value) => (typeof value === "string" ? value : JSON.stringify(value, null, 2));
 
+  const rpcAuthLabel = (rpc) => {
+    if (rpc.auth === "bootstrap") return "bootstrap token";
+    if (rpc.auth === "infrastructure") return "no auth";
+    if (rpc.permission === "") return "service token";
+    return `service token · ${rpc.permission}`;
+  };
+
   const protoLinks = (group) => {
     if (!group.proto) return null;
     if (group.protoExternal) {
@@ -161,6 +168,133 @@
             </div>
           </div>
         </section>
+        <section class="api-group" id="authentication">
+          <div class="api-group-head">
+            <div>
+              <p class="eyebrow">How it works</p>
+              <h2>Authentication &amp; Authorization</h2>
+              <p class="section-lede">
+                The gRPC control plane is an opt-in, machine-to-machine surface (GRPC_ENABLED=true). Every call
+                passes through a chain of recovery, logging, timeout, authentication, and audit interceptors, and
+                every RPC is classified into one of three authentication modes below.
+              </p>
+            </div>
+          </div>
+          <div class="endpoint-list">
+            <div class="endpoint-row">
+              <strong>Transport</strong>
+              <code>mTLS</code>
+              <p>When CONTROL_PLANE_ENABLED=true the listener requires mutual TLS: the server cert, key, and the CA that signs
+              the caller's client certificate are mandatory, and client certificates are required and verified. The control
+              plane refuses to serve without it.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>Bootstrap</strong>
+              <code>x-setup-token metadata</code>
+              <p>All SetupService RPCs authenticate with the pre-shared SETUP_BOOTSTRAP_TOKEN sent as the x-setup-token
+              metadata key — no accounts exist at first boot. The token is compared in constant time, rate limited, and the
+              setup service locks every bootstrap RPC once the system tenant is active.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>Service tokens</strong>
+              <code>authorization: Bearer &lt;access_token&gt;</code>
+              <p>Everything else requires an access token in the authorization metadata. Access tokens only — ID tokens are
+              refused — and DPoP-bound tokens cannot be used over gRPC. The token's service principal (svc claim) is resolved
+              and its policy bundle is evaluated against the permission mapped to the RPC (shown on every RPC card).</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>Default deny</strong>
+              <code>PermissionDenied</code>
+              <p>Any maintainerd.auth.v1 method not explicitly classified is refused. Health and reflection are the only
+              unauthenticated infrastructure calls.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>Certificate binding</strong>
+              <code>RFC 8705</code>
+              <p>Clients with a registered mTLS certificate thumbprint must present their token over a connection bound to
+              that exact certificate, so a stolen token is not a plain bearer credential.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>Step-up</strong>
+              <code>acr=2</code>
+              <p>Dangerous mutations (secret access, tenant deletion, user status changes, and similar) additionally require a
+              step-up token carrying an elevated acr claim.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>On-behalf-of</strong>
+              <code>on_behalf_of claim</code>
+              <p>RPCs that mutate state on behalf of a human require the token to carry the acting user's UUID in the
+              on_behalf_of claim. The actor is both the audit attribution and the subject of the membership and escalation
+              guards, and it must live in the token's own tenant.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>Instance split</strong>
+              <code>CONTROL_PLANE_ENABLED</code>
+              <p>Administrative services are only registered when the control plane is enabled. Runtime deployments serve only
+              the PDP, token introspection, and the read-only peer calls (policy bundle, default tenant, user reads).</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>Rate limits</strong>
+              <code>600 req/min</code>
+              <p>Per-principal rate limiting (600 requests per minute by default) applies after authentication; throttled
+              callers receive ResourceExhausted.</p>
+            </div>
+          </div>
+        </section>
+        <section class="api-group" id="errors">
+          <div class="api-group-head">
+            <div>
+              <p class="eyebrow">Convention</p>
+              <h2>Error Model</h2>
+              <p class="section-lede">
+                Errors follow standard gRPC status codes. Validation failures carry a BadRequest detail with per-field
+                violations; throttled callers receive a RetryInfo detail with the backoff delay.
+              </p>
+            </div>
+          </div>
+          <div class="endpoint-list">
+            <div class="endpoint-row">
+              <strong>Unauthenticated</strong>
+              <code>16</code>
+              <p>Missing, malformed, or invalid credentials: no bearer token, wrong bootstrap token, expired access token, or a DPoP-bound token over gRPC.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>PermissionDenied</strong>
+              <code>7</code>
+              <p>The caller's policy bundle does not allow the mapped permission, the method is unclassified, or a boundary check (tenant, instance role, on-behalf-of) failed.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>InvalidArgument</strong>
+              <code>3</code>
+              <p>Request validation failed; the BadRequest detail lists the violating fields.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>AlreadyExists</strong>
+              <code>6</code>
+              <p>A unique constraint is violated (duplicate name or record), or a locked bootstrap RPC was called after setup completed.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>NotFound</strong>
+              <code>5</code>
+              <p>The referenced record does not exist in the caller's scope.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>FailedPrecondition</strong>
+              <code>9</code>
+              <p>A control-plane-only method was called on an instance that has the control plane disabled.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>ResourceExhausted</strong>
+              <code>8</code>
+              <p>Rate limit exceeded; RetryInfo carries the backoff delay.</p>
+            </div>
+            <div class="endpoint-row">
+              <strong>Internal</strong>
+              <code>13</code>
+              <p>An unexpected server-side failure.</p>
+            </div>
+          </div>
+        </section>
       {:else if activeGroup}
         {#key activeGroup}
           {@const links = protoLinks(activeGroup)}
@@ -199,6 +333,15 @@
                       <code>{rpc.response}</code>
                     </span>
                     <span class="endpoint-summary-text">{rpc.details ? rpc.details.overview : "Detailed contract coming soon."}</span>
+                    <span class="rpc-badges">
+                      <span class="surface-pill">{rpcAuthLabel(rpc)}</span>
+                      {#if rpc.stepUp}
+                        <span class="surface-pill is-stepup">step-up required</span>
+                      {/if}
+                      {#if rpc.actorRequired}
+                        <span class="surface-pill is-stepup">on_behalf_of required</span>
+                      {/if}
+                    </span>
                   </span>
                   <span class="accordion-indicator" aria-hidden="true">
                     <ChevronDown size={18} strokeWidth={2.25} />

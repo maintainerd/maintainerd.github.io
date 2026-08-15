@@ -187,6 +187,9 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 .api-method.post, .api-method.put, .api-method.patch { background: var(--blue-tint); color: var(--blue-strong); }
 .api-method.delete { background: #fbe9ec; color: #b4283b; }
 .api-method.rpc { min-width: auto; background: var(--violet-tint, #ece9fb); color: var(--violet-strong, #5b4bc4); }
+.rpc-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.rpc-badges .surface-pill { margin-top: 0; }
+.rpc-badges .surface-pill.is-stepup { border-color: #f0d48a; background: #fdf6e3; color: #926d13; }
 .endpoint-summary.is-static { display: block; cursor: default; }
 .endpoint-summary.is-static:hover { background: transparent; }
 .rpc-arrow { color: var(--faint); font-size: .8rem; }

@@ -16,7 +16,8 @@ export const grpcGroupNav = [
     "rpcCount": 10,
     "rpcs": [
       {
-        "name": "GetSetupStatus",
+                "auth": "bootstrap",
+"name": "GetSetupStatus",
         "request": "GetSetupStatusRequest",
         "response": "GetSetupStatusResponse",
         "details": {
@@ -45,7 +46,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "CreateTenant",
+                "auth": "bootstrap",
+"name": "CreateTenant",
         "request": "CreateTenantRequest",
         "response": "CreateTenantResponse",
         "details": {
@@ -102,7 +104,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "CreateAdmin",
+                "auth": "bootstrap",
+"name": "CreateAdmin",
         "request": "CreateAdminRequest",
         "response": "CreateAdminResponse",
         "details": {
@@ -146,7 +149,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "CreateProfile",
+                "auth": "bootstrap",
+"name": "CreateProfile",
         "request": "CreateProfileRequest",
         "response": "CreateProfileResponse",
         "details": {
@@ -215,7 +219,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "RegisterControlService",
+                "auth": "bootstrap",
+"name": "RegisterControlService",
         "request": "RegisterControlServiceRequest",
         "response": "RegisterControlServiceResponse",
         "details": {
@@ -274,7 +279,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "EnsureControlClient",
+                "auth": "bootstrap",
+"name": "EnsureControlClient",
         "request": "EnsureControlClientRequest",
         "response": "EnsureControlClientResponse",
         "details": {
@@ -323,7 +329,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "EnsureResourceAPI",
+                "auth": "bootstrap",
+"name": "EnsureResourceAPI",
         "request": "EnsureResourceAPIRequest",
         "response": "EnsureResourceAPIResponse",
         "details": {
@@ -386,7 +393,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "EnsureRole",
+                "auth": "bootstrap",
+"name": "EnsureRole",
         "request": "EnsureRoleRequest",
         "response": "EnsureRoleResponse",
         "details": {
@@ -437,7 +445,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "EnsureConsoleClient",
+                "auth": "bootstrap",
+"name": "EnsureConsoleClient",
         "request": "EnsureConsoleClientRequest",
         "response": "EnsureConsoleClientResponse",
         "details": {
@@ -492,7 +501,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "CompleteSetup",
+                "auth": "bootstrap",
+"name": "CompleteSetup",
         "request": "CompleteSetupRequest",
         "response": "CompleteSetupResponse",
         "details": {
@@ -526,7 +536,8 @@ export const grpcGroupNav = [
     "rpcCount": 11,
     "rpcs": [
       {
-        "name": "GetDefaultTenant",
+                "permission": "",
+"name": "GetDefaultTenant",
         "request": "GetDefaultTenantRequest",
         "response": "GetDefaultTenantResponse",
         "details": {
@@ -570,7 +581,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "ListTenants",
+                "permission": "tenant:read",
+"name": "ListTenants",
         "request": "ListTenantsRequest",
         "response": "ListTenantsResponse",
         "details": {
@@ -638,7 +650,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "GetTenant",
+                "permission": "tenant:read",
+"name": "GetTenant",
         "request": "GetTenantRequest",
         "response": "GetTenantResponse",
         "details": {
@@ -678,7 +691,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "CreateTenant",
+                "permission": "tenant:create",
+"name": "CreateTenant",
         "request": "TenantServiceCreateTenantRequest",
         "response": "TenantServiceCreateTenantResponse",
         "details": {
@@ -726,7 +740,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "UpdateTenant",
+                "permission": "tenant:update",
+"name": "UpdateTenant",
         "request": "TenantServiceUpdateTenantRequest",
         "response": "TenantServiceUpdateTenantResponse",
         "details": {
@@ -776,7 +791,9 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "SetTenantStatus",
+                "permission": "tenant:update",
+        "stepUp": true,
+"name": "SetTenantStatus",
         "request": "SetTenantStatusRequest",
         "response": "SetTenantStatusResponse",
         "details": {
@@ -819,7 +836,10 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "DeleteTenant",
+                "permission": "tenant:delete",
+        "stepUp": true,
+        "actorRequired": true,
+"name": "DeleteTenant",
         "request": "DeleteTenantRequest",
         "response": "DeleteTenantResponse",
         "details": {
@@ -861,7 +881,8 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "ListTenantMembers",
+                "permission": "tenant:read",
+"name": "ListTenantMembers",
         "request": "ListTenantMembersRequest",
         "response": "ListTenantMembersResponse",
         "details": {
@@ -940,7 +961,9 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "AddTenantMember",
+                "permission": "tenant:update",
+        "actorRequired": true,
+"name": "AddTenantMember",
         "request": "AddTenantMemberRequest",
         "response": "AddTenantMemberResponse",
         "details": {
@@ -998,7 +1021,9 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "UpdateTenantMemberRole",
+                "permission": "tenant:update",
+        "actorRequired": true,
+"name": "UpdateTenantMemberRole",
         "request": "UpdateTenantMemberRoleRequest",
         "response": "UpdateTenantMemberRoleResponse",
         "details": {
@@ -1054,7 +1079,9 @@ export const grpcGroupNav = [
         }
       },
       {
-        "name": "RemoveTenantMember",
+                "permission": "tenant:update",
+        "actorRequired": true,
+"name": "RemoveTenantMember",
         "request": "RemoveTenantMemberRequest",
         "response": "RemoveTenantMemberResponse",
         "details": {
@@ -1095,12 +1122,18 @@ export const grpcGroupNav = [
     "description": "Per-tenant runtime controls for rate limiting, audit behavior, and maintenance windows.",
     "rpcCount": 6,
     "rpcs": [
-      { "name": "GetRateLimitConfig", "request": "GetRateLimitConfigRequest", "response": "GetRateLimitConfigResponse" },
-      { "name": "UpdateRateLimitConfig", "request": "UpdateRateLimitConfigRequest", "response": "UpdateRateLimitConfigResponse" },
-      { "name": "GetAuditConfig", "request": "GetAuditConfigRequest", "response": "GetAuditConfigResponse" },
-      { "name": "UpdateAuditConfig", "request": "UpdateAuditConfigRequest", "response": "UpdateAuditConfigResponse" },
-      { "name": "GetMaintenanceConfig", "request": "GetMaintenanceConfigRequest", "response": "GetMaintenanceConfigResponse" },
-      { "name": "UpdateMaintenanceConfig", "request": "UpdateMaintenanceConfigRequest", "response": "UpdateMaintenanceConfigResponse" }
+      {         "permission": "tenant-setting:read",
+"name": "GetRateLimitConfig", "request": "GetRateLimitConfigRequest", "response": "GetRateLimitConfigResponse" },
+      {         "permission": "tenant-setting:update",
+"name": "UpdateRateLimitConfig", "request": "UpdateRateLimitConfigRequest", "response": "UpdateRateLimitConfigResponse" },
+      {         "permission": "tenant-setting:read",
+"name": "GetAuditConfig", "request": "GetAuditConfigRequest", "response": "GetAuditConfigResponse" },
+      {         "permission": "tenant-setting:update",
+"name": "UpdateAuditConfig", "request": "UpdateAuditConfigRequest", "response": "UpdateAuditConfigResponse" },
+      {         "permission": "tenant-setting:read",
+"name": "GetMaintenanceConfig", "request": "GetMaintenanceConfigRequest", "response": "GetMaintenanceConfigResponse" },
+      {         "permission": "tenant-setting:update",
+"name": "UpdateMaintenanceConfig", "request": "UpdateMaintenanceConfigRequest", "response": "UpdateMaintenanceConfigResponse" }
     ]
   },
   {
@@ -1110,20 +1143,40 @@ export const grpcGroupNav = [
     "description": "User account lifecycle, verification, roles, and identities.",
     "rpcCount": 14,
     "rpcs": [
-      { "name": "ListUsers", "request": "ListUsersRequest", "response": "ListUsersResponse" },
-      { "name": "GetUser", "request": "GetUserRequest", "response": "GetUserResponse" },
-      { "name": "CreateUser", "request": "CreateUserRequest", "response": "CreateUserResponse" },
-      { "name": "UpdateUser", "request": "UpdateUserRequest", "response": "UpdateUserResponse" },
-      { "name": "SetUserStatus", "request": "SetUserStatusRequest", "response": "SetUserStatusResponse" },
-      { "name": "VerifyUserEmail", "request": "VerifyUserEmailRequest", "response": "VerifyUserEmailResponse" },
-      { "name": "VerifyUserPhone", "request": "VerifyUserPhoneRequest", "response": "VerifyUserPhoneResponse" },
-      { "name": "CompleteUserAccount", "request": "CompleteUserAccountRequest", "response": "CompleteUserAccountResponse" },
-      { "name": "DeleteUser", "request": "DeleteUserRequest", "response": "DeleteUserResponse" },
-      { "name": "ForceUserPasswordChange", "request": "ForceUserPasswordChangeRequest", "response": "ForceUserPasswordChangeResponse" },
-      { "name": "ListUserRoles", "request": "ListUserRolesRequest", "response": "ListUserRolesResponse" },
-      { "name": "ListUserIdentities", "request": "ListUserIdentitiesRequest", "response": "ListUserIdentitiesResponse" },
-      { "name": "AssignUserRoles", "request": "AssignUserRolesRequest", "response": "AssignUserRolesResponse" },
-      { "name": "RemoveUserRole", "request": "RemoveUserRoleRequest", "response": "RemoveUserRoleResponse" }
+      {         "permission": "user:read",
+"name": "ListUsers", "request": "ListUsersRequest", "response": "ListUsersResponse" },
+      {         "permission": "user:read",
+"name": "GetUser", "request": "GetUserRequest", "response": "GetUserResponse" },
+      {         "permission": "user:create",
+"name": "CreateUser", "request": "CreateUserRequest", "response": "CreateUserResponse" },
+      {         "permission": "user:update",
+"name": "UpdateUser", "request": "UpdateUserRequest", "response": "UpdateUserResponse" },
+      {         "permission": "user:update",
+        "stepUp": true,
+"name": "SetUserStatus", "request": "SetUserStatusRequest", "response": "SetUserStatusResponse" },
+      {         "permission": "user:update",
+"name": "VerifyUserEmail", "request": "VerifyUserEmailRequest", "response": "VerifyUserEmailResponse" },
+      {         "permission": "user:update",
+"name": "VerifyUserPhone", "request": "VerifyUserPhoneRequest", "response": "VerifyUserPhoneResponse" },
+      {         "permission": "user:update",
+"name": "CompleteUserAccount", "request": "CompleteUserAccountRequest", "response": "CompleteUserAccountResponse" },
+      {         "permission": "user:delete",
+        "stepUp": true,
+"name": "DeleteUser", "request": "DeleteUserRequest", "response": "DeleteUserResponse" },
+      {         "permission": "user:update",
+        "stepUp": true,
+"name": "ForceUserPasswordChange", "request": "ForceUserPasswordChangeRequest", "response": "ForceUserPasswordChangeResponse" },
+      {         "permission": "user:read",
+"name": "ListUserRoles", "request": "ListUserRolesRequest", "response": "ListUserRolesResponse" },
+      {         "permission": "user:read",
+"name": "ListUserIdentities", "request": "ListUserIdentitiesRequest", "response": "ListUserIdentitiesResponse" },
+      {         "permission": "user:create",
+        "stepUp": true,
+        "actorRequired": true,
+"name": "AssignUserRoles", "request": "AssignUserRolesRequest", "response": "AssignUserRolesResponse" },
+      {         "permission": "user:create",
+        "stepUp": true,
+"name": "RemoveUserRole", "request": "RemoveUserRoleRequest", "response": "RemoveUserRoleResponse" }
     ]
   },
   {
@@ -1133,12 +1186,18 @@ export const grpcGroupNav = [
     "description": "Profile records attached to users, including default-profile selection.",
     "rpcCount": 6,
     "rpcs": [
-      { "name": "ListUserProfiles", "request": "ListUserProfilesRequest", "response": "ListUserProfilesResponse" },
-      { "name": "GetUserProfile", "request": "GetUserProfileRequest", "response": "GetUserProfileResponse" },
-      { "name": "CreateUserProfile", "request": "CreateUserProfileRequest", "response": "CreateUserProfileResponse" },
-      { "name": "UpdateUserProfile", "request": "UpdateUserProfileRequest", "response": "UpdateUserProfileResponse" },
-      { "name": "SetDefaultUserProfile", "request": "SetDefaultUserProfileRequest", "response": "SetDefaultUserProfileResponse" },
-      { "name": "DeleteUserProfile", "request": "DeleteUserProfileRequest", "response": "DeleteUserProfileResponse" }
+      {         "permission": "user:read",
+"name": "ListUserProfiles", "request": "ListUserProfilesRequest", "response": "ListUserProfilesResponse" },
+      {         "permission": "user:read",
+"name": "GetUserProfile", "request": "GetUserProfileRequest", "response": "GetUserProfileResponse" },
+      {         "permission": "user:update",
+"name": "CreateUserProfile", "request": "CreateUserProfileRequest", "response": "CreateUserProfileResponse" },
+      {         "permission": "user:update",
+"name": "UpdateUserProfile", "request": "UpdateUserProfileRequest", "response": "UpdateUserProfileResponse" },
+      {         "permission": "user:update",
+"name": "SetDefaultUserProfile", "request": "SetDefaultUserProfileRequest", "response": "SetDefaultUserProfileResponse" },
+      {         "permission": "user:delete",
+"name": "DeleteUserProfile", "request": "DeleteUserProfileRequest", "response": "DeleteUserProfileResponse" }
     ]
   },
   {
@@ -1148,25 +1207,46 @@ export const grpcGroupNav = [
     "description": "OAuth client lifecycle, secrets, URIs, API audiences, and API permissions.",
     "rpcCount": 19,
     "rpcs": [
-      { "name": "ListClients", "request": "ListClientsRequest", "response": "ListClientsResponse" },
-      { "name": "GetClient", "request": "GetClientRequest", "response": "GetClientResponse" },
-      { "name": "GetClientSecret", "request": "GetClientSecretRequest", "response": "GetClientSecretResponse" },
-      { "name": "RotateClientSecret", "request": "RotateClientSecretRequest", "response": "RotateClientSecretResponse" },
-      { "name": "GetClientConfig", "request": "GetClientConfigRequest", "response": "GetClientConfigResponse" },
-      { "name": "CreateClient", "request": "CreateClientRequest", "response": "CreateClientResponse" },
-      { "name": "UpdateClient", "request": "UpdateClientRequest", "response": "UpdateClientResponse" },
-      { "name": "SetClientStatus", "request": "SetClientStatusRequest", "response": "SetClientStatusResponse" },
-      { "name": "DeleteClient", "request": "DeleteClientRequest", "response": "DeleteClientResponse" },
-      { "name": "ListClientURIs", "request": "ListClientURIsRequest", "response": "ListClientURIsResponse" },
-      { "name": "CreateClientURI", "request": "CreateClientURIRequest", "response": "CreateClientURIResponse" },
-      { "name": "UpdateClientURI", "request": "UpdateClientURIRequest", "response": "UpdateClientURIResponse" },
-      { "name": "DeleteClientURI", "request": "DeleteClientURIRequest", "response": "DeleteClientURIResponse" },
-      { "name": "ListClientAPIs", "request": "ListClientAPIsRequest", "response": "ListClientAPIsResponse" },
-      { "name": "AddClientAPIs", "request": "AddClientAPIsRequest", "response": "AddClientAPIsResponse" },
-      { "name": "RemoveClientAPI", "request": "RemoveClientAPIRequest", "response": "RemoveClientAPIResponse" },
-      { "name": "ListClientAPIPermissions", "request": "ListClientAPIPermissionsRequest", "response": "ListClientAPIPermissionsResponse" },
-      { "name": "AddClientAPIPermissions", "request": "AddClientAPIPermissionsRequest", "response": "AddClientAPIPermissionsResponse" },
-      { "name": "RemoveClientAPIPermission", "request": "RemoveClientAPIPermissionRequest", "response": "RemoveClientAPIPermissionResponse" }
+      {         "permission": "client:read",
+"name": "ListClients", "request": "ListClientsRequest", "response": "ListClientsResponse" },
+      {         "permission": "client:read",
+"name": "GetClient", "request": "GetClientRequest", "response": "GetClientResponse" },
+      {         "permission": "client:secret:read",
+        "stepUp": true,
+"name": "GetClientSecret", "request": "GetClientSecretRequest", "response": "GetClientSecretResponse" },
+      {         "permission": "client:secret:rotate",
+        "stepUp": true,
+"name": "RotateClientSecret", "request": "RotateClientSecretRequest", "response": "RotateClientSecretResponse" },
+      {         "permission": "client:config:read",
+"name": "GetClientConfig", "request": "GetClientConfigRequest", "response": "GetClientConfigResponse" },
+      {         "permission": "client:create",
+"name": "CreateClient", "request": "CreateClientRequest", "response": "CreateClientResponse" },
+      {         "permission": "client:update",
+"name": "UpdateClient", "request": "UpdateClientRequest", "response": "UpdateClientResponse" },
+      {         "permission": "client:update",
+"name": "SetClientStatus", "request": "SetClientStatusRequest", "response": "SetClientStatusResponse" },
+      {         "permission": "client:delete",
+"name": "DeleteClient", "request": "DeleteClientRequest", "response": "DeleteClientResponse" },
+      {         "permission": "client:uri:read",
+"name": "ListClientURIs", "request": "ListClientURIsRequest", "response": "ListClientURIsResponse" },
+      {         "permission": "client:uri:create",
+"name": "CreateClientURI", "request": "CreateClientURIRequest", "response": "CreateClientURIResponse" },
+      {         "permission": "client:uri:update",
+"name": "UpdateClientURI", "request": "UpdateClientURIRequest", "response": "UpdateClientURIResponse" },
+      {         "permission": "client:uri:delete",
+"name": "DeleteClientURI", "request": "DeleteClientURIRequest", "response": "DeleteClientURIResponse" },
+      {         "permission": "client:api:read",
+"name": "ListClientAPIs", "request": "ListClientAPIsRequest", "response": "ListClientAPIsResponse" },
+      {         "permission": "client:api:create",
+"name": "AddClientAPIs", "request": "AddClientAPIsRequest", "response": "AddClientAPIsResponse" },
+      {         "permission": "client:api:delete",
+"name": "RemoveClientAPI", "request": "RemoveClientAPIRequest", "response": "RemoveClientAPIResponse" },
+      {         "permission": "client:api:permission:read",
+"name": "ListClientAPIPermissions", "request": "ListClientAPIPermissionsRequest", "response": "ListClientAPIPermissionsResponse" },
+      {         "permission": "client:api:permission:create",
+"name": "AddClientAPIPermissions", "request": "AddClientAPIPermissionsRequest", "response": "AddClientAPIPermissionsResponse" },
+      {         "permission": "client:api:permission:delete",
+"name": "RemoveClientAPIPermission", "request": "RemoveClientAPIPermissionRequest", "response": "RemoveClientAPIPermissionResponse" }
     ]
   },
   {
@@ -1176,15 +1256,24 @@ export const grpcGroupNav = [
     "description": "Service principals, policy bundles, and service-to-policy bindings.",
     "rpcCount": 9,
     "rpcs": [
-      { "name": "GetMyPolicyBundle", "request": "GetMyPolicyBundleRequest", "response": "GetMyPolicyBundleResponse" },
-      { "name": "ListServices", "request": "ListServicesRequest", "response": "ListServicesResponse" },
-      { "name": "GetService", "request": "GetServiceRequest", "response": "GetServiceResponse" },
-      { "name": "CreateService", "request": "CreateServiceRequest", "response": "CreateServiceResponse" },
-      { "name": "UpdateService", "request": "UpdateServiceRequest", "response": "UpdateServiceResponse" },
-      { "name": "SetServiceStatus", "request": "SetServiceStatusRequest", "response": "SetServiceStatusResponse" },
-      { "name": "DeleteService", "request": "DeleteServiceRequest", "response": "DeleteServiceResponse" },
-      { "name": "AssignServicePolicy", "request": "AssignServicePolicyRequest", "response": "AssignServicePolicyResponse" },
-      { "name": "RemoveServicePolicy", "request": "RemoveServicePolicyRequest", "response": "RemoveServicePolicyResponse" }
+      {         "permission": "",
+"name": "GetMyPolicyBundle", "request": "GetMyPolicyBundleRequest", "response": "GetMyPolicyBundleResponse" },
+      {         "permission": "service:read",
+"name": "ListServices", "request": "ListServicesRequest", "response": "ListServicesResponse" },
+      {         "permission": "service:read",
+"name": "GetService", "request": "GetServiceRequest", "response": "GetServiceResponse" },
+      {         "permission": "service:create",
+"name": "CreateService", "request": "CreateServiceRequest", "response": "CreateServiceResponse" },
+      {         "permission": "service:update",
+"name": "UpdateService", "request": "UpdateServiceRequest", "response": "UpdateServiceResponse" },
+      {         "permission": "service:update",
+"name": "SetServiceStatus", "request": "SetServiceStatusRequest", "response": "SetServiceStatusResponse" },
+      {         "permission": "service:delete",
+"name": "DeleteService", "request": "DeleteServiceRequest", "response": "DeleteServiceResponse" },
+      {         "permission": "service:policy:assign",
+"name": "AssignServicePolicy", "request": "AssignServicePolicyRequest", "response": "AssignServicePolicyResponse" },
+      {         "permission": "service:policy:remove",
+"name": "RemoveServicePolicy", "request": "RemoveServicePolicyRequest", "response": "RemoveServicePolicyResponse" }
     ]
   },
   {
@@ -1194,12 +1283,18 @@ export const grpcGroupNav = [
     "description": "API resource definitions used as token audiences.",
     "rpcCount": 6,
     "rpcs": [
-      { "name": "ListAPIs", "request": "ListAPIsRequest", "response": "ListAPIsResponse" },
-      { "name": "GetAPI", "request": "GetAPIRequest", "response": "GetAPIResponse" },
-      { "name": "CreateAPI", "request": "CreateAPIRequest", "response": "CreateAPIResponse" },
-      { "name": "UpdateAPI", "request": "UpdateAPIRequest", "response": "UpdateAPIResponse" },
-      { "name": "SetAPIStatus", "request": "SetAPIStatusRequest", "response": "SetAPIStatusResponse" },
-      { "name": "DeleteAPI", "request": "DeleteAPIRequest", "response": "DeleteAPIResponse" }
+      {         "permission": "api:read",
+"name": "ListAPIs", "request": "ListAPIsRequest", "response": "ListAPIsResponse" },
+      {         "permission": "api:read",
+"name": "GetAPI", "request": "GetAPIRequest", "response": "GetAPIResponse" },
+      {         "permission": "api:create",
+"name": "CreateAPI", "request": "CreateAPIRequest", "response": "CreateAPIResponse" },
+      {         "permission": "api:update",
+"name": "UpdateAPI", "request": "UpdateAPIRequest", "response": "UpdateAPIResponse" },
+      {         "permission": "api:update",
+"name": "SetAPIStatus", "request": "SetAPIStatusRequest", "response": "SetAPIStatusResponse" },
+      {         "permission": "api:delete",
+"name": "DeleteAPI", "request": "DeleteAPIRequest", "response": "DeleteAPIResponse" }
     ]
   },
   {
@@ -1209,12 +1304,18 @@ export const grpcGroupNav = [
     "description": "Permission definitions scoped to API resources.",
     "rpcCount": 6,
     "rpcs": [
-      { "name": "ListPermissions", "request": "ListPermissionsRequest", "response": "ListPermissionsResponse" },
-      { "name": "GetPermission", "request": "GetPermissionRequest", "response": "GetPermissionResponse" },
-      { "name": "CreatePermission", "request": "CreatePermissionRequest", "response": "CreatePermissionResponse" },
-      { "name": "UpdatePermission", "request": "UpdatePermissionRequest", "response": "UpdatePermissionResponse" },
-      { "name": "SetPermissionStatus", "request": "SetPermissionStatusRequest", "response": "SetPermissionStatusResponse" },
-      { "name": "DeletePermission", "request": "DeletePermissionRequest", "response": "DeletePermissionResponse" }
+      {         "permission": "permission:read",
+"name": "ListPermissions", "request": "ListPermissionsRequest", "response": "ListPermissionsResponse" },
+      {         "permission": "permission:read",
+"name": "GetPermission", "request": "GetPermissionRequest", "response": "GetPermissionResponse" },
+      {         "permission": "permission:create",
+"name": "CreatePermission", "request": "CreatePermissionRequest", "response": "CreatePermissionResponse" },
+      {         "permission": "permission:update",
+"name": "UpdatePermission", "request": "UpdatePermissionRequest", "response": "UpdatePermissionResponse" },
+      {         "permission": "permission:update",
+"name": "SetPermissionStatus", "request": "SetPermissionStatusRequest", "response": "SetPermissionStatusResponse" },
+      {         "permission": "permission:delete",
+"name": "DeletePermission", "request": "DeletePermissionRequest", "response": "DeletePermissionResponse" }
     ]
   },
   {
@@ -1224,15 +1325,30 @@ export const grpcGroupNav = [
     "description": "Role CRUD and role-permission assignment.",
     "rpcCount": 9,
     "rpcs": [
-      { "name": "ListRoles", "request": "ListRolesRequest", "response": "ListRolesResponse" },
-      { "name": "GetRole", "request": "GetRoleRequest", "response": "GetRoleResponse" },
-      { "name": "CreateRole", "request": "CreateRoleRequest", "response": "CreateRoleResponse" },
-      { "name": "UpdateRole", "request": "UpdateRoleRequest", "response": "UpdateRoleResponse" },
-      { "name": "SetRoleStatus", "request": "SetRoleStatusRequest", "response": "SetRoleStatusResponse" },
-      { "name": "DeleteRole", "request": "DeleteRoleRequest", "response": "DeleteRoleResponse" },
-      { "name": "ListRolePermissions", "request": "ListRolePermissionsRequest", "response": "ListRolePermissionsResponse" },
-      { "name": "AddRolePermissions", "request": "AddRolePermissionsRequest", "response": "AddRolePermissionsResponse" },
-      { "name": "RemoveRolePermission", "request": "RemoveRolePermissionRequest", "response": "RemoveRolePermissionResponse" }
+      {         "permission": "role:read",
+"name": "ListRoles", "request": "ListRolesRequest", "response": "ListRolesResponse" },
+      {         "permission": "role:read",
+"name": "GetRole", "request": "GetRoleRequest", "response": "GetRoleResponse" },
+      {         "permission": "role:create",
+        "actorRequired": true,
+"name": "CreateRole", "request": "CreateRoleRequest", "response": "CreateRoleResponse" },
+      {         "permission": "role:update",
+        "actorRequired": true,
+"name": "UpdateRole", "request": "UpdateRoleRequest", "response": "UpdateRoleResponse" },
+      {         "permission": "role:update",
+        "actorRequired": true,
+"name": "SetRoleStatus", "request": "SetRoleStatusRequest", "response": "SetRoleStatusResponse" },
+      {         "permission": "role:delete",
+        "actorRequired": true,
+"name": "DeleteRole", "request": "DeleteRoleRequest", "response": "DeleteRoleResponse" },
+      {         "permission": "role:read",
+"name": "ListRolePermissions", "request": "ListRolePermissionsRequest", "response": "ListRolePermissionsResponse" },
+      {         "permission": "role:permission:create",
+        "actorRequired": true,
+"name": "AddRolePermissions", "request": "AddRolePermissionsRequest", "response": "AddRolePermissionsResponse" },
+      {         "permission": "role:permission:delete",
+        "actorRequired": true,
+"name": "RemoveRolePermission", "request": "RemoveRolePermissionRequest", "response": "RemoveRolePermissionResponse" }
     ]
   },
   {
@@ -1242,13 +1358,20 @@ export const grpcGroupNav = [
     "description": "Policy documents and the services they are bound to.",
     "rpcCount": 7,
     "rpcs": [
-      { "name": "ListPolicies", "request": "ListPoliciesRequest", "response": "ListPoliciesResponse" },
-      { "name": "GetPolicy", "request": "GetPolicyRequest", "response": "GetPolicyResponse" },
-      { "name": "ListPolicyServices", "request": "ListPolicyServicesRequest", "response": "ListPolicyServicesResponse" },
-      { "name": "CreatePolicy", "request": "CreatePolicyRequest", "response": "CreatePolicyResponse" },
-      { "name": "UpdatePolicy", "request": "UpdatePolicyRequest", "response": "UpdatePolicyResponse" },
-      { "name": "SetPolicyStatus", "request": "SetPolicyStatusRequest", "response": "SetPolicyStatusResponse" },
-      { "name": "DeletePolicy", "request": "DeletePolicyRequest", "response": "DeletePolicyResponse" }
+      {         "permission": "policy:read",
+"name": "ListPolicies", "request": "ListPoliciesRequest", "response": "ListPoliciesResponse" },
+      {         "permission": "policy:read",
+"name": "GetPolicy", "request": "GetPolicyRequest", "response": "GetPolicyResponse" },
+      {         "permission": "policy:read",
+"name": "ListPolicyServices", "request": "ListPolicyServicesRequest", "response": "ListPolicyServicesResponse" },
+      {         "permission": "policy:create",
+"name": "CreatePolicy", "request": "CreatePolicyRequest", "response": "CreatePolicyResponse" },
+      {         "permission": "policy:update",
+"name": "UpdatePolicy", "request": "UpdatePolicyRequest", "response": "UpdatePolicyResponse" },
+      {         "permission": "policy:update",
+"name": "SetPolicyStatus", "request": "SetPolicyStatusRequest", "response": "SetPolicyStatusResponse" },
+      {         "permission": "policy:delete",
+"name": "DeletePolicy", "request": "DeletePolicyRequest", "response": "DeletePolicyResponse" }
     ]
   },
   {
@@ -1258,11 +1381,16 @@ export const grpcGroupNav = [
     "description": "Trusted external OIDC issuers for workload token exchange.",
     "rpcCount": 5,
     "rpcs": [
-      { "name": "ListWorkloadIdentityFederations", "request": "ListWorkloadIdentityFederationsRequest", "response": "ListWorkloadIdentityFederationsResponse" },
-      { "name": "GetWorkloadIdentityFederation", "request": "GetWorkloadIdentityFederationRequest", "response": "GetWorkloadIdentityFederationResponse" },
-      { "name": "CreateWorkloadIdentityFederation", "request": "CreateWorkloadIdentityFederationRequest", "response": "CreateWorkloadIdentityFederationResponse" },
-      { "name": "UpdateWorkloadIdentityFederation", "request": "UpdateWorkloadIdentityFederationRequest", "response": "UpdateWorkloadIdentityFederationResponse" },
-      { "name": "DeleteWorkloadIdentityFederation", "request": "DeleteWorkloadIdentityFederationRequest", "response": "DeleteWorkloadIdentityFederationResponse" }
+      {         "permission": "workload-identity-federation:read",
+"name": "ListWorkloadIdentityFederations", "request": "ListWorkloadIdentityFederationsRequest", "response": "ListWorkloadIdentityFederationsResponse" },
+      {         "permission": "workload-identity-federation:read",
+"name": "GetWorkloadIdentityFederation", "request": "GetWorkloadIdentityFederationRequest", "response": "GetWorkloadIdentityFederationResponse" },
+      {         "permission": "workload-identity-federation:create",
+"name": "CreateWorkloadIdentityFederation", "request": "CreateWorkloadIdentityFederationRequest", "response": "CreateWorkloadIdentityFederationResponse" },
+      {         "permission": "workload-identity-federation:update",
+"name": "UpdateWorkloadIdentityFederation", "request": "UpdateWorkloadIdentityFederationRequest", "response": "UpdateWorkloadIdentityFederationResponse" },
+      {         "permission": "workload-identity-federation:delete",
+"name": "DeleteWorkloadIdentityFederation", "request": "DeleteWorkloadIdentityFederationRequest", "response": "DeleteWorkloadIdentityFederationResponse" }
     ]
   },
   {
@@ -1272,7 +1400,8 @@ export const grpcGroupNav = [
     "description": "Service-to-service authorization decisions.",
     "rpcCount": 1,
     "rpcs": [
-      { "name": "Authorize", "request": "AuthorizeRequest", "response": "AuthorizeResponse" }
+      {         "permission": "",
+"name": "Authorize", "request": "AuthorizeRequest", "response": "AuthorizeResponse" }
     ]
   },
   {
@@ -1282,7 +1411,8 @@ export const grpcGroupNav = [
     "description": "Token introspection for resource services.",
     "rpcCount": 1,
     "rpcs": [
-      { "name": "Introspect", "request": "IntrospectRequest", "response": "IntrospectResponse" }
+      {         "permission": "",
+"name": "Introspect", "request": "IntrospectRequest", "response": "IntrospectResponse" }
     ]
   },
   {
@@ -1293,8 +1423,10 @@ export const grpcGroupNav = [
     "description": "Standard gRPC health checking for the control plane.",
     "rpcCount": 2,
     "rpcs": [
-      { "name": "Check", "request": "HealthCheckRequest", "response": "HealthCheckResponse" },
-      { "name": "Watch", "request": "HealthCheckRequest", "response": "stream HealthCheckResponse" }
+      {         "auth": "infrastructure",
+"name": "Check", "request": "HealthCheckRequest", "response": "HealthCheckResponse" },
+      {         "auth": "infrastructure",
+"name": "Watch", "request": "HealthCheckRequest", "response": "stream HealthCheckResponse" }
     ]
   }
 ];
