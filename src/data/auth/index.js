@@ -120,10 +120,16 @@ export const apiGroupNav = [
     "endpointCount": 20
   },
   {
-    "slug": "branding-messaging",
-    "label": "Branding and Messaging",
-    "description": "Branding records, active theme control, public branding lookup, email and SMS templates, and delivery-provider configuration.",
-    "endpointCount": 22
+    "slug": "branding",
+    "label": "Branding",
+    "description": "Branding records and active theme control, public branding and logo serving, and the email and SMS templates that carry the tenant's message content.",
+    "endpointCount": 16
+  },
+  {
+    "slug": "messaging",
+    "label": "Messaging",
+    "description": "Email and SMS delivery-provider configuration: SMTP credentials, SMS providers, delivery status, and write-only secrets.",
+    "endpointCount": 6
   },
   {
     "slug": "events-webhooks",
@@ -163,7 +169,8 @@ const apiGroupLoaders = {
   "iam": () => import("./iam.js"),
   "mfa": () => import("./mfa.js"),
   "security-controls": () => import("./security-controls.js"),
-  "branding-messaging": () => import("./branding-messaging.js"),
+  "branding": () => import("./branding.js"),
+  "messaging": () => import("./messaging.js"),
   "events-webhooks": () => import("./events-webhooks.js"),
   "workload-identity-federation": () => import("./workload-identity-federation.js"),
   "dashboard": () => import("./dashboard.js")
