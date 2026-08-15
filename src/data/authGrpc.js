@@ -5623,24 +5623,833 @@ export const grpcGroupNav = [
     "description": "Service principals, policy bundles, and service-to-policy bindings.",
     "rpcCount": 9,
     "rpcs": [
-      {         "permission": "",
-"name": "GetMyPolicyBundle", "request": "GetMyPolicyBundleRequest", "response": "GetMyPolicyBundleResponse" },
-      {         "permission": "service:read",
-"name": "ListServices", "request": "ListServicesRequest", "response": "ListServicesResponse" },
-      {         "permission": "service:read",
-"name": "GetService", "request": "GetServiceRequest", "response": "GetServiceResponse" },
-      {         "permission": "service:create",
-"name": "CreateService", "request": "CreateServiceRequest", "response": "CreateServiceResponse" },
-      {         "permission": "service:update",
-"name": "UpdateService", "request": "UpdateServiceRequest", "response": "UpdateServiceResponse" },
-      {         "permission": "service:update",
-"name": "SetServiceStatus", "request": "SetServiceStatusRequest", "response": "SetServiceStatusResponse" },
-      {         "permission": "service:delete",
-"name": "DeleteService", "request": "DeleteServiceRequest", "response": "DeleteServiceResponse" },
-      {         "permission": "service:policy:assign",
-"name": "AssignServicePolicy", "request": "AssignServicePolicyRequest", "response": "AssignServicePolicyResponse" },
-      {         "permission": "service:policy:remove",
-"name": "RemoveServicePolicy", "request": "RemoveServicePolicyRequest", "response": "RemoveServicePolicyResponse" }
+      {
+        "permission": "",
+        "name": "GetMyPolicyBundle",
+        "request": "GetMyPolicyBundleRequest",
+        "response": "GetMyPolicyBundleResponse",
+        "details": {
+          "overview": "Returns the policy bundle for the calling service principal: the complete set of authorization documents a running workload enforces, addressed to its own service identity.",
+          "notes": [
+            "The identity comes from the token's svc claim (or a service subject), never from the request.",
+            "The bundle version is a content hash carried in etag; sending if_none_match equal to the etag returns not_modified=true with no bundle.",
+            "Only active policies are included; one unparseable attached policy fails the whole bundle."
+          ],
+          "requestFields": [
+            {
+              "name": "if_none_match",
+              "type": "string",
+              "required": false,
+              "description": "Previously received etag; when it matches the current bundle, the response is not_modified=true."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "bundle.service",
+              "type": "string",
+              "description": "The service principal name."
+            },
+            {
+              "name": "bundle.version",
+              "type": "string",
+              "description": "Content-hash version of the bundle."
+            },
+            {
+              "name": "bundle.policies",
+              "type": "repeated google.protobuf.Struct",
+              "description": "The policy documents: { version: v1, statement: [{ effect, action[], resource[] }] }."
+            },
+            {
+              "name": "bundle.generated_at",
+              "type": "google.protobuf.Timestamp",
+              "description": "Generation time."
+            },
+            {
+              "name": "etag",
+              "type": "string",
+              "description": "The current bundle etag."
+            },
+            {
+              "name": "not_modified",
+              "type": "bool",
+              "description": "True when if_none_match matched; the bundle is omitted."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, service, or policy does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "if_none_match": "v9f2c1a3b4d5e6"
+          },
+          "responseExample": {
+            "bundle": {
+              "service": "billing-service",
+              "version": "v9f2c1a3b4d5e6",
+              "policies": [
+                {
+                  "version": "v1",
+                  "statement": [
+                    {
+                      "effect": "allow",
+                      "action": [
+                        "invoices:read"
+                      ],
+                      "resource": [
+                        "billing-api"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "generated_at": "2026-08-15T09:00:00Z"
+            },
+            "etag": "v9f2c1a3b4d5e6",
+            "not_modified": false
+          }
+        }
+      },
+      {
+        "permission": "service:read",
+        "name": "ListServices",
+        "request": "ListServicesRequest",
+        "response": "ListServicesResponse",
+        "details": {
+          "overview": "Lists services in a tenant with filtering and pagination. Each row includes API and policy counts.",
+          "notes": [
+            "status accepts multiple values from active, maintenance, deprecated, inactive."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the service belongs to."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on name."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on display name."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on description."
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on version."
+            },
+            {
+              "name": "status",
+              "type": "repeated string",
+              "required": false,
+              "description": "Filter by status: active, maintenance, deprecated, inactive."
+            },
+            {
+              "name": "is_system",
+              "type": "optional bool",
+              "required": false,
+              "description": "Filter by system flag."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "services",
+              "type": "repeated Service",
+              "description": "The matching service records."
+            },
+            {
+              "name": "page.total",
+              "type": "int64",
+              "description": "Total matching services."
+            },
+            {
+              "name": "page.page",
+              "type": "int32",
+              "description": "Current page."
+            },
+            {
+              "name": "page.limit",
+              "type": "int32",
+              "description": "Page size."
+            },
+            {
+              "name": "page.total_pages",
+              "type": "int32",
+              "description": "Total page count."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, service, or policy does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "status": [
+              "active"
+            ],
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "services": [
+              {
+                "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "name": "billing-service",
+                "display_name": "Billing Service",
+                "description": "Handles billing operations",
+                "version": "1.0.0",
+                "status": "active",
+                "is_system": false,
+                "api_count": 2,
+                "policy_count": 1,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-10T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "service:read",
+        "name": "GetService",
+        "request": "GetServiceRequest",
+        "response": "GetServiceResponse",
+        "details": {
+          "overview": "Returns one service principal by UUID in the named tenant.",
+          "notes": [
+            "Services outside the caller's tenant scope respond as not found."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the service belongs to."
+            },
+            {
+              "name": "service_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the service principal."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "service",
+              "type": "Service",
+              "description": "The service record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, service, or policy does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "service": {
+              "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-service",
+              "display_name": "Billing Service",
+              "description": "Handles billing operations",
+              "version": "1.0.0",
+              "status": "active",
+              "is_system": false,
+              "api_count": 2,
+              "policy_count": 1,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "service:create",
+        "name": "CreateService",
+        "request": "CreateServiceRequest",
+        "response": "CreateServiceResponse",
+        "details": {
+          "overview": "Creates a service principal in the named tenant. A service row is the identity that policy bundles are served to and that APIs hang off.",
+          "notes": [
+            "Service names are unique per tenant."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the service belongs to."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Service name. 3-50 characters, unique per tenant."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": true,
+              "description": "Human-readable name. 3-100 characters."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Description. At most 255 characters."
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "required": true,
+              "description": "Service version. 1-20 characters."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active, maintenance, deprecated, inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "service",
+              "type": "Service",
+              "description": "The created service record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, service, or policy does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "name": "billing-service",
+            "display_name": "Billing Service",
+            "description": "Handles billing operations",
+            "version": "1.0.0",
+            "status": "active"
+          },
+          "responseExample": {
+            "service": {
+              "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-service",
+              "display_name": "Billing Service",
+              "description": "Handles billing operations",
+              "version": "1.0.0",
+              "status": "active",
+              "is_system": false,
+              "api_count": 2,
+              "policy_count": 1,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "service:update",
+        "name": "UpdateService",
+        "request": "UpdateServiceRequest",
+        "response": "UpdateServiceResponse",
+        "details": {
+          "overview": "Replaces a service's fields. Renaming or disabling a service redirects or blanks the authorization rules a running workload enforces.",
+          "notes": [
+            "System services cannot be updated."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the service belongs to."
+            },
+            {
+              "name": "service_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the service principal."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Service name. 3-50 characters, unique per tenant."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": true,
+              "description": "Human-readable name. 3-100 characters."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Description. At most 255 characters."
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "required": true,
+              "description": "Service version. 1-20 characters."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active, maintenance, deprecated, inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "service",
+              "type": "Service",
+              "description": "The updated service record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, service, or policy does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "name": "billing-service",
+            "display_name": "Billing Service",
+            "description": "Handles billing and payments",
+            "version": "1.1.0",
+            "status": "active"
+          },
+          "responseExample": {
+            "service": {
+              "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-service",
+              "display_name": "Billing Service",
+              "description": "Handles billing operations",
+              "version": "1.1.0",
+              "status": "active",
+              "is_system": false,
+              "api_count": 2,
+              "policy_count": 1,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "service:update",
+        "name": "SetServiceStatus",
+        "request": "SetServiceStatusRequest",
+        "response": "SetServiceStatusResponse",
+        "details": {
+          "overview": "Updates only a service's status. Disabling a service stops it from fetching policy bundles and blanks the authorization rules its workload enforces.",
+          "notes": [
+            "System service status cannot be updated."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the service belongs to."
+            },
+            {
+              "name": "service_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the service principal."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active, maintenance, deprecated, inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "service",
+              "type": "Service",
+              "description": "The updated service record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, service, or policy does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "status": "maintenance"
+          },
+          "responseExample": {
+            "service": {
+              "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-service",
+              "display_name": "Billing Service",
+              "description": "Handles billing operations",
+              "version": "1.0.0",
+              "status": "maintenance",
+              "is_system": false,
+              "api_count": 2,
+              "policy_count": 1,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "service:delete",
+        "name": "DeleteService",
+        "request": "DeleteServiceRequest",
+        "response": "DeleteServiceResponse",
+        "details": {
+          "overview": "Soft-deletes a service, cascading to its APIs and their permissions in the same transaction.",
+          "notes": [
+            "System services cannot be deleted."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the service belongs to."
+            },
+            {
+              "name": "service_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the service principal."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "service",
+              "type": "Service",
+              "description": "The deleted service record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, service, or policy does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "service": {
+              "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-service",
+              "display_name": "Billing Service",
+              "description": "Handles billing operations",
+              "version": "1.0.0",
+              "status": "active",
+              "is_system": false,
+              "api_count": 2,
+              "policy_count": 1,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "service:policy:assign",
+        "name": "AssignServicePolicy",
+        "request": "AssignServicePolicyRequest",
+        "response": "AssignServicePolicyResponse",
+        "details": {
+          "overview": "Binds a policy to a service. This is where an inert policy document starts deciding real requests for the service's workload.",
+          "notes": [
+            "Both the service and the policy must belong to the named tenant.",
+            "Idempotent: an existing assignment returns success without a duplicate."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the service belongs to."
+            },
+            {
+              "name": "service_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the service principal."
+            },
+            {
+              "name": "policy_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the policy to bind."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "assigned",
+              "type": "bool",
+              "description": "Always true on success."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, service, or policy does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "policy_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "assigned": true
+          }
+        }
+      },
+      {
+        "permission": "service:policy:remove",
+        "name": "RemoveServicePolicy",
+        "request": "RemoveServicePolicyRequest",
+        "response": "RemoveServicePolicyResponse",
+        "details": {
+          "overview": "Unbinds a policy from a service. Dropping a deny policy changes what the workload allows.",
+          "notes": [
+            "Idempotent: removing an assignment that does not exist still succeeds."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the service belongs to."
+            },
+            {
+              "name": "service_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the service principal."
+            },
+            {
+              "name": "policy_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the policy to unbind."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "removed",
+              "type": "bool",
+              "description": "Always true on success."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, service, or policy does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "policy_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "removed": true
+          }
+        }
+      },
     ]
   },
   {
