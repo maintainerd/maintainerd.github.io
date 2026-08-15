@@ -19,9 +19,7 @@
 
 <main>
   <PageHero
-    eyebrow="Service catalog"
-    title="Services Maintainerd can run or provision."
-    lede="Maintainerd has built-in platform services and Docker-image service categories that Core and runtime providers can provision."
+    compact
     breadcrumbs={[{ href: "/", label: "Maintainerd" }, { label: "Services" }]}
   />
 
