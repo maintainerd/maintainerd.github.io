@@ -142,12 +142,6 @@ export const apiGroupNav = [
     "label": "Workload Identity Federation",
     "description": "Configuration APIs for trusted workload identity federation providers used by services and automation.",
     "endpointCount": 5
-  },
-  {
-    "slug": "dashboard",
-    "label": "Dashboard",
-    "description": "Aggregate operational summary used by the management console dashboard.",
-    "endpointCount": 1
   }
 ];
 
@@ -172,8 +166,7 @@ const apiGroupLoaders = {
   "branding": () => import("./branding.js"),
   "messaging": () => import("./messaging.js"),
   "events-webhooks": () => import("./events-webhooks.js"),
-  "workload-identity-federation": () => import("./workload-identity-federation.js"),
-  "dashboard": () => import("./dashboard.js")
+  "workload-identity-federation": () => import("./workload-identity-federation.js")
 };
 
 export const apiEndpointCount = apiGroupNav.reduce((total, group) => total + group.endpointCount, 0);
