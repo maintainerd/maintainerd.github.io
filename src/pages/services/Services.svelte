@@ -13,7 +13,7 @@
 
 <svelte:head>
   <title>Services | Maintainerd</title>
-  <meta name="description" content="Explore Maintainerd services and external Docker-image service categories that Maintainerd Core can provision." />
+  <meta name="description" content="Explore Maintainerd services and Docker-image service categories that Maintainerd Core can provision." />
   <link rel="canonical" href="https://maintainerd.github.io/services/" />
 </svelte:head>
 
@@ -21,7 +21,7 @@
   <PageHero
     eyebrow="Service catalog"
     title="Services Maintainerd can run or provision."
-    lede="Maintainerd has two service families: Maintainerd-native services, and external services provisioned from Docker images through Core and runtime providers."
+    lede="Maintainerd has built-in platform services and Docker-image service categories that Core and runtime providers can provision."
     breadcrumbs={[{ href: "/", label: "Maintainerd" }, { label: "Services" }]}
   />
 
@@ -31,8 +31,8 @@
         <p class="eyebrow">Catalog</p>
         <h2>Choose a category.</h2>
         <p class="section-lede">
-          Maintainerd services are platform building blocks. External services are Docker-image backed workloads
-          that Core can manage through Docker or Kubernetes providers.
+          Maintainerd services are platform building blocks. The other categories are Docker-image backed workloads
+          that Core can manage through Docker, Kubernetes, or runtime providers.
         </p>
       </div>
       <label class="select-field">
@@ -73,7 +73,7 @@
       <section class="catalog-section">
         <div class="catalog-section-head">
           <div>
-            <p class="eyebrow">External services</p>
+            <p class="eyebrow">{category.title}</p>
             <h2>{category.title}.</h2>
           </div>
         </div>
@@ -82,7 +82,7 @@
             <ServiceCard
               {service}
               mark={service.mark}
-              status="External"
+              status="Planned"
               statusKind="planned"
               footerLeft="Docker image"
               footerRight={service.image}

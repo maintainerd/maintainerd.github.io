@@ -319,7 +319,7 @@ export const externalCategories = [
   {
     slug: "database",
     title: "Databases",
-    optionsLabel: "External: databases",
+    optionsLabel: "Databases",
     services: [
       { mark: "Pg", name: "PostgreSQL", image: "postgres", summary: "Relational database for applications that need SQL, transactions, extensions, and durable state." },
       { mark: "My", name: "MySQL", image: "mysql", summary: "Relational database for common application stacks and managed-compatible workloads." },
@@ -330,7 +330,7 @@ export const externalCategories = [
   {
     slug: "cache",
     title: "Cache and key-value",
-    optionsLabel: "External: cache & key-value",
+    optionsLabel: "Cache and key-value",
     services: [
       { mark: "Re", name: "Redis", image: "redis", summary: "Cache, queues, rate limits, sessions, and short-lived state for application services." },
       { mark: "Va", name: "Valkey", image: "valkey/valkey", summary: "Redis-compatible key-value service for cache and ephemeral runtime data." }
@@ -339,7 +339,7 @@ export const externalCategories = [
   {
     slug: "edge",
     title: "Edge and proxy",
-    optionsLabel: "External: edge & proxy",
+    optionsLabel: "Edge and proxy",
     services: [
       { mark: "Nx", name: "nginx", image: "nginx", summary: "Reverse proxy and static edge for applications, APIs, and service hostnames." },
       { mark: "Cy", name: "Caddy", image: "caddy", summary: "HTTPS-first web server and reverse proxy with automatic certificate support." },
@@ -349,7 +349,7 @@ export const externalCategories = [
   {
     slug: "observability",
     title: "Observability",
-    optionsLabel: "External: observability",
+    optionsLabel: "Observability",
     services: [
       { mark: "Gr", name: "Grafana", image: "grafana/grafana", summary: "Dashboards for metrics, logs, traces, and service health." },
       { mark: "Pr", name: "Prometheus", image: "prom/prometheus", summary: "Metrics collection and alerting for services and infrastructure." },
@@ -359,7 +359,7 @@ export const externalCategories = [
   {
     slug: "messaging",
     title: "Messaging and queues",
-    optionsLabel: "External: messaging & queues",
+    optionsLabel: "Messaging and queues",
     services: [
       { mark: "Rq", name: "RabbitMQ", image: "rabbitmq", summary: "Message broker for queues, event routing, and asynchronous services." },
       { mark: "Na", name: "NATS", image: "nats", summary: "Lightweight messaging and eventing for distributed services." },
@@ -369,7 +369,7 @@ export const externalCategories = [
   {
     slug: "storage",
     title: "Storage",
-    optionsLabel: "External: storage",
+    optionsLabel: "Storage",
     services: [
       { mark: "Mi", name: "MinIO", image: "minio/minio", summary: "S3-compatible object storage for files, backups, and application assets." },
       { mark: "Nc", name: "Nextcloud", image: "nextcloud", summary: "File collaboration and personal cloud storage for teams." }
@@ -378,7 +378,7 @@ export const externalCategories = [
   {
     slug: "developer",
     title: "Developer tools",
-    optionsLabel: "External: developer tools",
+    optionsLabel: "Developer tools",
     services: [
       { mark: "Gt", name: "Gitea", image: "gitea/gitea", summary: "Self-hosted Git service for repositories, teams, and lightweight project collaboration." },
       { mark: "Jk", name: "Jenkins", image: "jenkins/jenkins", summary: "Automation server for CI workflows, jobs, and deployment pipelines." }
@@ -387,7 +387,7 @@ export const externalCategories = [
   {
     slug: "cms",
     title: "Content and commerce",
-    optionsLabel: "External: content & commerce",
+    optionsLabel: "Content and commerce",
     services: [
       { mark: "Wp", name: "WordPress", image: "wordpress", summary: "Publishing and site management for content-heavy applications." },
       { mark: "St", name: "Strapi", image: "strapi/strapi", summary: "Headless CMS for content APIs and editorial workflows." },

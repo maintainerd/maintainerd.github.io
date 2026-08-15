@@ -12,7 +12,7 @@
       <h3>Platform</h3>
       <a href="/services/">Services</a>
       <a href="/services/core/">Core</a>
-      <a href="/services/docker/">External services</a>
+      <a href="/services/docker/">Docker provider</a>
     </div>
     <div>
       <h3>Docs</h3>
