@@ -2,13 +2,27 @@
   import { ChevronDown } from "@lucide/svelte";
   import { onMount, tick } from "svelte";
   import PageHero from "@/components/ui/PageHero.svelte";
-  import { defaultGrpcGroupSlug, findGrpcGroupNav, grpcGroupNav, grpcPackage, grpcRpcCount } from "@/data/authGrpc.js";
+  import { defaultGrpcGroupSlug, findGrpcGroupNav, grpcGroupNav, grpcPackage, grpcRpcCount, protoBaseUrl, protoRawBaseUrl } from "@/data/authGrpc.js";
 
   const baseSlug = "overview";
   const rpcLabel = (count) => `${count} RPC${count === 1 ? "" : "s"}`;
   const requiredLabel = (value) => (value ? "Required" : "Optional");
   const slugify = (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const rpcId = (groupSlug, rpc) => `${groupSlug}-${slugify(rpc.name)}`;
+
+  const protoLinks = (group) => {
+    if (!group.proto) return null;
+    if (group.protoExternal) {
+      return {
+        view: group.proto,
+        download: group.proto.replace("/blob/", "/raw/")
+      };
+    }
+    return {
+      view: `${protoBaseUrl}/${group.proto}`,
+      download: `${protoRawBaseUrl}/${group.proto}`
+    };
+  };
 
   let activeSlug = baseSlug;
   let activeGroup = null;
@@ -147,13 +161,21 @@
           </div>
         </section>
       {:else if activeGroup}
-        <section class="api-group" id={activeGroup.slug}>
+        {#key activeGroup}
+          {@const links = protoLinks(activeGroup)}
+          <section class="api-group" id={activeGroup.slug}>
           <div class="api-group-head">
             <div>
               <p class="eyebrow">{rpcLabel(activeGroup.rpcCount)}</p>
               <h2>{activeGroup.label}</h2>
               <p class="section-lede">{activeGroup.description}</p>
             </div>
+            {#if links}
+              <div class="proto-links">
+                <a href={links.view} target="_blank" rel="noopener noreferrer">View .proto</a>
+                <a href={links.download} target="_blank" rel="noopener noreferrer" download>Download .proto</a>
+              </div>
+            {/if}
           </div>
           <div class="endpoint-list">
             {#each activeGroup.rpcs as rpc}
@@ -279,7 +301,8 @@
               </article>
             {/each}
           </div>
-        </section>
+          </section>
+        {/key}
       {/if}
     </div>
   </section>

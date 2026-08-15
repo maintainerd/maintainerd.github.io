@@ -4,9 +4,13 @@
 
 export const grpcPackage = "maintainerd.auth.v1";
 
+export const protoBaseUrl = "https://github.com/maintainerd/maintainerd-auth/blob/main/proto/maintainerd/auth/v1";
+export const protoRawBaseUrl = "https://raw.githubusercontent.com/maintainerd/maintainerd-auth/main/proto/maintainerd/auth/v1";
+
 export const grpcGroupNav = [
   {
     "slug": "setup",
+    "proto": "setup.proto",
     "label": "Setup",
     "description": "One-time bootstrap RPCs for tenant creation, first administrator, control-service registration, and setup completion.",
     "rpcCount": 10,
@@ -345,6 +349,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "tenants",
+    "proto": "tenant.proto",
     "label": "Tenants",
     "description": "Tenant lifecycle and tenant membership management.",
     "rpcCount": 11,
@@ -364,6 +369,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "tenant-settings",
+    "proto": "tenant.proto",
     "label": "Tenant Settings",
     "description": "Per-tenant runtime controls for rate limiting, audit behavior, and maintenance windows.",
     "rpcCount": 6,
@@ -378,6 +384,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "users",
+    "proto": "user.proto",
     "label": "Users",
     "description": "User account lifecycle, verification, roles, and identities.",
     "rpcCount": 14,
@@ -400,6 +407,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "user-profiles",
+    "proto": "user.proto",
     "label": "User Profiles",
     "description": "Profile records attached to users, including default-profile selection.",
     "rpcCount": 6,
@@ -414,6 +422,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "clients",
+    "proto": "client.proto",
     "label": "Applications and Clients",
     "description": "OAuth client lifecycle, secrets, URIs, API audiences, and API permissions.",
     "rpcCount": 19,
@@ -441,6 +450,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "services",
+    "proto": "service.proto",
     "label": "Services",
     "description": "Service principals, policy bundles, and service-to-policy bindings.",
     "rpcCount": 9,
@@ -458,6 +468,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "apis",
+    "proto": "api.proto",
     "label": "APIs",
     "description": "API resource definitions used as token audiences.",
     "rpcCount": 6,
@@ -472,6 +483,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "permissions",
+    "proto": "permission.proto",
     "label": "Permissions",
     "description": "Permission definitions scoped to API resources.",
     "rpcCount": 6,
@@ -486,6 +498,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "roles",
+    "proto": "role.proto",
     "label": "Roles",
     "description": "Role CRUD and role-permission assignment.",
     "rpcCount": 9,
@@ -503,6 +516,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "policies",
+    "proto": "policy.proto",
     "label": "Policies",
     "description": "Policy documents and the services they are bound to.",
     "rpcCount": 7,
@@ -518,6 +532,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "workload-identity-federation",
+    "proto": "workload_identity.proto",
     "label": "Workload Identity Federation",
     "description": "Trusted external OIDC issuers for workload token exchange.",
     "rpcCount": 5,
@@ -531,6 +546,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "authorization",
+    "proto": "authorization.proto",
     "label": "Authorization",
     "description": "Service-to-service authorization decisions.",
     "rpcCount": 1,
@@ -540,6 +556,7 @@ export const grpcGroupNav = [
   },
   {
     "slug": "oauth-introspection",
+    "proto": "oauth.proto",
     "label": "OAuth Introspection",
     "description": "Token introspection for resource services.",
     "rpcCount": 1,
@@ -549,6 +566,8 @@ export const grpcGroupNav = [
   },
   {
     "slug": "health",
+    "proto": "https://github.com/grpc/grpc/blob/master/src/proto/grpc/health/v1/health.proto",
+    "protoExternal": true,
     "label": "Health",
     "description": "Standard gRPC health checking for the control plane.",
     "rpcCount": 2,
