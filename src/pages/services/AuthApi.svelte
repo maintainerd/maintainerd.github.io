@@ -1,7 +1,7 @@
 <script>
   import { onMount, tick } from "svelte";
   import PageHero from "@/components/ui/PageHero.svelte";
-  import { apiBaseUrls, apiEndpointCount, apiGroupNav, defaultApiGroupSlug, findApiGroupNav, loadApiGroup } from "@/data/authApi.js";
+  import { apiBaseUrls, apiGroupNav, defaultApiGroupSlug, findApiGroupNav, loadApiGroup } from "@/data/authApi.js";
 
   const methodClass = (method) => method.toLowerCase();
   const endpointLabel = (count) => `${count} endpoint${count === 1 ? "" : "s"}`;
@@ -70,9 +70,7 @@
 
 <main>
   <PageHero
-    eyebrow="API reference"
-    title="Auth API"
-    lede={`${apiEndpointCount} Auth API operations grouped by product area. This catalog is the source map for the detailed endpoint reference, including methods, request URLs, headers, bodies, permissions, and status-specific responses.`}
+    compact
     breadcrumbs={[
       { href: "/", label: "Maintainerd" },
       { href: "/services/auth/docs/", label: "Auth" },

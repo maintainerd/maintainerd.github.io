@@ -4,9 +4,10 @@
   export let lede = "";
   export let breadcrumbs = [];
   export let service = false;
+  export let compact = false;
 </script>
 
-<section class={service ? "service-hero" : "page-hero"}>
+<section class={`${service ? "service-hero" : "page-hero"}${compact ? " compact-hero" : ""}`}>
   <div class="section">
     {#if breadcrumbs.length}
       <div class="breadcrumbs">
@@ -23,7 +24,7 @@
       </div>
     {/if}
     {#if eyebrow}<p class="eyebrow">{eyebrow}</p>{/if}
-    <h1>{title}</h1>
+    {#if title}<h1>{title}</h1>{/if}
     {#if lede}<p class="lede">{lede}</p>{/if}
     <slot />
   </div>

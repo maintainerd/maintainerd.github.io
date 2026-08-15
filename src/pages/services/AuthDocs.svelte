@@ -63,9 +63,7 @@
 
 <main>
   <PageHero
-    eyebrow="Auth docs"
-    title="Configure Maintainerd Auth for production."
-    lede="Set up HTTPS hostnames, tenants, clients, identity providers, registration, login, account settings, events, and security controls."
+    compact
     breadcrumbs={[
       { href: "/", label: "Maintainerd" },
       { href: "/services/", label: "Services" },

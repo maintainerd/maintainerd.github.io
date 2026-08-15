@@ -123,6 +123,10 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 /* Subpage heroes — light + minimal */
 .page-hero, .service-hero { border-bottom: 1px solid var(--line); background: var(--paper); }
 .page-hero .section, .service-hero .section { padding: 56px 0; }
+.page-hero.compact-hero, .service-hero.compact-hero { border-bottom: 0; }
+.page-hero.compact-hero .section, .service-hero.compact-hero .section { padding: 24px 0 0; }
+.compact-hero .breadcrumbs { margin-bottom: 0; }
+.compact-hero + .section { padding-top: 24px; }
 .page-hero h1, .service-hero h1 { font-size: clamp(2.1rem, 4vw, 3rem); overflow-wrap: anywhere; }
 .page-hero .lede, .service-hero .lede { color: var(--muted); }
 .breadcrumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; color: var(--faint); font-size: .86rem; font-weight: 500; }
