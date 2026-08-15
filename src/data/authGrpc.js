@@ -3783,46 +3783,1837 @@ export const grpcGroupNav = [
     "description": "OAuth client lifecycle, secrets, URIs, API audiences, and API permissions.",
     "rpcCount": 19,
     "rpcs": [
-      {         "permission": "client:read",
-"name": "ListClients", "request": "ListClientsRequest", "response": "ListClientsResponse" },
-      {         "permission": "client:read",
-"name": "GetClient", "request": "GetClientRequest", "response": "GetClientResponse" },
-      {         "permission": "client:secret:read",
+      {
+        "permission": "client:read",
+        "name": "ListClients",
+        "request": "ListClientsRequest",
+        "response": "ListClientsResponse",
+        "details": {
+          "overview": "Lists clients in a tenant with filtering and pagination.",
+          "notes": [
+            "The caller may act on its own tenant; a system-tenant principal may list any tenant's clients.",
+            "client_type and status accept multiple values."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Filter by client name."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": false,
+              "description": "Filter by display name."
+            },
+            {
+              "name": "client_type",
+              "type": "repeated string",
+              "required": false,
+              "description": "Filter by client type: traditional, spa, mobile, m2m."
+            },
+            {
+              "name": "identity_provider_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Filter by a connected identity provider UUID."
+            },
+            {
+              "name": "status",
+              "type": "repeated string",
+              "required": false,
+              "description": "Filter by status: active, inactive."
+            },
+            {
+              "name": "is_default",
+              "type": "optional bool",
+              "required": false,
+              "description": "Filter by default flag."
+            },
+            {
+              "name": "is_system",
+              "type": "optional bool",
+              "required": false,
+              "description": "Filter by system flag."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "clients",
+              "type": "repeated Client",
+              "description": "The matching client records."
+            },
+            {
+              "name": "page.total",
+              "type": "int64",
+              "description": "Total matching clients."
+            },
+            {
+              "name": "page.page",
+              "type": "int32",
+              "description": "Current page."
+            },
+            {
+              "name": "page.limit",
+              "type": "int32",
+              "description": "Page size."
+            },
+            {
+              "name": "page.total_pages",
+              "type": "int32",
+              "description": "Total page count."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "status": [
+              "active"
+            ],
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "clients": [
+              {
+                "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "name": "app-web",
+                "display_name": "Example Web Application",
+                "client_type": "traditional",
+                "domain": "app.acme.example",
+                "status": "active",
+                "is_default": false,
+                "is_system": false,
+                "allow_registration": false,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-10T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "client:read",
+        "name": "GetClient",
+        "request": "GetClientRequest",
+        "response": "GetClientResponse",
+        "details": {
+          "overview": "Returns one client by UUID in the named tenant.",
+          "notes": [
+            "Clients outside the caller's tenant scope respond as not found."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "client",
+              "type": "Client",
+              "description": "The client record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "client": {
+              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "app-web",
+              "display_name": "Example Web Application",
+              "client_type": "traditional",
+              "domain": "app.acme.example",
+              "status": "active",
+              "is_default": false,
+              "is_system": false,
+              "allow_registration": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "client:secret:read",
         "stepUp": true,
-"name": "GetClientSecret", "request": "GetClientSecretRequest", "response": "GetClientSecretResponse" },
-      {         "permission": "client:secret:rotate",
+        "name": "GetClientSecret",
+        "request": "GetClientSecretRequest",
+        "response": "GetClientSecretResponse",
+        "details": {
+          "overview": "Deliberately unimplemented: client secrets are hashed at rest and can never be retrieved after creation.",
+          "notes": [
+            "This RPC exists only because the generated service interface requires it; it always answers Unimplemented.",
+            "Use RotateClientSecret to issue a new secret instead."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "client_id",
+              "type": "string",
+              "description": "Never populated; the RPC always fails."
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "description": "Never populated; the RPC always fails."
+            }
+          ],
+          "errors": [
+                        {"code": "Unimplemented", "description": "Always returned: client secrets cannot be retrieved after creation; use RotateClientSecret to issue a new one."},
+{
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {}
+        }
+      },
+      {
+        "permission": "client:secret:rotate",
         "stepUp": true,
-"name": "RotateClientSecret", "request": "RotateClientSecretRequest", "response": "RotateClientSecretResponse" },
-      {         "permission": "client:config:read",
-"name": "GetClientConfig", "request": "GetClientConfigRequest", "response": "GetClientConfigResponse" },
-      {         "permission": "client:create",
-"name": "CreateClient", "request": "CreateClientRequest", "response": "CreateClientResponse" },
-      {         "permission": "client:update",
-"name": "UpdateClient", "request": "UpdateClientRequest", "response": "UpdateClientResponse" },
-      {         "permission": "client:update",
-"name": "SetClientStatus", "request": "SetClientStatusRequest", "response": "SetClientStatusResponse" },
-      {         "permission": "client:delete",
-"name": "DeleteClient", "request": "DeleteClientRequest", "response": "DeleteClientResponse" },
-      {         "permission": "client:uri:read",
-"name": "ListClientURIs", "request": "ListClientURIsRequest", "response": "ListClientURIsResponse" },
-      {         "permission": "client:uri:create",
-"name": "CreateClientURI", "request": "CreateClientURIRequest", "response": "CreateClientURIResponse" },
-      {         "permission": "client:uri:update",
-"name": "UpdateClientURI", "request": "UpdateClientURIRequest", "response": "UpdateClientURIResponse" },
-      {         "permission": "client:uri:delete",
-"name": "DeleteClientURI", "request": "DeleteClientURIRequest", "response": "DeleteClientURIResponse" },
-      {         "permission": "client:api:read",
-"name": "ListClientAPIs", "request": "ListClientAPIsRequest", "response": "ListClientAPIsResponse" },
-      {         "permission": "client:api:create",
-"name": "AddClientAPIs", "request": "AddClientAPIsRequest", "response": "AddClientAPIsResponse" },
-      {         "permission": "client:api:delete",
-"name": "RemoveClientAPI", "request": "RemoveClientAPIRequest", "response": "RemoveClientAPIResponse" },
-      {         "permission": "client:api:permission:read",
-"name": "ListClientAPIPermissions", "request": "ListClientAPIPermissionsRequest", "response": "ListClientAPIPermissionsResponse" },
-      {         "permission": "client:api:permission:create",
-"name": "AddClientAPIPermissions", "request": "AddClientAPIPermissionsRequest", "response": "AddClientAPIPermissionsResponse" },
-      {         "permission": "client:api:permission:delete",
-"name": "RemoveClientAPIPermission", "request": "RemoveClientAPIPermissionRequest", "response": "RemoveClientAPIPermissionResponse" }
+        "name": "RotateClientSecret",
+        "request": "RotateClientSecretRequest",
+        "response": "RotateClientSecretResponse",
+        "details": {
+          "overview": "Generates a new client secret and returns it exactly once. The previous secret can remain valid for a bounded grace period.",
+          "notes": [
+            "Requires a step-up token (acr=2) and a user actor from the token.",
+            "grace_period_hours is capped at 168 (7 days); 0 revokes the previous secret immediately."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            },
+            {
+              "name": "grace_period_hours",
+              "type": "int32",
+              "required": false,
+              "description": "Hours the previous secret stays valid. 0-168."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "client_secret",
+              "type": "string",
+              "description": "The new plaintext secret, shown exactly once."
+            },
+            {
+              "name": "previous_secret_expires_at",
+              "type": "string",
+              "description": "Declared in the proto; the current implementation does not populate it."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "grace_period_hours": 24
+          },
+          "responseExample": {
+            "client_secret": "newsecret_9d1d5b4d3a",
+            "previous_secret_expires_at": ""
+          }
+        }
+      },
+      {
+        "permission": "client:config:read",
+        "name": "GetClientConfig",
+        "request": "GetClientConfigRequest",
+        "response": "GetClientConfigResponse",
+        "details": {
+          "overview": "Returns the client's effective config: the free-form config overlaid with the authoritative runtime columns, exactly as the runtime enforces them.",
+          "notes": [
+            "Mirrored keys are reported from the columns; keys with no backing column pass through untouched."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "description": "The effective configuration object."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "config": {
+              "grant_types": [
+                "authorization_code",
+                "refresh_token"
+              ],
+              "response_types": [
+                "code"
+              ],
+              "token_endpoint_auth_method": "client_secret_basic",
+              "allowed_scopes": [
+                "openid",
+                "email",
+                "profile"
+              ],
+              "require_pkce": true
+            }
+          }
+        }
+      },
+      {
+        "permission": "client:create",
+        "name": "CreateClient",
+        "request": "CreateClientRequest",
+        "response": "CreateClientResponse",
+        "details": {
+          "overview": "Creates a client in the named tenant and returns its credentials exactly once. The create is replay-guarded: a retry after a lost response returns the original credentials instead of stranding a secret.",
+          "notes": [
+            "Every mutating RPC requires a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed.",
+            "The OAuth matrix is validated on write: auth method none only for public clients, secret methods require a secret, private_key_jwt requires jwks or jwks_uri, client_credentials requires client authentication and a non-empty allowed_scopes.",
+            "allow_registration defaults to true when omitted."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Machine name. 3-50 characters."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": true,
+              "description": "Human-readable name. 8-200 characters."
+            },
+            {
+              "name": "client_type",
+              "type": "string",
+              "required": true,
+              "description": "One of traditional, spa, mobile, m2m."
+            },
+            {
+              "name": "domain",
+              "type": "string",
+              "required": true,
+              "description": "Application domain. 3-253 characters: a hostname or https URL. It becomes the token issuer."
+            },
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "required": false,
+              "description": "Configuration object, at most 16KB. Advanced keys (jwks, jwks_uri, mtls_bound_cert_thumbprint, scope_claim_mappings, claim_mappers, grant/response types, token endpoint auth method, TTLs) are mirrored into runtime columns and validated as a coherent OAuth matrix."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            },
+            {
+              "name": "identity_provider_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Legacy single identity-provider binding."
+            },
+            {
+              "name": "branding_id",
+              "type": "string",
+              "required": false,
+              "description": "Branding theme UUID."
+            },
+            {
+              "name": "allow_registration",
+              "type": "optional bool",
+              "required": false,
+              "description": "Self-registration flag. Defaults to true."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "client",
+              "type": "Client",
+              "description": "The created client record."
+            },
+            {
+              "name": "credentials.client_uuid",
+              "type": "string",
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "credentials.client_id",
+              "type": "string",
+              "description": "The OAuth client identifier."
+            },
+            {
+              "name": "credentials.client_secret",
+              "type": "string",
+              "description": "The plaintext secret, shown exactly once."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "name": "app-web",
+            "display_name": "Example Web Application",
+            "client_type": "traditional",
+            "domain": "app.acme.example",
+            "config": {
+              "grant_types": [
+                "authorization_code",
+                "refresh_token"
+              ],
+              "token_endpoint_auth_method": "client_secret_basic",
+              "allowed_scopes": [
+                "openid",
+                "email",
+                "profile"
+              ]
+            },
+            "status": "active",
+            "allow_registration": false
+          },
+          "responseExample": {
+            "client": {
+              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "app-web",
+              "display_name": "Example Web Application",
+              "client_type": "traditional",
+              "domain": "app.acme.example",
+              "status": "active",
+              "is_default": false,
+              "is_system": false,
+              "allow_registration": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            },
+            "credentials": {
+              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_id": "app-web-client",
+              "client_secret": "secret_9d1d5b4d3a"
+            }
+          }
+        }
+      },
+      {
+        "permission": "client:update",
+        "name": "UpdateClient",
+        "request": "UpdateClientRequest",
+        "response": "UpdateClientResponse",
+        "details": {
+          "overview": "Updates a client's fields in the named tenant. An omitted config means leave it unchanged.",
+          "notes": [
+            "Every mutating RPC requires a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed.",
+            "The same DTO validation and OAuth matrix rules as creation apply."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Machine name. 3-50 characters."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": true,
+              "description": "Human-readable name. 8-200 characters."
+            },
+            {
+              "name": "client_type",
+              "type": "string",
+              "required": true,
+              "description": "One of traditional, spa, mobile, m2m."
+            },
+            {
+              "name": "domain",
+              "type": "string",
+              "required": true,
+              "description": "Application domain. 3-253 characters: a hostname or https URL. It becomes the token issuer."
+            },
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "required": false,
+              "description": "Configuration object, at most 16KB. Advanced keys (jwks, jwks_uri, mtls_bound_cert_thumbprint, scope_claim_mappings, claim_mappers, grant/response types, token endpoint auth method, TTLs) are mirrored into runtime columns and validated as a coherent OAuth matrix."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            },
+            {
+              "name": "branding_id",
+              "type": "string",
+              "required": false,
+              "description": "Branding theme UUID."
+            },
+            {
+              "name": "allow_registration",
+              "type": "optional bool",
+              "required": false,
+              "description": "Self-registration flag."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "client",
+              "type": "Client",
+              "description": "The updated client record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "name": "app-web",
+            "display_name": "Example Web Application",
+            "client_type": "traditional",
+            "domain": "app.acme.example",
+            "status": "active"
+          },
+          "responseExample": {
+            "client": {
+              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "app-web",
+              "display_name": "Example Web Application",
+              "client_type": "traditional",
+              "domain": "app.acme.example",
+              "status": "active",
+              "is_default": false,
+              "is_system": false,
+              "allow_registration": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "client:update",
+        "name": "SetClientStatus",
+        "request": "SetClientStatusRequest",
+        "response": "SetClientStatusResponse",
+        "details": {
+          "overview": "Changes a client's status to the explicitly requested value.",
+          "notes": [
+            "Every mutating RPC requires a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "client",
+              "type": "Client",
+              "description": "The updated client record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "status": "inactive"
+          },
+          "responseExample": {
+            "client": {
+              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "app-web",
+              "display_name": "Example Web Application",
+              "client_type": "traditional",
+              "domain": "app.acme.example",
+              "status": "inactive",
+              "is_default": false,
+              "is_system": false,
+              "allow_registration": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "client:delete",
+        "name": "DeleteClient",
+        "request": "DeleteClientRequest",
+        "response": "DeleteClientResponse",
+        "details": {
+          "overview": "Soft-deletes a client in the named tenant.",
+          "notes": [
+            "Every mutating RPC requires a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "client",
+              "type": "Client",
+              "description": "The deleted client record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "client": {
+              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "app-web",
+              "display_name": "Example Web Application",
+              "client_type": "traditional",
+              "domain": "app.acme.example",
+              "status": "active",
+              "is_default": false,
+              "is_system": false,
+              "allow_registration": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "client:uri:read",
+        "name": "ListClientURIs",
+        "request": "ListClientURIsRequest",
+        "response": "ListClientURIsResponse",
+        "details": {
+          "overview": "Returns the URI records attached to a client.",
+          "notes": [
+            "These records drive redirect validation, CORS allowlisting, and logout return URLs."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "uris",
+              "type": "repeated ClientURI",
+              "description": "The client's URI records."
+            },
+            {
+              "name": "uris[].client_uri_uuid",
+              "type": "string",
+              "description": "URI record UUID."
+            },
+            {
+              "name": "uris[].uri",
+              "type": "string",
+              "description": "The URI value."
+            },
+            {
+              "name": "uris[].type",
+              "type": "string",
+              "description": "URI type: redirect_uri, origin_uri, logout_uri, login_uri, cors_origin_uri."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "uris": [
+              {
+                "client_uri_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "uri": "https://app.acme.example/auth/callback",
+                "type": "redirect_uri",
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "permission": "client:uri:create",
+        "name": "CreateClientURI",
+        "request": "CreateClientURIRequest",
+        "response": "CreateClientURIResponse",
+        "details": {
+          "overview": "Attaches a URI record to a client.",
+          "notes": [
+            "Every mutating RPC requires a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "uri",
+              "type": "string",
+              "required": true,
+              "description": "The URI value. 5-200 characters."
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "required": true,
+              "description": "URI type: redirect_uri, origin_uri, logout_uri, login_uri, or cors_origin_uri."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "uri.client_uri_uuid",
+              "type": "string",
+              "description": "URI record UUID."
+            },
+            {
+              "name": "uri.uri",
+              "type": "string",
+              "description": "The URI value."
+            },
+            {
+              "name": "uri.type",
+              "type": "string",
+              "description": "URI type."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "uri": "https://app.acme.example/auth/callback",
+            "type": "redirect_uri"
+          },
+          "responseExample": {
+            "uri": {
+              "client_uri_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "uri": "https://app.acme.example/auth/callback",
+              "type": "redirect_uri",
+              "created_at": "2026-08-15T09:00:00Z",
+              "updated_at": "2026-08-15T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "client:uri:update",
+        "name": "UpdateClientURI",
+        "request": "UpdateClientURIRequest",
+        "response": "UpdateClientURIResponse",
+        "details": {
+          "overview": "Updates an existing URI record's value and type.",
+          "notes": [
+            "Every mutating RPC requires a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "client_uri_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the URI record."
+            },
+            {
+              "name": "uri",
+              "type": "string",
+              "required": true,
+              "description": "The URI value. 5-200 characters."
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "required": true,
+              "description": "URI type: redirect_uri, origin_uri, logout_uri, login_uri, or cors_origin_uri."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "uri.client_uri_uuid",
+              "type": "string",
+              "description": "URI record UUID."
+            },
+            {
+              "name": "uri.uri",
+              "type": "string",
+              "description": "The URI value."
+            },
+            {
+              "name": "uri.type",
+              "type": "string",
+              "description": "URI type."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "client_uri_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "uri": "https://app.acme.example/auth/callback",
+            "type": "redirect_uri"
+          },
+          "responseExample": {
+            "uri": {
+              "client_uri_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "uri": "https://app.acme.example/auth/callback",
+              "type": "redirect_uri",
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-15T09:30:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "client:uri:delete",
+        "name": "DeleteClientURI",
+        "request": "DeleteClientURIRequest",
+        "response": "DeleteClientURIResponse",
+        "details": {
+          "overview": "Removes a URI record from a client.",
+          "notes": [
+            "Every mutating RPC requires a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "client_uri_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the URI record."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "client",
+              "type": "Client",
+              "description": "The updated client record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "client_uri_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "client": {
+              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "app-web",
+              "display_name": "Example Web Application",
+              "client_type": "traditional",
+              "domain": "app.acme.example",
+              "status": "active",
+              "is_default": false,
+              "is_system": false,
+              "allow_registration": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "client:api:read",
+        "name": "ListClientAPIs",
+        "request": "ListClientAPIsRequest",
+        "response": "ListClientAPIsResponse",
+        "details": {
+          "overview": "Returns the APIs assigned to a client together with the permissions granted for each.",
+          "notes": [
+            "API assignments define which audiences the client's tokens may address."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "apis",
+              "type": "repeated ClientAPI",
+              "description": "The client's API assignments."
+            },
+            {
+              "name": "apis[].client_api_uuid",
+              "type": "string",
+              "description": "Assignment UUID."
+            },
+            {
+              "name": "apis[].api.api_uuid",
+              "type": "string",
+              "description": "API UUID."
+            },
+            {
+              "name": "apis[].api.name",
+              "type": "string",
+              "description": "API name."
+            },
+            {
+              "name": "apis[].api.display_name",
+              "type": "string",
+              "description": "API display name."
+            },
+            {
+              "name": "apis[].api.status",
+              "type": "string",
+              "description": "API status."
+            },
+            {
+              "name": "apis[].permissions",
+              "type": "repeated ClientAPIPermission",
+              "description": "Permissions granted for the API."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "apis": [
+              {
+                "client_api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "api": {
+                  "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+                  "name": "billing",
+                  "display_name": "Billing API",
+                  "description": "Billing endpoints",
+                  "status": "active",
+                  "is_system": false,
+                  "created_at": "2026-08-01T09:00:00Z",
+                  "updated_at": "2026-08-01T09:00:00Z"
+                },
+                "permissions": [
+                  {
+                    "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                    "name": "invoices:read",
+                    "description": "Read invoices",
+                    "status": "active",
+                    "is_system": false,
+                    "created_at": "2026-08-01T09:00:00Z",
+                    "updated_at": "2026-08-01T09:00:00Z"
+                  }
+                ],
+                "created_at": "2026-08-01T09:00:00Z"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "permission": "client:api:create",
+        "name": "AddClientAPIs",
+        "request": "AddClientAPIsRequest",
+        "response": "AddClientAPIsResponse",
+        "details": {
+          "overview": "Assigns one or more APIs to a client. The mutation is refused without an actor holding an identity in the tenant.",
+          "notes": [
+            "Every mutating RPC requires a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "api_uuids",
+              "type": "repeated string",
+              "required": true,
+              "description": "API UUIDs to assign."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "message",
+              "type": "string",
+              "description": "Success confirmation message."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_uuids": [
+              "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d"
+            ]
+          },
+          "responseExample": {
+            "message": "APIs added to auth client successfully"
+          }
+        }
+      },
+      {
+        "permission": "client:api:delete",
+        "name": "RemoveClientAPI",
+        "request": "RemoveClientAPIRequest",
+        "response": "RemoveClientAPIResponse",
+        "details": {
+          "overview": "Removes an API assignment from a client.",
+          "notes": [
+            "Every mutating RPC requires a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "api_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the assigned API."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "message",
+              "type": "string",
+              "description": "Success confirmation message."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "message": "API removed from auth client successfully"
+          }
+        }
+      },
+      {
+        "permission": "client:api:permission:read",
+        "name": "ListClientAPIPermissions",
+        "request": "ListClientAPIPermissionsRequest",
+        "response": "ListClientAPIPermissionsResponse",
+        "details": {
+          "overview": "Returns the permissions a client holds under a specific assigned API.",
+          "notes": [
+            "The API must already be assigned to the client."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "api_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the assigned API."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "permissions",
+              "type": "repeated ClientAPIPermission",
+              "description": "The client's permissions for the API."
+            },
+            {
+              "name": "permissions[].permission_uuid",
+              "type": "string",
+              "description": "Permission UUID."
+            },
+            {
+              "name": "permissions[].name",
+              "type": "string",
+              "description": "Permission name."
+            },
+            {
+              "name": "permissions[].description",
+              "type": "string",
+              "description": "Permission description."
+            },
+            {
+              "name": "permissions[].status",
+              "type": "string",
+              "description": "Permission status."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "permissions": [
+              {
+                "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "name": "invoices:read",
+                "description": "Read invoices",
+                "status": "active",
+                "is_system": false,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "permission": "client:api:permission:create",
+        "name": "AddClientAPIPermissions",
+        "request": "AddClientAPIPermissionsRequest",
+        "response": "AddClientAPIPermissionsResponse",
+        "details": {
+          "overview": "Grants one or more permissions under an assigned API to the client.",
+          "notes": [
+            "Every mutating RPC requires a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "api_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the assigned API."
+            },
+            {
+              "name": "permission_uuids",
+              "type": "repeated string",
+              "required": true,
+              "description": "Permission UUIDs to grant."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "message",
+              "type": "string",
+              "description": "Success confirmation message."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_uuids": [
+              "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            ]
+          },
+          "responseExample": {
+            "message": "Permissions added to auth client API successfully"
+          }
+        }
+      },
+      {
+        "permission": "client:api:permission:delete",
+        "name": "RemoveClientAPIPermission",
+        "request": "RemoveClientAPIPermissionRequest",
+        "response": "RemoveClientAPIPermissionResponse",
+        "details": {
+          "overview": "Revokes a single permission under an assigned API from the client.",
+          "notes": [
+            "Every mutating RPC requires a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the client belongs to."
+            },
+            {
+              "name": "client_uuid",
+              "type": "string",
+              "required": true,
+              "description": "Management UUID of the client."
+            },
+            {
+              "name": "api_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the assigned API."
+            },
+            {
+              "name": "permission_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the permission to revoke."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "message",
+              "type": "string",
+              "description": "Success confirmation message."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, the token is not bound to a tenant, or the token may only act on its own tenant."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or client does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "message": "Permission removed from auth client API successfully"
+          }
+        }
+      },
     ]
   },
   {
