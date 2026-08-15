@@ -8602,20 +8602,801 @@ export const grpcGroupNav = [
     "description": "Policy documents and the services they are bound to.",
     "rpcCount": 7,
     "rpcs": [
-      {         "permission": "policy:read",
-"name": "ListPolicies", "request": "ListPoliciesRequest", "response": "ListPoliciesResponse" },
-      {         "permission": "policy:read",
-"name": "GetPolicy", "request": "GetPolicyRequest", "response": "GetPolicyResponse" },
-      {         "permission": "policy:read",
-"name": "ListPolicyServices", "request": "ListPolicyServicesRequest", "response": "ListPolicyServicesResponse" },
-      {         "permission": "policy:create",
-"name": "CreatePolicy", "request": "CreatePolicyRequest", "response": "CreatePolicyResponse" },
-      {         "permission": "policy:update",
-"name": "UpdatePolicy", "request": "UpdatePolicyRequest", "response": "UpdatePolicyResponse" },
-      {         "permission": "policy:update",
-"name": "SetPolicyStatus", "request": "SetPolicyStatusRequest", "response": "SetPolicyStatusResponse" },
-      {         "permission": "policy:delete",
-"name": "DeletePolicy", "request": "DeletePolicyRequest", "response": "DeletePolicyResponse" }
+      {
+        "permission": "policy:read",
+        "name": "ListPolicies",
+        "request": "ListPoliciesRequest",
+        "response": "ListPoliciesResponse",
+        "details": {
+          "overview": "Lists policies in a tenant with filtering and pagination.",
+          "notes": [
+            "status accepts multiple values (at most 2).",
+            "service_uuid joins through service_policies and live services."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the policy belongs to."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on name. 1-150 characters."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on description."
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on version."
+            },
+            {
+              "name": "status",
+              "type": "repeated string",
+              "required": false,
+              "description": "Filter by status: active, inactive."
+            },
+            {
+              "name": "is_system",
+              "type": "optional bool",
+              "required": false,
+              "description": "Filter by system flag."
+            },
+            {
+              "name": "service_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Filter by a bound service UUID."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "policies",
+              "type": "repeated Policy",
+              "description": "The matching policy records."
+            },
+            {
+              "name": "page.total",
+              "type": "int64",
+              "description": "Total matching policies."
+            },
+            {
+              "name": "page.page",
+              "type": "int32",
+              "description": "Current page."
+            },
+            {
+              "name": "page.limit",
+              "type": "int32",
+              "description": "Page size."
+            },
+            {
+              "name": "page.total_pages",
+              "type": "int32",
+              "description": "Total page count."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, policy, or bound service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "status": [
+              "active"
+            ],
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "policies": [
+              {
+                "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "name": "billing-read",
+                "description": "Allows read access to billing",
+                "document": {
+                  "version": "v1",
+                  "statement": [
+                    {
+                      "effect": "allow",
+                      "action": [
+                        "invoices:read"
+                      ],
+                      "resource": [
+                        "billing-api"
+                      ]
+                    }
+                  ]
+                },
+                "version": "1",
+                "status": "active",
+                "is_system": false,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-10T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "policy:read",
+        "name": "GetPolicy",
+        "request": "GetPolicyRequest",
+        "response": "GetPolicyResponse",
+        "details": {
+          "overview": "Returns one policy by UUID in the named tenant, including its full document.",
+          "notes": [
+            "Policies outside the caller's tenant scope respond as not found."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the policy belongs to."
+            },
+            {
+              "name": "policy_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the policy."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "policy",
+              "type": "Policy",
+              "description": "The policy record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, policy, or bound service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "policy": {
+              "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-read",
+              "description": "Allows read access to billing",
+              "document": {
+                "version": "v1",
+                "statement": [
+                  {
+                    "effect": "allow",
+                    "action": [
+                      "invoices:read"
+                    ],
+                    "resource": [
+                      "billing-api"
+                    ]
+                  }
+                ]
+              },
+              "version": "1",
+              "status": "active",
+              "is_system": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "policy:read",
+        "name": "ListPolicyServices",
+        "request": "ListPolicyServicesRequest",
+        "response": "ListPolicyServicesResponse",
+        "details": {
+          "overview": "Returns the services bound to a policy, filtered and paginated. Policy ownership is checked first.",
+          "notes": [
+            "Only services belonging to the named tenant are returned."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the policy belongs to."
+            },
+            {
+              "name": "policy_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the policy."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Filter by service name."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": false,
+              "description": "Filter by display name."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Filter by description."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "services",
+              "type": "repeated Service",
+              "description": "The bound services."
+            },
+            {
+              "name": "page",
+              "type": "PageMetadata",
+              "description": "Pagination metadata."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, policy, or bound service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "services": [
+              {
+                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "billing-service",
+                "display_name": "Billing Service",
+                "description": "Handles billing operations",
+                "version": "1.0.0",
+                "status": "active",
+                "is_system": false,
+                "api_count": 2,
+                "policy_count": 1,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "policy:create",
+        "name": "CreatePolicy",
+        "request": "CreatePolicyRequest",
+        "response": "CreatePolicyResponse",
+        "details": {
+          "overview": "Creates a policy document in the named tenant. The document is the authorization decision for every service it gets bound to.",
+          "notes": [
+            "Document schema: version (v1), statement[] with effect (allow|deny), action[], resource[].",
+            "Action and resource values support wildcard patterns evaluated at decision time.",
+            "Uniqueness is per-tenant on (name, version)."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the policy belongs to."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Policy name. 3-150 characters: lowercase letters, numbers, underscores, colons, slashes, hyphens."
+            },
+            {
+              "name": "description",
+              "type": "optional string",
+              "required": false,
+              "description": "Description. At most 500 characters."
+            },
+            {
+              "name": "document",
+              "type": "google.protobuf.Struct",
+              "required": true,
+              "description": "Policy document: { version: \"v1\", statement: [{ effect: allow|deny, action[], resource[] }] }."
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "required": true,
+              "description": "Policy version. 1-20 characters."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "policy",
+              "type": "Policy",
+              "description": "The created policy record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, policy, or bound service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "name": "billing-read",
+            "description": "Allows read access to billing",
+            "document": {
+              "version": "v1",
+              "statement": [
+                {
+                  "effect": "allow",
+                  "action": [
+                    "invoices:read"
+                  ],
+                  "resource": [
+                    "billing-api"
+                  ]
+                }
+              ]
+            },
+            "version": "1",
+            "status": "active"
+          },
+          "responseExample": {
+            "policy": {
+              "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-read",
+              "description": "Allows read access to billing",
+              "document": {
+                "version": "v1",
+                "statement": [
+                  {
+                    "effect": "allow",
+                    "action": [
+                      "invoices:read"
+                    ],
+                    "resource": [
+                      "billing-api"
+                    ]
+                  }
+                ]
+              },
+              "version": "1",
+              "status": "active",
+              "is_system": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "policy:update",
+        "name": "UpdatePolicy",
+        "request": "UpdatePolicyRequest",
+        "response": "UpdatePolicyResponse",
+        "details": {
+          "overview": "Replaces a policy in the named tenant. A policy document IS the authorization decision for every service it is bound to.",
+          "notes": [
+            "System policies cannot be updated.",
+            "Every update snapshots the before-state into append-only version history."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the policy belongs to."
+            },
+            {
+              "name": "policy_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the policy."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Policy name. 3-150 characters: lowercase letters, numbers, underscores, colons, slashes, hyphens."
+            },
+            {
+              "name": "description",
+              "type": "optional string",
+              "required": false,
+              "description": "Description. At most 500 characters."
+            },
+            {
+              "name": "document",
+              "type": "google.protobuf.Struct",
+              "required": true,
+              "description": "Policy document: { version: \"v1\", statement: [{ effect: allow|deny, action[], resource[] }] }."
+            },
+            {
+              "name": "version",
+              "type": "string",
+              "required": true,
+              "description": "Policy version. 1-20 characters."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "policy",
+              "type": "Policy",
+              "description": "The updated policy record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, policy, or bound service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "name": "billing-read",
+            "description": "Allows read access to billing",
+            "document": {
+              "version": "v1",
+              "statement": [
+                {
+                  "effect": "allow",
+                  "action": [
+                    "invoices:read"
+                  ],
+                  "resource": [
+                    "billing-api"
+                  ]
+                }
+              ]
+            },
+            "version": "1",
+            "status": "active"
+          },
+          "responseExample": {
+            "policy": {
+              "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-read",
+              "description": "Allows read access to billing",
+              "document": {
+                "version": "v1",
+                "statement": [
+                  {
+                    "effect": "allow",
+                    "action": [
+                      "invoices:read"
+                    ],
+                    "resource": [
+                      "billing-api"
+                    ]
+                  }
+                ]
+              },
+              "version": "1",
+              "status": "active",
+              "is_system": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "policy:update",
+        "name": "SetPolicyStatus",
+        "request": "SetPolicyStatusRequest",
+        "response": "SetPolicyStatusResponse",
+        "details": {
+          "overview": "Updates only a policy's status. Deactivating a policy stops it from being included in the policy bundles served to bound services.",
+          "notes": [
+            "System policy status cannot be updated."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the policy belongs to."
+            },
+            {
+              "name": "policy_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the policy."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "policy",
+              "type": "Policy",
+              "description": "The updated policy record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, policy, or bound service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "status": "inactive"
+          },
+          "responseExample": {
+            "policy": {
+              "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-read",
+              "description": "Allows read access to billing",
+              "document": {
+                "version": "v1",
+                "statement": [
+                  {
+                    "effect": "allow",
+                    "action": [
+                      "invoices:read"
+                    ],
+                    "resource": [
+                      "billing-api"
+                    ]
+                  }
+                ]
+              },
+              "version": "1",
+              "status": "inactive",
+              "is_system": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "policy:delete",
+        "name": "DeletePolicy",
+        "request": "DeletePolicyRequest",
+        "response": "DeletePolicyResponse",
+        "details": {
+          "overview": "Soft-deletes a policy in the named tenant. Bound services stop receiving the policy in their bundles.",
+          "notes": [
+            "System policies cannot be deleted."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the policy belongs to."
+            },
+            {
+              "name": "policy_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the policy."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "policy",
+              "type": "Policy",
+              "description": "The deleted policy record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, policy, or bound service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "policy": {
+              "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-read",
+              "description": "Allows read access to billing",
+              "document": {
+                "version": "v1",
+                "statement": [
+                  {
+                    "effect": "allow",
+                    "action": [
+                      "invoices:read"
+                    ],
+                    "resource": [
+                      "billing-api"
+                    ]
+                  }
+                ]
+              },
+              "version": "1",
+              "status": "active",
+              "is_system": false,
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
     ]
   },
   {
