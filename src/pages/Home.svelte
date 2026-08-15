@@ -1,11 +1,7 @@
 <script>
-  import Badge from "@/components/ui/Badge.svelte";
   import ButtonLink from "@/components/ui/ButtonLink.svelte";
   import ServiceCard from "@/components/ui/ServiceCard.svelte";
-  import Terminal from "@/components/ui/Terminal.svelte";
   import { maintainerdServices } from "@/data/services.js";
-
-  const auth = maintainerdServices.find((service) => service.slug === "auth");
 </script>
 
 <svelte:head>
@@ -29,43 +25,17 @@
         </p>
         <div class="hero-actions">
           <ButtonLink href="/services/" variant="primary">Browse services</ButtonLink>
-          <ButtonLink href="/services/auth/docs/">Auth · v0.1.1</ButtonLink>
           <ButtonLink href="https://github.com/maintainerd" external>GitHub</ButtonLink>
         </div>
       </div>
     </div>
   </section>
 
-  {#if auth}
-    <section class="section">
-      <p class="eyebrow">Available now</p>
-      <h2>Auth</h2>
-      <p class="section-lede">The first service is shipping.</p>
-      <div class="feature" style="margin-top:24px">
-        <img src={auth.icon} alt="" />
-        <div>
-          <div class="meta">
-            <h3 style="margin:0">Auth</h3>
-            <Badge kind="version">{auth.status}</Badge>
-          </div>
-          <p style="color:var(--muted);margin:0">{auth.description}</p>
-          <Terminal title="Container image" command={auth.command} />
-          <div class="feature-links">
-            <a href="/services/auth/docs/">Docs</a>
-            <a href="/services/auth/api/">API</a>
-            <a href={auth.dockerHref} target="_blank" rel="noopener noreferrer">Docker Hub</a>
-            <a href={auth.githubHref} target="_blank" rel="noopener noreferrer">GitHub</a>
-          </div>
-        </div>
-      </div>
-    </section>
-  {/if}
-
   <section class="band">
     <div class="section" id="services" style="padding-top:64px;padding-bottom:64px">
       <p class="eyebrow">Service catalog</p>
       <h2>Everything, in one place.</h2>
-      <p class="section-lede">Independent services that stand alone or connect through Core. Everything past Auth is on the roadmap.</p>
+      <p class="section-lede">Independent services that stand alone or connect through Core. Browse the catalog to see what is available and what is planned.</p>
       <div class="service-grid">
         {#each maintainerdServices as service}
           <ServiceCard {service} href={service.href || `/services/${service.slug}/`} />
