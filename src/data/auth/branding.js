@@ -108,6 +108,247 @@ const brandingNotFoundResponse = {
   }
 };
 
+const brandingMetadataExample = {
+  "layout": "centered",
+  "auth_ui_template": "centered-card",
+  "login_form_logo_placement": "inside-form",
+  "login_form_logo_detail": "Secure access",
+  "split_showcase_visual_style": "identity-mesh",
+  "split_showcase_panel_title": "Secure access for your team",
+  "split_showcase_panel_subtitle": "One identity for every service",
+  "split_showcase_image_url": "https://cdn.example.com/showcase.jpg",
+  "login_page_content": {
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Use your Example Corp account"
+    },
+    "registration": {
+      "title": "Create your account",
+      "subtitle": "Get started in under a minute"
+    },
+    "forgot-password-form": {
+      "title": "Reset your password",
+      "subtitle": "We will email you a reset link"
+    }
+  },
+  "colors": {
+    "primary": "#2563eb",
+    "secondary": "#64748b",
+    "accent": "#0ea5e9",
+    "appBackground": "#f8fafc",
+    "textPrimary": "#0f172a",
+    "textMuted": "#64748b",
+    "border": "#e2e8f0",
+    "cardBackground": "#ffffff",
+    "authPageBackground": "#f8fafc",
+    "authFormPanelBackground": "#ffffff",
+    "authFormPanelBorder": "#e2e8f0",
+    "authFormPanelText": "#0f172a",
+    "authVisualPanelBackground": "#1e3a8a",
+    "authVisualPanelText": "#ffffff",
+    "authVisualPanelOverlay": "#000000",
+    "authDecorativeLight": "#ffffff",
+    "authDecorativeDark": "#1e3a8a",
+    "authProgressPanelBackground": "#f1f5f9",
+    "authSecurityPanelBackground": "#f8fafc",
+    "topPanelBackground": "#ffffff",
+    "topPanelBorder": "#e2e8f0",
+    "topPanelText": "#0f172a",
+    "sidePanelBackground": "#ffffff",
+    "sidePanelBorder": "#e2e8f0",
+    "sidePanelSectionText": "#64748b",
+    "sidePanelItemIcon": "#64748b",
+    "sidePanelItemIconHover": "#0f172a",
+    "sidePanelItemActiveIcon": "#2563eb",
+    "sidePanelItemHoverText": "#0f172a",
+    "sidePanelChevron": "#94a3b8"
+  },
+  "font": {
+    "family": "Inter, system-ui, sans-serif"
+  },
+  "effects": {
+    "authFormPanelShadow": "0 4px 12px rgba(0, 0, 0, 0.08)"
+  },
+  "components": {
+    "primaryButton": {
+      "background": "#2563eb",
+      "hoverColor": "#1d4ed8",
+      "activeColor": "#1e40af",
+      "textColor": "#ffffff",
+      "borderColor": "transparent",
+      "borderThickness": "0px",
+      "borderRadius": "6px"
+    },
+    "secondaryButton": {
+      "background": "#f1f5f9",
+      "hoverColor": "#e2e8f0",
+      "activeColor": "#cbd5e1",
+      "textColor": "#0f172a"
+    },
+    "outlineButton": {
+      "background": "transparent",
+      "hoverColor": "#f8fafc",
+      "activeColor": "#f1f5f9",
+      "textColor": "#0f172a",
+      "borderColor": "#cbd5e1",
+      "borderThickness": "1px",
+      "borderRadius": "6px"
+    },
+    "destructiveButton": {
+      "background": "#dc2626",
+      "hoverColor": "#b91c1c",
+      "activeColor": "#991b1b",
+      "textColor": "#ffffff"
+    },
+    "ghostButton": {
+      "background": "transparent",
+      "hoverColor": "#f1f5f9",
+      "activeColor": "#e2e8f0",
+      "textColor": "#334155"
+    },
+    "badges": {
+      "positive": {
+        "background": "#dcfce7",
+        "textColor": "#166534",
+        "borderColor": "#bbf7d0"
+      },
+      "in-progress": {
+        "background": "#fef9c3",
+        "textColor": "#854d0e",
+        "borderColor": "#fef08a"
+      },
+      "neutral": {
+        "background": "#f1f5f9",
+        "textColor": "#475569",
+        "borderColor": "#e2e8f0"
+      },
+      "negative": {
+        "background": "#fee2e2",
+        "textColor": "#991b1b",
+        "borderColor": "#fecaca"
+      }
+    },
+    "card": {
+      "background": "#ffffff",
+      "borderColor": "#e2e8f0",
+      "borderThickness": "1px",
+      "borderRadius": "8px"
+    },
+    "listing-card": {
+      "background": "#ffffff",
+      "hoverColor": "#f8fafc",
+      "borderColor": "#e2e8f0"
+    },
+    "sub-container": {
+      "background": "#f8fafc",
+      "borderColor": "#e2e8f0"
+    },
+    "option-card": {
+      "background": "#ffffff",
+      "hoverColor": "#f8fafc",
+      "borderColor": "#e2e8f0"
+    },
+    "alert": {
+      "background": "#fffbeb",
+      "textColor": "#92400e",
+      "borderColor": "#fde68a"
+    },
+    "inputs": {
+      "background": "#ffffff",
+      "textColor": "#0f172a",
+      "borderColor": "#cbd5e1",
+      "borderRadius": "6px"
+    },
+    "textarea": {
+      "background": "#ffffff",
+      "borderColor": "#cbd5e1",
+      "borderRadius": "6px"
+    },
+    "switch": {
+      "onBackground": "#2563eb",
+      "offBackground": "#cbd5e1",
+      "thumbColor": "#ffffff"
+    },
+    "switchSubContainer": {
+      "background": "#f8fafc",
+      "borderColor": "#e2e8f0"
+    },
+    "checkboxSubContainer": {
+      "background": "#f8fafc",
+      "borderColor": "#e2e8f0"
+    },
+    "topPanelControl": {
+      "background": "transparent",
+      "hoverColor": "#f1f5f9",
+      "activeColor": "#e2e8f0",
+      "textColor": "#334155"
+    },
+    "topPanelDropdownTrigger": {
+      "background": "#f8fafc",
+      "hoverColor": "#f1f5f9",
+      "activeColor": "#e2e8f0",
+      "textColor": "#0f172a",
+      "borderColor": "#e2e8f0",
+      "borderThickness": "1px",
+      "borderRadius": "6px"
+    },
+    "topPanelSearchTrigger": {
+      "background": "#f8fafc",
+      "hoverColor": "#f1f5f9",
+      "activeColor": "#e2e8f0",
+      "textColor": "#64748b",
+      "borderColor": "#e2e8f0",
+      "borderThickness": "1px",
+      "borderRadius": "6px"
+    },
+    "topPanelProfileTrigger": {
+      "background": "transparent",
+      "hoverColor": "#f1f5f9",
+      "activeColor": "#e2e8f0",
+      "textColor": "#0f172a"
+    },
+    "topPanelCreateButton": {
+      "background": "#2563eb",
+      "hoverColor": "#1d4ed8",
+      "activeColor": "#1e40af",
+      "textColor": "#ffffff",
+      "borderRadius": "6px"
+    },
+    "sidePanelSectionLabel": {
+      "textColor": "#64748b"
+    },
+    "parent-item": {
+      "background": "transparent",
+      "hoverBackground": "#f1f5f9",
+      "activeBackground": "#e0e7ff",
+      "textColor": "#0f172a",
+      "hoverTextColor": "#0f172a",
+      "activeTextColor": "#1d4ed8"
+    },
+    "sub-item": {
+      "background": "transparent",
+      "hoverBackground": "#f8fafc",
+      "activeBackground": "#eef2ff",
+      "textColor": "#475569",
+      "hoverTextColor": "#0f172a",
+      "activeTextColor": "#1d4ed8"
+    },
+    "iconContainer": {
+      "background": "#f1f5f9",
+      "hoverColor": "#e2e8f0",
+      "borderColor": "#e2e8f0",
+      "borderThickness": "1px",
+      "borderRadius": "6px",
+      "textColor": "#475569",
+      "size": "24px"
+    }
+  },
+  "logo_label": "Example",
+  "show_logo_label": true,
+  "identity_logo_label": "Example Auth",
+  "identity_show_logo_label": true
+};
+
 const brandingExample = {
   "branding_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   "name": "custom-theme",
@@ -125,20 +366,22 @@ const brandingExample = {
   "support_url": "https://example.com/support",
   "privacy_policy_url": "https://example.com/privacy",
   "terms_of_service_url": "https://example.com/terms",
-  "metadata": {
-    "layout": "centered",
-    "colors": {
-      "primary": "#2563eb"
-    },
-    "font": "Inter",
-    "effects": {},
-    "components": {},
-    "logo_label": "Example",
-    "show_logo_label": true
-  },
+  "metadata": brandingMetadataExample,
   "created_at": "2026-08-01T09:00:00Z",
   "updated_at": "2026-08-10T09:00:00Z"
 };
+
+const brandingMetadataNotes = [
+  "The metadata object carries the theme tokens and login experience configuration. The console editor builds it from these sections:",
+  "auth_ui_template selects the hosted login template: centered-card, split-showcase, stepper-flow, or editorial-cover. layout is derived from the template.",
+  "login_form_logo_placement (inside-form or above-form) and login_form_logo_detail control the identity-surface form logo.",
+  "split_showcase_* keys configure the visual panel for split templates: visual style (default, identity-mesh, access-grid, security-radar, trust-circuit, audit-trail, session-orbit, or image), panel title, panel subtitle, and image URL.",
+  "login_page_content maps hosted-auth page ids (login, registration, forgot-password-form, reset-password-form, login-mfa-code, invite-accept, and more) to their { title, subtitle } copy.",
+  "colors.* holds every color token: app foundation (primary, secondary, accent, appBackground, textPrimary, textMuted, border, cardBackground), login template (authPageBackground, authFormPanelBackground, authFormPanelBorder, authFormPanelText, authVisualPanelBackground, authVisualPanelText, authVisualPanelOverlay, authDecorativeLight, authDecorativeDark, authProgressPanelBackground, authSecurityPanelBackground), top panel, and side panel tokens.",
+  "font.family holds the font stack and effects.authFormPanelShadow the form shadow.",
+  "components.* holds nested component tokens: buttons (primaryButton, secondaryButton, outlineButton, destructiveButton, ghostButton), badges (positive, in-progress, neutral, negative), card surfaces (card, listing-card, sub-container, option-card, alert), inputs (inputs, textarea, switch, switchSubContainer, checkboxSubContainer), top panel (topPanelControl, topPanelDropdownTrigger, topPanelSearchTrigger, topPanelProfileTrigger, topPanelCreateButton), side panel (sidePanelSectionLabel, parent-item, sub-item), and iconContainer.",
+  "Legacy top-level metadata keys (color.*, font.family) are still read as fallbacks, and logo label preferences are mirrored into metadata on write."
+];
 
 const brandingUpdateFields = [
   {
@@ -235,7 +478,7 @@ const brandingUpdateFields = [
     "name": "metadata",
     "type": "object",
     "required": false,
-    "description": "Free-form theme metadata (colors, fonts, effects, components)."
+    "description": "Free-form theme configuration: auth_ui_template, login page copy (login_page_content), theme tokens (colors.*, font.family, effects.authFormPanelShadow, components.*), and split-template presentation keys. See the notes for the full structure."
   }
 ];
 
@@ -387,7 +630,8 @@ const group = {
           "Requires the branding:create permission.",
           "layout must be centered, full_page, or split; the value lives in metadata.",
           "Created themes are is_system=false and is_active=false.",
-          "The response is HTTP 200 (not 201)."
+          "The response is HTTP 200 (not 201).",
+          ...brandingMetadataNotes
         ],
         "parameters": [],
         "headers": jwtJsonHeaders,
@@ -400,12 +644,7 @@ const group = {
             "layout": "centered",
             "company_name": "Example Corp",
             "logo_label": "Example",
-            "metadata": {
-              "colors": {
-                "primary": "#2563eb"
-              },
-              "font": "Inter"
-            }
+            "metadata": brandingMetadataExample
           }
         },
         "responses": [
@@ -444,7 +683,8 @@ const group = {
           "Requires the branding:update permission.",
           "is_active and is_system are never changed here; activation is a separate endpoint.",
           "The logo cache is invalidated on every update.",
-          "Uploaded logo bytes replace any previously stored logo."
+          "Uploaded logo bytes replace any previously stored logo.",
+          ...brandingMetadataNotes
         ],
         "parameters": [
           {
@@ -464,7 +704,9 @@ const group = {
             "company_name": "Example Corp",
             "support_url": "https://example.com/support",
             "metadata": {
+              ...brandingMetadataExample,
               "colors": {
+                ...brandingMetadataExample.colors,
                 "primary": "#1d4ed8"
               }
             }
