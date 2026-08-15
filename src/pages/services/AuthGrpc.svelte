@@ -246,11 +246,17 @@
                             </tbody>
                           </table>
                         </div>
+                        {#if rpc.details.requestExample !== undefined}
+                          <pre><code>{formatExample(rpc.details.requestExample)}</code></pre>
+                        {/if}
                       </div>
                     {:else if rpc.request !== "Empty"}
                       <div class="detail-block">
                         <h3>Request — {rpc.request}</h3>
                         <p>The request message carries no fields.</p>
+                        {#if rpc.details.requestExample !== undefined}
+                          <pre><code>{formatExample(rpc.details.requestExample)}</code></pre>
+                        {/if}
                       </div>
                     {/if}
 
@@ -282,6 +288,9 @@
                             </tbody>
                           </table>
                         </div>
+                        {#if rpc.details.responseExample !== undefined}
+                          <pre><code>{formatExample(rpc.details.responseExample)}</code></pre>
+                        {/if}
                       </div>
                     {/if}
 
@@ -296,22 +305,6 @@
                             </article>
                           {/each}
                         </div>
-                      </div>
-                    {/if}
-
-                    {#if rpc.details.requestExample !== undefined}
-                      <div class="detail-block">
-                        <h3>Request Example</h3>
-                        <p>Sample {rpc.request} in proto3 JSON.</p>
-                        <pre><code>{formatExample(rpc.details.requestExample)}</code></pre>
-                      </div>
-                    {/if}
-
-                    {#if rpc.details.responseExample !== undefined}
-                      <div class="detail-block">
-                        <h3>Response Example</h3>
-                        <p>Sample {rpc.response} in proto3 JSON.</p>
-                        <pre><code>{formatExample(rpc.details.responseExample)}</code></pre>
                       </div>
                     {/if}
                   </div>
