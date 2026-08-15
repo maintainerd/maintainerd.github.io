@@ -2,7 +2,7 @@
 
 const group = {
   "slug": "iam",
-  "label": "IAM",
+  "label": "APIs & Resources",
   "description": "Resource APIs, permissions, roles, policies, services, policy bindings, policy history, policy bundles, and service-to-service authorization decisions.",
   "endpoints": [
     {
