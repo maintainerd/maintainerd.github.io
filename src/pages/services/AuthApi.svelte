@@ -1,4 +1,5 @@
 <script>
+  import { ChevronDown } from "@lucide/svelte";
   import { onMount, tick } from "svelte";
   import PageHero from "@/components/ui/PageHero.svelte";
   import { apiBaseUrls, apiGroupNav, findApiGroupNav, loadApiGroup } from "@/data/authApi.js";
@@ -193,7 +194,9 @@
                     <span class="endpoint-summary-text">{endpoint.summary}</span>
                     <span class="surface-pill">{endpoint.surface}</span>
                   </span>
-                  <span class="accordion-indicator" aria-hidden="true">{isEndpointOpen ? "-" : "+"}</span>
+                  <span class="accordion-indicator" aria-hidden="true">
+                    <ChevronDown size={18} strokeWidth={2.25} />
+                  </span>
                 </button>
                 {#if endpoint.details && isEndpointOpen}
                   <div class="endpoint-detail" id={`${currentEndpointId}-detail`}>

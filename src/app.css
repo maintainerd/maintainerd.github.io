@@ -202,8 +202,8 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 .endpoint-summary:hover { background: var(--panel); }
 .endpoint-summary-main { display: grid; min-width: 0; gap: 8px; }
 .endpoint-summary-text { color: var(--muted); font-size: .92rem; line-height: 1.45; }
-.accordion-indicator { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--blue); font-weight: 700; }
-.endpoint-card.is-open .accordion-indicator { border-color: var(--blue); background: var(--blue-tint); }
+.accordion-indicator { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--blue); transition: transform .16s ease, background .16s ease, border-color .16s ease; }
+.endpoint-card.is-open .accordion-indicator { border-color: var(--blue); background: var(--blue-tint); transform: rotate(180deg); }
 .endpoint-line { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .endpoint-line code, .endpoint-row code { overflow-wrap: anywhere; font: 600 .88rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink); }
 .surface-pill { display: inline-flex; width: fit-content; margin-top: 10px; padding: 3px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--faint); font-size: .72rem; font-weight: 700; }
