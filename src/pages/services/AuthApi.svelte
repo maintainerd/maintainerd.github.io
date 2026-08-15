@@ -206,6 +206,43 @@
                       </ul>
                     {/if}
 
+                    {#if endpoint.details.parameters?.length}
+                      <div class="detail-block">
+                        <h3>Parameters</h3>
+                        <div class="detail-table">
+                          <table class="parameter-table">
+                            <colgroup>
+                              <col class="name-column" />
+                              <col class="location-column" />
+                              <col class="value-column" />
+                              <col class="required-column" />
+                              <col class="description-column" />
+                            </colgroup>
+                            <thead>
+                              <tr>
+                                <th>Name</th>
+                                <th>In</th>
+                                <th>Type</th>
+                                <th>Required</th>
+                                <th>Description</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {#each endpoint.details.parameters as parameter}
+                                <tr>
+                                  <td data-label="Name"><code>{parameter.name}</code></td>
+                                  <td data-label="In">{parameter.in}</td>
+                                  <td data-label="Type">{parameter.type}</td>
+                                  <td data-label="Required">{requiredLabel(parameter.required)}</td>
+                                  <td data-label="Description">{parameter.description}</td>
+                                </tr>
+                              {/each}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    {/if}
+
                     <div class="detail-block">
                       <h3>Headers</h3>
                       <div class="detail-table">

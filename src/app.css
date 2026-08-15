@@ -217,6 +217,7 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 .detail-table { overflow-x: visible; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); }
 .detail-table table { width: 100%; border-collapse: collapse; font-size: .86rem; line-height: 1.45; table-layout: fixed; }
 .detail-table .name-column { width: 180px; }
+.detail-table .location-column { width: 90px; }
 .detail-table .value-column { width: 180px; }
 .detail-table .request-table .value-column { width: 120px; }
 .detail-table .required-column { width: 90px; }
