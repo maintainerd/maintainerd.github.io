@@ -3065,18 +3065,715 @@ export const grpcGroupNav = [
     "description": "Profile records attached to users, including default-profile selection.",
     "rpcCount": 6,
     "rpcs": [
-      {         "permission": "user:read",
-"name": "ListUserProfiles", "request": "ListUserProfilesRequest", "response": "ListUserProfilesResponse" },
-      {         "permission": "user:read",
-"name": "GetUserProfile", "request": "GetUserProfileRequest", "response": "GetUserProfileResponse" },
-      {         "permission": "user:update",
-"name": "CreateUserProfile", "request": "CreateUserProfileRequest", "response": "CreateUserProfileResponse" },
-      {         "permission": "user:update",
-"name": "UpdateUserProfile", "request": "UpdateUserProfileRequest", "response": "UpdateUserProfileResponse" },
-      {         "permission": "user:update",
-"name": "SetDefaultUserProfile", "request": "SetDefaultUserProfileRequest", "response": "SetDefaultUserProfileResponse" },
-      {         "permission": "user:delete",
-"name": "DeleteUserProfile", "request": "DeleteUserProfileRequest", "response": "DeleteUserProfileResponse" }
+      {
+        "permission": "user:read",
+        "name": "ListUserProfiles",
+        "request": "ListUserProfilesRequest",
+        "response": "ListUserProfilesResponse",
+        "details": {
+          "overview": "Lists a user's profiles with filtering and pagination.",
+          "notes": [
+            "The effective filters are first_name, last_name, and email. The request message also declares phone, city, country, and is_default fields, which the current implementation does not apply.",
+            "Profiles are scoped to the user_uuid in the request."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the user who owns the profile."
+            },
+            {
+              "name": "first_name",
+              "type": "string",
+              "required": false,
+              "description": "Filter by first name."
+            },
+            {
+              "name": "last_name",
+              "type": "string",
+              "required": false,
+              "description": "Filter by last name."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": false,
+              "description": "Filter by email."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination: page, limit, sort_by, sort_order."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "profiles",
+              "type": "repeated UserProfile",
+              "description": "The user's profiles."
+            },
+            {
+              "name": "page.total",
+              "type": "int64",
+              "description": "Total matching profiles."
+            },
+            {
+              "name": "page.page",
+              "type": "int32",
+              "description": "Current page."
+            },
+            {
+              "name": "page.limit",
+              "type": "int32",
+              "description": "Page size."
+            },
+            {
+              "name": "page.total_pages",
+              "type": "int32",
+              "description": "Total page count."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, user, or profile does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "profiles": [
+              {
+                "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "first_name": "Alex",
+                "middle_name": "J.",
+                "last_name": "Rivera",
+                "display_name": "Alex Rivera",
+                "gender": "prefer_not_to_say",
+                "email": "alex@acme.example",
+                "timezone": "Asia/Manila",
+                "language": "en-US",
+                "profile_url": "https://acme.example/team/alex",
+                "birthdate": "1990-01-25",
+                "is_default": true,
+                "metadata": {
+                  "department": "platform"
+                },
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-10T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:read",
+        "name": "GetUserProfile",
+        "request": "GetUserProfileRequest",
+        "response": "GetUserProfileResponse",
+        "details": {
+          "overview": "Returns one profile by UUID, scoped to the named user.",
+          "notes": [
+            "The profile must belong to the user_uuid in the request; a mismatch is refused."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the user who owns the profile."
+            },
+            {
+              "name": "profile_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the profile."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "profile",
+              "type": "UserProfile",
+              "description": "The profile record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, user, or profile does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "profile": {
+              "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "first_name": "Alex",
+              "middle_name": "J.",
+              "last_name": "Rivera",
+              "display_name": "Alex Rivera",
+              "gender": "prefer_not_to_say",
+              "email": "alex@acme.example",
+              "timezone": "Asia/Manila",
+              "language": "en-US",
+              "profile_url": "https://acme.example/team/alex",
+              "birthdate": "1990-01-25",
+              "is_default": true,
+              "metadata": {
+                "department": "platform"
+              },
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:update",
+        "name": "CreateUserProfile",
+        "request": "CreateUserProfileRequest",
+        "response": "CreateUserProfileResponse",
+        "details": {
+          "overview": "Creates a profile for the named user. The create is replay-guarded: the profile UUID is minted per call, so the ledger is what prevents a retry from creating a duplicate profile.",
+          "notes": [
+            "The tenant is named by tenant_uuid and the profile is always scoped to the user_uuid in the request.",
+            "The request message declares additional fields (suffix, bio, phone, address, city, country); the current implementation stores the fields listed above only.",
+            "Create is replay-guarded: a retry after a lost response returns the original profile instead of minting a duplicate."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the user who owns the profile."
+            },
+            {
+              "name": "first_name",
+              "type": "string",
+              "required": true,
+              "description": "First name. 1-100 characters."
+            },
+            {
+              "name": "middle_name",
+              "type": "string",
+              "required": false,
+              "description": "Middle name. At most 100 characters."
+            },
+            {
+              "name": "last_name",
+              "type": "string",
+              "required": false,
+              "description": "Last name. At most 100 characters."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": false,
+              "description": "Display name. At most 100 characters."
+            },
+            {
+              "name": "birthdate",
+              "type": "string",
+              "required": false,
+              "description": "Birthdate in YYYY-MM-DD format."
+            },
+            {
+              "name": "gender",
+              "type": "string",
+              "required": false,
+              "description": "One of male, female, other, prefer_not_to_say."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": false,
+              "description": "Email address. Valid format, at most 255 characters."
+            },
+            {
+              "name": "timezone",
+              "type": "string",
+              "required": false,
+              "description": "Timezone label. At most 50 characters."
+            },
+            {
+              "name": "language",
+              "type": "string",
+              "required": false,
+              "description": "Language preference. At most 10 characters."
+            },
+            {
+              "name": "profile_url",
+              "type": "string",
+              "required": false,
+              "description": "Profile URL. Valid URL, at most 1000 characters."
+            },
+            {
+              "name": "metadata",
+              "type": "google.protobuf.Struct",
+              "required": false,
+              "description": "Free-form profile metadata."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "profile",
+              "type": "UserProfile",
+              "description": "The created profile record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, user, or profile does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "first_name": "Alex",
+            "last_name": "Rivera",
+            "email": "alex@acme.example",
+            "timezone": "Asia/Manila",
+            "language": "en-US"
+          },
+          "responseExample": {
+            "profile": {
+              "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "first_name": "Alex",
+              "middle_name": "J.",
+              "last_name": "Rivera",
+              "display_name": "Alex Rivera",
+              "gender": "prefer_not_to_say",
+              "email": "alex@acme.example",
+              "timezone": "Asia/Manila",
+              "language": "en-US",
+              "profile_url": "https://acme.example/team/alex",
+              "birthdate": "1990-01-25",
+              "is_default": true,
+              "metadata": {
+                "department": "platform"
+              },
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:update",
+        "name": "UpdateUserProfile",
+        "request": "UpdateUserProfileRequest",
+        "response": "UpdateUserProfileResponse",
+        "details": {
+          "overview": "Updates a profile for the named user. The operation is create-or-update against the named profile UUID and the same validation rules as creation apply.",
+          "notes": [
+            "The tenant is named by tenant_uuid and the profile is always scoped to the user_uuid in the request.",
+            "The request message declares additional fields (suffix, bio, phone, address, city, country); the current implementation stores the fields listed above only.",
+            "Create is replay-guarded: a retry after a lost response returns the original profile instead of minting a duplicate."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the user who owns the profile."
+            },
+            {
+              "name": "profile_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the profile."
+            },
+            {
+              "name": "first_name",
+              "type": "string",
+              "required": true,
+              "description": "First name. 1-100 characters."
+            },
+            {
+              "name": "middle_name",
+              "type": "string",
+              "required": false,
+              "description": "Middle name. At most 100 characters."
+            },
+            {
+              "name": "last_name",
+              "type": "string",
+              "required": false,
+              "description": "Last name. At most 100 characters."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": false,
+              "description": "Display name. At most 100 characters."
+            },
+            {
+              "name": "birthdate",
+              "type": "string",
+              "required": false,
+              "description": "Birthdate in YYYY-MM-DD format."
+            },
+            {
+              "name": "gender",
+              "type": "string",
+              "required": false,
+              "description": "One of male, female, other, prefer_not_to_say."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": false,
+              "description": "Email address. Valid format, at most 255 characters."
+            },
+            {
+              "name": "timezone",
+              "type": "string",
+              "required": false,
+              "description": "Timezone label. At most 50 characters."
+            },
+            {
+              "name": "language",
+              "type": "string",
+              "required": false,
+              "description": "Language preference. At most 10 characters."
+            },
+            {
+              "name": "profile_url",
+              "type": "string",
+              "required": false,
+              "description": "Profile URL. Valid URL, at most 1000 characters."
+            },
+            {
+              "name": "metadata",
+              "type": "google.protobuf.Struct",
+              "required": false,
+              "description": "Free-form profile metadata."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "profile",
+              "type": "UserProfile",
+              "description": "The updated profile record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, user, or profile does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "first_name": "Alex",
+            "last_name": "Rivera",
+            "display_name": "Alex J. Rivera"
+          },
+          "responseExample": {
+            "profile": {
+              "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "first_name": "Alex",
+              "middle_name": "J.",
+              "last_name": "Rivera",
+              "display_name": "Alex J. Rivera",
+              "gender": "prefer_not_to_say",
+              "email": "alex@acme.example",
+              "timezone": "Asia/Manila",
+              "language": "en-US",
+              "profile_url": "https://acme.example/team/alex",
+              "birthdate": "1990-01-25",
+              "is_default": true,
+              "metadata": {
+                "department": "platform"
+              },
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:update",
+        "name": "SetDefaultUserProfile",
+        "request": "SetDefaultUserProfileRequest",
+        "response": "SetDefaultUserProfileResponse",
+        "details": {
+          "overview": "Marks a profile as the user's default. The profile must belong to the named user.",
+          "notes": [
+            "In the current single-profile model the returned profile always carries is_default=true."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the user who owns the profile."
+            },
+            {
+              "name": "profile_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the profile."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "profile",
+              "type": "UserProfile",
+              "description": "The profile record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, user, or profile does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "profile": {
+              "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "first_name": "Alex",
+              "middle_name": "J.",
+              "last_name": "Rivera",
+              "display_name": "Alex Rivera",
+              "gender": "prefer_not_to_say",
+              "email": "alex@acme.example",
+              "timezone": "Asia/Manila",
+              "language": "en-US",
+              "profile_url": "https://acme.example/team/alex",
+              "birthdate": "1990-01-25",
+              "is_default": true,
+              "metadata": {
+                "department": "platform"
+              },
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:delete",
+        "name": "DeleteUserProfile",
+        "request": "DeleteUserProfileRequest",
+        "response": "DeleteUserProfileResponse",
+        "details": {
+          "overview": "Deletes a profile owned by the named user.",
+          "notes": [
+            "A profile that does not belong to the named user is refused rather than deleted."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the user who owns the profile."
+            },
+            {
+              "name": "profile_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the profile."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "profile",
+              "type": "UserProfile",
+              "description": "The deleted profile record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, user, or profile does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "profile": {
+              "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "first_name": "Alex",
+              "middle_name": "J.",
+              "last_name": "Rivera",
+              "display_name": "Alex Rivera",
+              "gender": "prefer_not_to_say",
+              "email": "alex@acme.example",
+              "timezone": "Asia/Manila",
+              "language": "en-US",
+              "profile_url": "https://acme.example/team/alex",
+              "birthdate": "1990-01-25",
+              "is_default": true,
+              "metadata": {
+                "department": "platform"
+              },
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
     ]
   },
   {
