@@ -1,11 +1,65 @@
 <script>
+  import { onMount, tick } from "svelte";
   import PageHero from "@/components/ui/PageHero.svelte";
-  import { apiBaseUrls, apiEndpointCount, apiGroups } from "@/data/authApi.js";
+  import { apiBaseUrls, apiEndpointCount, apiGroupNav, defaultApiGroupSlug, findApiGroupNav, loadApiGroup } from "@/data/authApi.js";
 
   const methodClass = (method) => method.toLowerCase();
   const endpointLabel = (count) => `${count} endpoint${count === 1 ? "" : "s"}`;
   const requiredLabel = (value) => (value ? "Required" : "Optional");
   const prettyJson = (value) => JSON.stringify(value, null, 2);
+
+  let activeSlug = defaultApiGroupSlug;
+  let activeGroup = null;
+  let loadingGroup = false;
+  let loadRequestId = 0;
+
+  const normalizeSlug = (slug) => findApiGroupNav(slug)?.slug || defaultApiGroupSlug;
+
+  const loadActiveGroup = async (slug, shouldScroll = false) => {
+    const nextSlug = normalizeSlug(slug);
+    const requestId = ++loadRequestId;
+
+    activeSlug = nextSlug;
+    loadingGroup = true;
+
+    const group = await loadApiGroup(nextSlug);
+
+    if (requestId !== loadRequestId) {
+      return;
+    }
+
+    activeGroup = group;
+    loadingGroup = false;
+
+    if (shouldScroll) {
+      await tick();
+      document.getElementById(nextSlug)?.scrollIntoView({ block: "start" });
+    }
+  };
+
+  const hashSlug = () => {
+    const rawHash = window.location.hash.replace(/^#/, "");
+
+    try {
+      return decodeURIComponent(rawHash);
+    } catch {
+      return rawHash;
+    }
+  };
+
+  onMount(() => {
+    loadActiveGroup(hashSlug(), Boolean(window.location.hash));
+
+    const handleHashChange = () => {
+      loadActiveGroup(hashSlug(), true);
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  });
 </script>
 
 <svelte:head>
@@ -32,10 +86,10 @@
       <a aria-current="page" href="/services/auth/api/">API reference</a>
       <a href="/services/">All services</a>
       <span class="side-nav-label">Endpoint groups</span>
-      {#each apiGroups as group}
-        <a href={`#${group.slug}`} noroute>
+      {#each apiGroupNav as group}
+        <a href={`#${group.slug}`} noroute aria-current={activeSlug === group.slug ? "location" : undefined}>
           <span>{group.label}</span>
-          <small>{group.endpoints.length}</small>
+          <small>{group.endpointCount}</small>
         </a>
       {/each}
     </aside>
@@ -57,17 +111,27 @@
         </div>
       </div>
 
-      {#each apiGroups as group}
-        <section class="api-group" id={group.slug}>
+      {#if loadingGroup && !activeGroup}
+        <section class="api-group">
           <div class="api-group-head">
             <div>
-              <p class="eyebrow">{endpointLabel(group.endpoints.length)}</p>
-              <h2>{group.label}</h2>
-              <p class="section-lede">{group.description}</p>
+              <p class="eyebrow">Loading</p>
+              <h2>Loading API section</h2>
+              <p class="section-lede">Preparing the selected endpoint group.</p>
+            </div>
+          </div>
+        </section>
+      {:else if activeGroup}
+        <section class="api-group" id={activeGroup.slug}>
+          <div class="api-group-head">
+            <div>
+              <p class="eyebrow">{endpointLabel(activeGroup.endpoints.length)}</p>
+              <h2>{activeGroup.label}</h2>
+              <p class="section-lede">{activeGroup.description}</p>
             </div>
           </div>
           <div class="endpoint-list">
-            {#each group.endpoints as endpoint}
+            {#each activeGroup.endpoints as endpoint}
               <article class="endpoint-card">
                 <div class="endpoint-line">
                   <span class={`api-method ${methodClass(endpoint.method)}`}>{endpoint.method}</span>
@@ -162,7 +226,7 @@
             {/each}
           </div>
         </section>
-      {/each}
+      {/if}
     </div>
   </section>
 </main>
