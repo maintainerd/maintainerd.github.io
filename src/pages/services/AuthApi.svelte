@@ -1,25 +1,39 @@
 <script>
   import { onMount, tick } from "svelte";
   import PageHero from "@/components/ui/PageHero.svelte";
-  import { apiBaseUrls, apiGroupNav, defaultApiGroupSlug, findApiGroupNav, loadApiGroup } from "@/data/authApi.js";
+  import { apiBaseUrls, apiGroupNav, findApiGroupNav, loadApiGroup } from "@/data/authApi.js";
 
   const methodClass = (method) => method.toLowerCase();
   const endpointLabel = (count) => `${count} endpoint${count === 1 ? "" : "s"}`;
   const requiredLabel = (value) => (value ? "Required" : "Optional");
   const formatExample = (value) => (typeof value === "string" ? value : JSON.stringify(value, null, 2));
+  const baseUrlsSlug = "base-urls";
 
-  let activeSlug = defaultApiGroupSlug;
+  let activeSlug = baseUrlsSlug;
   let activeGroup = null;
   let loadingGroup = false;
   let loadRequestId = 0;
 
-  const normalizeSlug = (slug) => findApiGroupNav(slug)?.slug || defaultApiGroupSlug;
+  const normalizeSlug = (slug) => (slug === baseUrlsSlug ? baseUrlsSlug : findApiGroupNav(slug)?.slug || baseUrlsSlug);
 
   const loadActiveGroup = async (slug, shouldScroll = false) => {
     const nextSlug = normalizeSlug(slug);
     const requestId = ++loadRequestId;
 
     activeSlug = nextSlug;
+
+    if (nextSlug === baseUrlsSlug) {
+      activeGroup = null;
+      loadingGroup = false;
+
+      if (shouldScroll) {
+        await tick();
+        document.getElementById(nextSlug)?.scrollIntoView({ block: "start" });
+      }
+
+      return;
+    }
+
     loadingGroup = true;
 
     const group = await loadApiGroup(nextSlug);
@@ -48,7 +62,7 @@
   };
 
   onMount(() => {
-    loadActiveGroup(hashSlug(), Boolean(window.location.hash));
+    loadActiveGroup(hashSlug() || baseUrlsSlug, Boolean(window.location.hash));
 
     const handleHashChange = () => {
       loadActiveGroup(hashSlug(), true);
@@ -83,6 +97,10 @@
       <a href="/services/auth/docs/">Docs</a>
       <a aria-current="page" href="/services/auth/api/">API reference</a>
       <a href="/services/">All services</a>
+      <span class="side-nav-label">Sections</span>
+      <a href={`#${baseUrlsSlug}`} noroute aria-current={activeSlug === baseUrlsSlug ? "location" : undefined}>
+        <span>Base URLs</span>
+      </a>
       <span class="side-nav-label">Endpoint groups</span>
       {#each apiGroupNav as group}
         <a href={`#${group.slug}`} noroute aria-current={activeSlug === group.slug ? "location" : undefined}>
@@ -92,24 +110,29 @@
       {/each}
     </aside>
     <div class="content-flow">
-      <div class="callout">
-        <h2>Base URLs</h2>
-        <p>
-          Auth separates public identity traffic from management operations. Endpoint rows below identify the
-          surface so developers know which hostname and authentication model apply before using a route.
-        </p>
-        <div class="endpoint-list compact">
-          {#each apiBaseUrls as base}
-            <div class="endpoint-row">
-              <strong>{base.label}</strong>
-              <code>{base.url}</code>
-              <p>{base.description}</p>
+      {#if activeSlug === baseUrlsSlug}
+        <section class="api-group" id={baseUrlsSlug}>
+          <div class="api-group-head">
+            <div>
+              <p class="eyebrow">Reference</p>
+              <h2>Base URLs</h2>
+              <p class="section-lede">
+                Auth separates public identity traffic from management operations. Use the base URL that matches
+                the endpoint surface before appending the documented path.
+              </p>
             </div>
-          {/each}
-        </div>
-      </div>
-
-      {#if loadingGroup && !activeGroup}
+          </div>
+          <div class="endpoint-list">
+            {#each apiBaseUrls as base}
+              <div class="endpoint-row">
+                <strong>{base.label}</strong>
+                <code>{base.url}</code>
+                <p>{base.description}</p>
+              </div>
+            {/each}
+          </div>
+        </section>
+      {:else if loadingGroup && !activeGroup}
         <section class="api-group">
           <div class="api-group-head">
             <div>
