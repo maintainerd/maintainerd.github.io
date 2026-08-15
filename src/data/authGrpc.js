@@ -349,22 +349,335 @@ export const grpcGroupNav = [
   },
   {
     "slug": "tenants",
-    "proto": "tenant.proto",
     "label": "Tenants",
     "description": "Tenant lifecycle and tenant membership management.",
     "rpcCount": 11,
     "rpcs": [
-      { "name": "GetDefaultTenant", "request": "GetDefaultTenantRequest", "response": "GetDefaultTenantResponse" },
-      { "name": "ListTenants", "request": "ListTenantsRequest", "response": "ListTenantsResponse" },
-      { "name": "GetTenant", "request": "GetTenantRequest", "response": "GetTenantResponse" },
-      { "name": "CreateTenant", "request": "TenantServiceCreateTenantRequest", "response": "TenantServiceCreateTenantResponse" },
-      { "name": "UpdateTenant", "request": "TenantServiceUpdateTenantRequest", "response": "TenantServiceUpdateTenantResponse" },
-      { "name": "SetTenantStatus", "request": "SetTenantStatusRequest", "response": "SetTenantStatusResponse" },
-      { "name": "DeleteTenant", "request": "DeleteTenantRequest", "response": "DeleteTenantResponse" },
-      { "name": "ListTenantMembers", "request": "ListTenantMembersRequest", "response": "ListTenantMembersResponse" },
-      { "name": "AddTenantMember", "request": "AddTenantMemberRequest", "response": "AddTenantMemberResponse" },
-      { "name": "UpdateTenantMemberRole", "request": "UpdateTenantMemberRoleRequest", "response": "UpdateTenantMemberRoleResponse" },
-      { "name": "RemoveTenantMember", "request": "RemoveTenantMemberRequest", "response": "RemoveTenantMemberResponse" }
+      {
+        "name": "GetDefaultTenant",
+        "request": "GetDefaultTenantRequest",
+        "response": "GetDefaultTenantResponse",
+        "details": {
+          "overview": "Returns the system tenant — the default tenant an instance resolves to when no tenant context applies.",
+          "notes": [
+            "Requires an authenticated actor; the system tenant lookup itself has no further authorization.",
+            "The system tenant is the same record every tenant-management boundary check compares against."
+          ],
+          "requestFields": [],
+          "responseFields": [
+            { "name": "tenant", "type": "Tenant", "description": "The system tenant record." },
+            { "name": "tenant.tenant_uuid", "type": "string", "description": "UUID of the tenant." },
+            { "name": "tenant.name", "type": "string", "description": "Tenant name (the DNS subdomain slug)." },
+            { "name": "tenant.display_name", "type": "string", "description": "Human-readable tenant name." },
+            { "name": "tenant.description", "type": "string", "description": "Tenant description." },
+            { "name": "tenant.status", "type": "string", "description": "Status: active, inactive, pending, or suspended." },
+            { "name": "tenant.is_system", "type": "bool", "description": "True for the system tenant." },
+            { "name": "tenant.metadata", "type": "google.protobuf.Struct", "description": "Free-form tenant metadata." },
+            { "name": "tenant.created_at", "type": "google.protobuf.Timestamp", "description": "Creation time." },
+            { "name": "tenant.updated_at", "type": "google.protobuf.Timestamp", "description": "Last update time." }
+          ],
+          "errors": [
+            { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
+            { "code": "NotFound", "description": "The system tenant does not exist yet (setup not completed)." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "ListTenants",
+        "request": "ListTenantsRequest",
+        "response": "ListTenantsResponse",
+        "details": {
+          "overview": "Lists tenants with filtering and pagination. System-tenant principals enumerate every tenant; any other principal is scoped to their own tenant only.",
+          "notes": [
+            "The tenant scope is resolved from the issuer-stamped tenant_id claim — it cannot be forged from the request.",
+            "status accepts multiple values.",
+            "Pagination defaults to page 1 and the standard page size when omitted."
+          ],
+          "requestFields": [
+            { "name": "name", "type": "string", "required": false, "description": "Filter by tenant name." },
+            { "name": "display_name", "type": "string", "required": false, "description": "Filter by display name." },
+            { "name": "description", "type": "string", "required": false, "description": "Filter by description." },
+            { "name": "status", "type": "repeated string", "required": false, "description": "Filter by status: active, inactive, pending, suspended." },
+            { "name": "is_system", "type": "optional bool", "required": false, "description": "Filter by system flag." },
+            { "name": "pagination.page", "type": "int32", "required": false, "description": "Page number, starting at 1." },
+            { "name": "pagination.limit", "type": "int32", "required": false, "description": "Page size." },
+            { "name": "pagination.sort_by", "type": "string", "required": false, "description": "Sort field." },
+            { "name": "pagination.sort_order", "type": "string", "required": false, "description": "Sort direction: asc or desc." }
+          ],
+          "responseFields": [
+            { "name": "tenants", "type": "repeated Tenant", "description": "The matching tenant records." },
+            { "name": "page.total", "type": "int64", "description": "Total matching tenants." },
+            { "name": "page.page", "type": "int32", "description": "Current page." },
+            { "name": "page.limit", "type": "int32", "description": "Page size." },
+            { "name": "page.total_pages", "type": "int32", "description": "Total page count." }
+          ],
+          "errors": [
+            { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
+            { "code": "InvalidArgument", "description": "Filter or pagination validation failed." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "GetTenant",
+        "request": "GetTenantRequest",
+        "response": "GetTenantResponse",
+        "details": {
+          "overview": "Returns one tenant by UUID. Non-system principals may read only their own tenant record.",
+          "notes": [
+            "A tenant-bound principal requesting another tenant's record is refused, not silently scoped."
+          ],
+          "requestFields": [
+            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the tenant to read." }
+          ],
+          "responseFields": [
+            { "name": "tenant", "type": "Tenant", "description": "The tenant record." }
+          ],
+          "errors": [
+            { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
+            { "code": "InvalidArgument", "description": "tenant_uuid is missing or not a valid UUID." },
+            { "code": "PermissionDenied", "description": "The caller is not the system tenant and requested another tenant's record." },
+            { "code": "NotFound", "description": "No tenant matches the UUID." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "CreateTenant",
+        "request": "TenantServiceCreateTenantRequest",
+        "response": "TenantServiceCreateTenantResponse",
+        "details": {
+          "overview": "Creates a tenant. Only system-tenant principals may create tenants; the new tenant's name is the DNS subdomain slug used to resolve incoming hosts.",
+          "notes": [
+            "The name is security-critical: it becomes the tenant subdomain, so reserved platform slugs (system, console, api, control, auth, www, admin, root, rabbitmq, prometheus, grafana, signoz, and others) are rejected.",
+            "Authorization runs before validation so an unauthorized caller cannot consume an otherwise-valid name.",
+            "Creation seeds the tenant's default identity provider and other baseline records."
+          ],
+          "requestFields": [
+            { "name": "name", "type": "string", "required": true, "description": "Tenant name. 3-63 characters: lowercase letters, numbers, and hyphens, starting and ending with an alphanumeric. Reserved slugs are rejected." },
+            { "name": "display_name", "type": "string", "required": false, "description": "Human-readable tenant name." },
+            { "name": "description", "type": "string", "required": true, "description": "Description. 8-200 characters." },
+            { "name": "status", "type": "string", "required": true, "description": "Status: active, inactive, pending, or suspended." }
+          ],
+          "responseFields": [
+            { "name": "tenant", "type": "Tenant", "description": "The created tenant record." }
+          ],
+          "errors": [
+            { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
+            { "code": "PermissionDenied", "description": "The caller is not a member of the system tenant." },
+            { "code": "InvalidArgument", "description": "A required field is missing or fails validation, including reserved names." },
+            { "code": "AlreadyExists", "description": "A tenant with this name already exists." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "UpdateTenant",
+        "request": "TenantServiceUpdateTenantRequest",
+        "response": "TenantServiceUpdateTenantResponse",
+        "details": {
+          "overview": "Updates a tenant's name, display name, description, and status. The caller must be a system-tenant principal or a member of the target tenant with management rights.",
+          "notes": [
+            "Renaming changes the tenant's DNS subdomain slug, so the same name rules as creation apply.",
+            "The tenant-management boundary is enforced before any field is touched."
+          ],
+          "requestFields": [
+            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the tenant to update." },
+            { "name": "name", "type": "string", "required": true, "description": "Tenant name. 3-63 characters DNS-safe slug; reserved slugs rejected." },
+            { "name": "display_name", "type": "string", "required": false, "description": "Human-readable tenant name." },
+            { "name": "description", "type": "string", "required": true, "description": "Description. 8-200 characters." },
+            { "name": "status", "type": "string", "required": true, "description": "Status: active, inactive, pending, or suspended." }
+          ],
+          "responseFields": [
+            { "name": "tenant", "type": "Tenant", "description": "The updated tenant record." }
+          ],
+          "errors": [
+            { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
+            { "code": "PermissionDenied", "description": "The caller is neither a system-tenant principal nor a manager of the target tenant." },
+            { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
+            { "code": "AlreadyExists", "description": "The new name collides with another tenant." },
+            { "code": "NotFound", "description": "No tenant matches the UUID." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "SetTenantStatus",
+        "request": "SetTenantStatusRequest",
+        "response": "SetTenantStatusResponse",
+        "details": {
+          "overview": "Updates only a tenant's status. Changing status affects login availability and maintenance behavior immediately.",
+          "notes": [
+            "The tenant-management boundary applies exactly as on UpdateTenant.",
+            "The system tenant's active status is the durable setup-complete fact, so it cannot be moved to inactive through this RPC."
+          ],
+          "requestFields": [
+            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the tenant." },
+            { "name": "status", "type": "string", "required": true, "description": "Status: active, inactive, pending, or suspended." }
+          ],
+          "responseFields": [
+            { "name": "tenant", "type": "Tenant", "description": "The updated tenant record." }
+          ],
+          "errors": [
+            { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
+            { "code": "PermissionDenied", "description": "The caller cannot manage the target tenant." },
+            { "code": "InvalidArgument", "description": "tenant_uuid or status is missing or invalid." },
+            { "code": "NotFound", "description": "No tenant matches the UUID." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "DeleteTenant",
+        "request": "DeleteTenantRequest",
+        "response": "DeleteTenantResponse",
+        "details": {
+          "overview": "Soft-deletes a tenant. Only system-tenant principals may delete tenants, and the system tenant itself cannot be deleted.",
+          "notes": [
+            "The acting user must be resolvable from the verified token — the request body's actor_user_uuid is never trusted for attribution.",
+            "Deleting a tenant takes its users, clients, and configuration out of service."
+          ],
+          "requestFields": [
+            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the tenant to delete." },
+            { "name": "actor_user_uuid", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token, never from the body." }
+          ],
+          "responseFields": [
+            { "name": "tenant", "type": "Tenant", "description": "The deleted tenant record." }
+          ],
+          "errors": [
+            { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
+            { "code": "PermissionDenied", "description": "The caller is not a system-tenant principal or administrator." },
+            { "code": "InvalidArgument", "description": "tenant_uuid is missing or invalid, or the target is the system tenant." },
+            { "code": "NotFound", "description": "No tenant matches the UUID." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "ListTenantMembers",
+        "request": "ListTenantMembersRequest",
+        "response": "ListTenantMembersResponse",
+        "details": {
+          "overview": "Lists a tenant's members with an optional role filter and pagination. The caller must be a system-tenant principal or a member of the target tenant with management rights.",
+          "notes": [
+            "Each member row carries the resolved user projection (username, email, verification flags, status)."
+          ],
+          "requestFields": [
+            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the tenant whose members are listed." },
+            { "name": "role", "type": "string", "required": false, "description": "Filter by role: owner, admin, or member." },
+            { "name": "pagination", "type": "Pagination", "required": false, "description": "Standard pagination." }
+          ],
+          "responseFields": [
+            { "name": "members", "type": "repeated TenantMember", "description": "The matching member records." },
+            { "name": "members[].tenant_member_uuid", "type": "string", "description": "UUID of the membership record." },
+            { "name": "members[].role", "type": "string", "description": "Membership role: owner, admin, or member." },
+            { "name": "members[].user", "type": "TenantMemberUser", "description": "The resolved user record." },
+            { "name": "members[].user.user_uuid", "type": "string", "description": "UUID of the user." },
+            { "name": "members[].user.username", "type": "string", "description": "Username." },
+            { "name": "members[].user.fullname", "type": "string", "description": "Full name." },
+            { "name": "members[].user.email", "type": "string", "description": "Email address." },
+            { "name": "members[].user.phone", "type": "string", "description": "Phone number." },
+            { "name": "members[].user.is_email_verified", "type": "bool", "description": "Email verification state." },
+            { "name": "members[].user.is_phone_verified", "type": "bool", "description": "Phone verification state." },
+            { "name": "members[].user.is_profile_completed", "type": "bool", "description": "Profile completion state." },
+            { "name": "members[].user.is_account_completed", "type": "bool", "description": "Account completion state." },
+            { "name": "members[].user.status", "type": "string", "description": "User account status." },
+            { "name": "page", "type": "PageMetadata", "description": "Pagination metadata." }
+          ],
+          "errors": [
+            { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
+            { "code": "PermissionDenied", "description": "The caller cannot manage the target tenant." },
+            { "code": "InvalidArgument", "description": "tenant_uuid or the role filter is invalid." },
+            { "code": "NotFound", "description": "No tenant matches the UUID." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "AddTenantMember",
+        "request": "AddTenantMemberRequest",
+        "response": "AddTenantMemberResponse",
+        "details": {
+          "overview": "Adds a user to a tenant with a membership role. The user must already exist in the system tenant before they can be added to another tenant.",
+          "notes": [
+            "Assigning the owner role is restricted to system-tenant administrators, and a tenant can hold only one owner — use UpdateTenantMemberRole for ownership transfers.",
+            "The acting user comes from the verified token, never from actor_user_uuid in the body.",
+            "System-tenant ownership can only be established during initial setup."
+          ],
+          "requestFields": [
+            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the target tenant." },
+            { "name": "user_uuid", "type": "string", "required": true, "description": "UUID of the user to add." },
+            { "name": "role", "type": "string", "required": true, "description": "Role: owner, admin, or member." },
+            { "name": "actor_user_uuid", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token." }
+          ],
+          "responseFields": [
+            { "name": "member", "type": "TenantMember", "description": "The created membership record." }
+          ],
+          "errors": [
+            { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
+            { "code": "PermissionDenied", "description": "The caller cannot manage the tenant, or is not a system-tenant administrator while assigning the owner role." },
+            { "code": "InvalidArgument", "description": "A required field is missing or the role is invalid." },
+            { "code": "NotFound", "description": "The tenant or user does not exist." },
+            { "code": "AlreadyExists", "description": "The user is already a member of the tenant." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "UpdateTenantMemberRole",
+        "request": "UpdateTenantMemberRoleRequest",
+        "response": "UpdateTenantMemberRoleResponse",
+        "details": {
+          "overview": "Changes a member's role within a tenant. This is also how ownership is transferred: assigning owner to a member replaces the previous owner.",
+          "notes": [
+            "Only system-tenant administrators can assign the owner role.",
+            "The acting user comes from the verified token."
+          ],
+          "requestFields": [
+            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the target tenant." },
+            { "name": "tenant_member_uuid", "type": "string", "required": true, "description": "UUID of the membership record." },
+            { "name": "role", "type": "string", "required": true, "description": "New role: owner, admin, or member." },
+            { "name": "actor_user_uuid", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token." }
+          ],
+          "responseFields": [
+            { "name": "member", "type": "TenantMember", "description": "The updated membership record." }
+          ],
+          "errors": [
+            { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
+            { "code": "PermissionDenied", "description": "The caller cannot manage the tenant, or is not a system-tenant administrator while assigning the owner role." },
+            { "code": "InvalidArgument", "description": "A required field is missing or the role is invalid." },
+            { "code": "NotFound", "description": "The tenant or membership record does not exist." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      },
+      {
+        "name": "RemoveTenantMember",
+        "request": "RemoveTenantMemberRequest",
+        "response": "RemoveTenantMemberResponse",
+        "details": {
+          "overview": "Removes a member from a tenant. The acting user comes from the verified token.",
+          "notes": [
+            "Removal is guarded by the same tenant-management boundary as the other member RPCs."
+          ],
+          "requestFields": [
+            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the target tenant." },
+            { "name": "tenant_member_uuid", "type": "string", "required": true, "description": "UUID of the membership record to remove." },
+            { "name": "actor_user_uuid", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token." }
+          ],
+          "responseFields": [
+            { "name": "removed", "type": "bool", "description": "Always true on success." }
+          ],
+          "errors": [
+            { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
+            { "code": "PermissionDenied", "description": "The caller cannot manage the target tenant." },
+            { "code": "InvalidArgument", "description": "tenant_uuid or tenant_member_uuid is missing or invalid." },
+            { "code": "NotFound", "description": "The tenant or membership record does not exist." },
+            { "code": "Internal", "description": "An unexpected storage or service error occurred." }
+          ]
+        }
+      }
     ]
   },
   {
