@@ -172,8 +172,7 @@
             </div>
             {#if links}
               <div class="proto-links">
-                <a href={links.view} target="_blank" rel="noopener noreferrer">View .proto</a>
-                <a href={links.download} target="_blank" rel="noopener noreferrer" download>Download .proto</a>
+                <a href={links.download} target="_blank" rel="noopener noreferrer">Download .proto</a>
               </div>
             {/if}
           </div>

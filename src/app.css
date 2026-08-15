@@ -195,9 +195,9 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 .api-nav small { color: var(--faint); font-size: .74rem; }
 .api-group { scroll-margin-top: 88px; }
 .api-group + .api-group { margin-top: 48px; }
-.api-group-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
-.proto-links { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 2px; }
-.proto-links a { padding: 6px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--blue); font-size: .8rem; font-weight: 600; }
+.api-group-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.proto-links { display: flex; flex-wrap: wrap; gap: 8px; flex-shrink: 0; margin-top: 4px; }
+.proto-links a { padding: 6px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--blue); font-size: .8rem; font-weight: 600; white-space: nowrap; }
 .proto-links a:hover { border-color: var(--blue); background: var(--blue-tint); }
 .endpoint-list { display: grid; gap: 10px; }
 .endpoint-list.compact { margin-top: 16px; }
