@@ -4,6 +4,8 @@
 
   const methodClass = (method) => method.toLowerCase();
   const endpointLabel = (count) => `${count} endpoint${count === 1 ? "" : "s"}`;
+  const requiredLabel = (value) => (value ? "Required" : "Optional");
+  const prettyJson = (value) => JSON.stringify(value, null, 2);
 </script>
 
 <svelte:head>
@@ -73,6 +75,89 @@
                 </div>
                 <span class="surface-pill">{endpoint.surface}</span>
                 <p>{endpoint.summary}</p>
+                {#if endpoint.details}
+                  <div class="endpoint-detail">
+                    <p>{endpoint.details.overview}</p>
+                    {#if endpoint.details.notes?.length}
+                      <ul class="detail-notes">
+                        {#each endpoint.details.notes as note}
+                          <li>{note}</li>
+                        {/each}
+                      </ul>
+                    {/if}
+
+                    <div class="detail-block">
+                      <h3>Headers</h3>
+                      <div class="detail-table">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Name</th>
+                              <th>Value</th>
+                              <th>Required</th>
+                              <th>Description</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {#each endpoint.details.headers as header}
+                              <tr>
+                                <td><code>{header.name}</code></td>
+                                <td><code>{header.value}</code></td>
+                                <td>{requiredLabel(header.required)}</td>
+                                <td>{header.description}</td>
+                              </tr>
+                            {/each}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <div class="detail-block">
+                      <h3>Request Body</h3>
+                      <p>{endpoint.details.requestBody.description}</p>
+                      {#if endpoint.details.requestBody.fields.length}
+                        <div class="detail-table">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>Field</th>
+                                <th>Type</th>
+                                <th>Required</th>
+                                <th>Description</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {#each endpoint.details.requestBody.fields as field}
+                                <tr>
+                                  <td><code>{field.name}</code></td>
+                                  <td>{field.type}</td>
+                                  <td>{requiredLabel(field.required)}</td>
+                                  <td>{field.description}</td>
+                                </tr>
+                              {/each}
+                            </tbody>
+                          </table>
+                        </div>
+                      {/if}
+                      {#if endpoint.details.requestBody.example}
+                        <pre><code>{prettyJson(endpoint.details.requestBody.example)}</code></pre>
+                      {/if}
+                    </div>
+
+                    <div class="detail-block">
+                      <h3>Responses</h3>
+                      <div class="response-list">
+                        {#each endpoint.details.responses as response}
+                          <article class="response-card">
+                            <h4>{response.status}</h4>
+                            <p>{response.description}</p>
+                            <pre><code>{prettyJson(response.example)}</code></pre>
+                          </article>
+                        {/each}
+                      </div>
+                    </div>
+                  </div>
+                {/if}
               </article>
             {/each}
           </div>
