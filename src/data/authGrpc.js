@@ -1122,18 +1122,609 @@ export const grpcGroupNav = [
     "description": "Per-tenant runtime controls for rate limiting, audit behavior, and maintenance windows.",
     "rpcCount": 6,
     "rpcs": [
-      {         "permission": "tenant-setting:read",
-"name": "GetRateLimitConfig", "request": "GetRateLimitConfigRequest", "response": "GetRateLimitConfigResponse" },
-      {         "permission": "tenant-setting:update",
-"name": "UpdateRateLimitConfig", "request": "UpdateRateLimitConfigRequest", "response": "UpdateRateLimitConfigResponse" },
-      {         "permission": "tenant-setting:read",
-"name": "GetAuditConfig", "request": "GetAuditConfigRequest", "response": "GetAuditConfigResponse" },
-      {         "permission": "tenant-setting:update",
-"name": "UpdateAuditConfig", "request": "UpdateAuditConfigRequest", "response": "UpdateAuditConfigResponse" },
-      {         "permission": "tenant-setting:read",
-"name": "GetMaintenanceConfig", "request": "GetMaintenanceConfigRequest", "response": "GetMaintenanceConfigResponse" },
-      {         "permission": "tenant-setting:update",
-"name": "UpdateMaintenanceConfig", "request": "UpdateMaintenanceConfigRequest", "response": "UpdateMaintenanceConfigResponse" }
+      {
+        "permission": "tenant-setting:read",
+        "name": "GetRateLimitConfig",
+        "request": "GetRateLimitConfigRequest",
+        "response": "GetRateLimitConfigResponse",
+        "details": {
+          "overview": "Returns the tenant's rate-limit configuration: the per-window request budget, window length, per-IP enforcement, exempt IPs, and per-endpoint overrides.",
+          "notes": [
+            "The tenant-management boundary applies: the caller must be a system-tenant principal or a member of the target tenant.",
+            "Unlike the REST surface (which resolves the tenant from context), the tenant is named by tenant_uuid in the request.",
+            "If the tenant setting row does not exist yet, the default config is created before returning it."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant whose settings are being read or updated."
+            },
+            {
+              "name": "config.enabled",
+              "type": "boolean",
+              "required": false,
+              "description": "Master switch for tenant rate limiting."
+            },
+            {
+              "name": "config.requests_per_window",
+              "type": "number",
+              "required": false,
+              "description": "Request budget per window. 1-100000."
+            },
+            {
+              "name": "config.window_duration_seconds",
+              "type": "number",
+              "required": false,
+              "description": "Window length in seconds. 1-3600."
+            },
+            {
+              "name": "config.per_ip",
+              "type": "boolean",
+              "required": false,
+              "description": "Apply the budget per IP instead of per tenant."
+            },
+            {
+              "name": "config.exempt_ips",
+              "type": "array of strings",
+              "required": false,
+              "description": "IP addresses exempt from rate limiting."
+            },
+            {
+              "name": "config.endpoint_overrides",
+              "type": "object",
+              "required": false,
+              "description": "Per-endpoint overrides: keys are endpoint names, values are positive integer budgets."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "description": "The full configuration object after the operation."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller is neither a system-tenant principal nor a member of the target tenant with management rights."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+            },
+            {
+              "code": "NotFound",
+              "description": "No tenant matches the UUID."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "config": {}
+          },
+          "responseExample": {
+            "config": {
+              "enabled": false,
+              "requests_per_window": 100,
+              "window_duration_seconds": 60,
+              "per_ip": true,
+              "exempt_ips": [],
+              "endpoint_overrides": {}
+            }
+          }
+        }
+      },
+      {
+        "permission": "tenant-setting:update",
+        "name": "UpdateRateLimitConfig",
+        "request": "UpdateRateLimitConfigRequest",
+        "response": "UpdateRateLimitConfigResponse",
+        "details": {
+          "overview": "Updates the tenant's rate-limit configuration. The submitted keys are merged over the stored config and the full result is returned.",
+          "notes": [
+            "The tenant-management boundary applies: the caller must be a system-tenant principal or a member of the target tenant.",
+            "The config object is validated with the same per-section rules as the REST surface; unknown fields are rejected and field-level violations are carried in the BadRequest detail.",
+            "Updates merge the submitted keys into the stored config; omitted keys keep their previous values.",
+            "The response returns the full config after the merge."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant whose settings are being read or updated."
+            },
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "required": true,
+              "description": "Rate-limit configuration object. Unknown fields are rejected; omitted keys keep their stored values."
+            },
+            {
+              "name": "config.enabled",
+              "type": "boolean",
+              "required": false,
+              "description": "Master switch for tenant rate limiting."
+            },
+            {
+              "name": "config.requests_per_window",
+              "type": "number",
+              "required": false,
+              "description": "Request budget per window. 1-100000."
+            },
+            {
+              "name": "config.window_duration_seconds",
+              "type": "number",
+              "required": false,
+              "description": "Window length in seconds. 1-3600."
+            },
+            {
+              "name": "config.per_ip",
+              "type": "boolean",
+              "required": false,
+              "description": "Apply the budget per IP instead of per tenant."
+            },
+            {
+              "name": "config.exempt_ips",
+              "type": "array of strings",
+              "required": false,
+              "description": "IP addresses exempt from rate limiting."
+            },
+            {
+              "name": "config.endpoint_overrides",
+              "type": "object",
+              "required": false,
+              "description": "Per-endpoint overrides: keys are endpoint names, values are positive integer budgets."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "description": "The full configuration object after the operation."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller is neither a system-tenant principal nor a member of the target tenant with management rights."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+            },
+            {
+              "code": "NotFound",
+              "description": "No tenant matches the UUID."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "config": {
+              "enabled": true,
+              "requests_per_window": 300,
+              "window_duration_seconds": 60,
+              "per_ip": true,
+              "exempt_ips": [
+                "203.0.113.10"
+              ]
+            }
+          },
+          "responseExample": {
+            "config": {
+              "enabled": true,
+              "requests_per_window": 300,
+              "window_duration_seconds": 60,
+              "per_ip": true,
+              "exempt_ips": [
+                "203.0.113.10"
+              ],
+              "endpoint_overrides": {}
+            }
+          }
+        }
+      },
+      {
+        "permission": "tenant-setting:read",
+        "name": "GetAuditConfig",
+        "request": "GetAuditConfigRequest",
+        "response": "GetAuditConfigResponse",
+        "details": {
+          "overview": "Returns the tenant's audit configuration: audit enablement, PII masking, retention, log level, and audited event types.",
+          "notes": [
+            "The tenant-management boundary applies: the caller must be a system-tenant principal or a member of the target tenant.",
+            "Unlike the REST surface (which resolves the tenant from context), the tenant is named by tenant_uuid in the request.",
+            "If the tenant setting row does not exist yet, the default config is created before returning it."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant whose settings are being read or updated."
+            },
+            {
+              "name": "config.enabled",
+              "type": "boolean",
+              "required": false,
+              "description": "Master switch for the audit log."
+            },
+            {
+              "name": "config.pii_masking",
+              "type": "boolean",
+              "required": false,
+              "description": "Mask personally identifiable information in audit entries."
+            },
+            {
+              "name": "config.retention_days",
+              "type": "number",
+              "required": false,
+              "description": "Audit entry retention in days. 1-3650."
+            },
+            {
+              "name": "config.log_level",
+              "type": "string",
+              "required": false,
+              "description": "One of debug, info, warn, critical."
+            },
+            {
+              "name": "config.event_types",
+              "type": "array of strings",
+              "required": false,
+              "description": "Event types to audit. Each entry must be a non-empty string."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "description": "The full configuration object after the operation."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller is neither a system-tenant principal nor a member of the target tenant with management rights."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+            },
+            {
+              "code": "NotFound",
+              "description": "No tenant matches the UUID."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "config": {}
+          },
+          "responseExample": {
+            "config": {
+              "enabled": true,
+              "retention_days": 90,
+              "pii_masking": true,
+              "log_level": "info",
+              "event_types": []
+            }
+          }
+        }
+      },
+      {
+        "permission": "tenant-setting:update",
+        "name": "UpdateAuditConfig",
+        "request": "UpdateAuditConfigRequest",
+        "response": "UpdateAuditConfigResponse",
+        "details": {
+          "overview": "Updates the tenant's audit configuration. The submitted keys are merged over the stored config and the full result is returned.",
+          "notes": [
+            "The tenant-management boundary applies: the caller must be a system-tenant principal or a member of the target tenant.",
+            "The config object is validated with the same per-section rules as the REST surface; unknown fields are rejected and field-level violations are carried in the BadRequest detail.",
+            "Updates merge the submitted keys into the stored config; omitted keys keep their previous values.",
+            "The response returns the full config after the merge."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant whose settings are being read or updated."
+            },
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "required": true,
+              "description": "Audit configuration object. Unknown fields are rejected; omitted keys keep their stored values."
+            },
+            {
+              "name": "config.enabled",
+              "type": "boolean",
+              "required": false,
+              "description": "Master switch for the audit log."
+            },
+            {
+              "name": "config.pii_masking",
+              "type": "boolean",
+              "required": false,
+              "description": "Mask personally identifiable information in audit entries."
+            },
+            {
+              "name": "config.retention_days",
+              "type": "number",
+              "required": false,
+              "description": "Audit entry retention in days. 1-3650."
+            },
+            {
+              "name": "config.log_level",
+              "type": "string",
+              "required": false,
+              "description": "One of debug, info, warn, critical."
+            },
+            {
+              "name": "config.event_types",
+              "type": "array of strings",
+              "required": false,
+              "description": "Event types to audit. Each entry must be a non-empty string."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "description": "The full configuration object after the operation."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller is neither a system-tenant principal nor a member of the target tenant with management rights."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+            },
+            {
+              "code": "NotFound",
+              "description": "No tenant matches the UUID."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "config": {
+              "retention_days": 180,
+              "log_level": "warn"
+            }
+          },
+          "responseExample": {
+            "config": {
+              "enabled": true,
+              "retention_days": 180,
+              "pii_masking": true,
+              "log_level": "warn",
+              "event_types": []
+            }
+          }
+        }
+      },
+      {
+        "permission": "tenant-setting:read",
+        "name": "GetMaintenanceConfig",
+        "request": "GetMaintenanceConfigRequest",
+        "response": "GetMaintenanceConfigResponse",
+        "details": {
+          "overview": "Returns the tenant's maintenance configuration: the maintenance flag, user-facing message, and optional scheduled window.",
+          "notes": [
+            "The tenant-management boundary applies: the caller must be a system-tenant principal or a member of the target tenant.",
+            "Unlike the REST surface (which resolves the tenant from context), the tenant is named by tenant_uuid in the request.",
+            "If the tenant setting row does not exist yet, the default config is created before returning it."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant whose settings are being read or updated."
+            },
+            {
+              "name": "config.enabled",
+              "type": "boolean",
+              "required": false,
+              "description": "Master switch for the maintenance window."
+            },
+            {
+              "name": "config.message",
+              "type": "string",
+              "required": false,
+              "description": "User-facing maintenance message. Cannot be empty when present."
+            },
+            {
+              "name": "config.scheduled_start",
+              "type": "string (RFC3339) or null",
+              "required": false,
+              "description": "Optional scheduled start timestamp."
+            },
+            {
+              "name": "config.scheduled_end",
+              "type": "string (RFC3339) or null",
+              "required": false,
+              "description": "Optional scheduled end timestamp. Must be after scheduled_start when both are present."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "description": "The full configuration object after the operation."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller is neither a system-tenant principal nor a member of the target tenant with management rights."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+            },
+            {
+              "code": "NotFound",
+              "description": "No tenant matches the UUID."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "config": {}
+          },
+          "responseExample": {
+            "config": {
+              "enabled": false,
+              "message": "The system is currently undergoing maintenance. Please try again later.",
+              "scheduled_start": null,
+              "scheduled_end": null
+            }
+          }
+        }
+      },
+      {
+        "permission": "tenant-setting:update",
+        "name": "UpdateMaintenanceConfig",
+        "request": "UpdateMaintenanceConfigRequest",
+        "response": "UpdateMaintenanceConfigResponse",
+        "details": {
+          "overview": "Updates the tenant's maintenance configuration. The submitted keys are merged over the stored config and the full result is returned.",
+          "notes": [
+            "The tenant-management boundary applies: the caller must be a system-tenant principal or a member of the target tenant.",
+            "The config object is validated with the same per-section rules as the REST surface; unknown fields are rejected and field-level violations are carried in the BadRequest detail.",
+            "Updates merge the submitted keys into the stored config; omitted keys keep their previous values.",
+            "The response returns the full config after the merge."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant whose settings are being read or updated."
+            },
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "required": true,
+              "description": "Maintenance configuration object. Unknown fields are rejected; omitted keys keep their stored values."
+            },
+            {
+              "name": "config.enabled",
+              "type": "boolean",
+              "required": false,
+              "description": "Master switch for the maintenance window."
+            },
+            {
+              "name": "config.message",
+              "type": "string",
+              "required": false,
+              "description": "User-facing maintenance message. Cannot be empty when present."
+            },
+            {
+              "name": "config.scheduled_start",
+              "type": "string (RFC3339) or null",
+              "required": false,
+              "description": "Optional scheduled start timestamp."
+            },
+            {
+              "name": "config.scheduled_end",
+              "type": "string (RFC3339) or null",
+              "required": false,
+              "description": "Optional scheduled end timestamp. Must be after scheduled_start when both are present."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "config",
+              "type": "google.protobuf.Struct",
+              "description": "The full configuration object after the operation."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller is neither a system-tenant principal nor a member of the target tenant with management rights."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+            },
+            {
+              "code": "NotFound",
+              "description": "No tenant matches the UUID."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "config": {
+              "enabled": true,
+              "message": "Scheduled maintenance from 02:00 to 04:00 UTC.",
+              "scheduled_start": "2026-08-20T02:00:00Z",
+              "scheduled_end": "2026-08-20T04:00:00Z"
+            }
+          },
+          "responseExample": {
+            "config": {
+              "enabled": true,
+              "message": "Scheduled maintenance from 02:00 to 04:00 UTC.",
+              "scheduled_start": "2026-08-20T02:00:00Z",
+              "scheduled_end": "2026-08-20T04:00:00Z"
+            }
+          }
+        }
+      },
     ]
   },
   {
