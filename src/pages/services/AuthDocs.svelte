@@ -38,8 +38,20 @@
   }
 
   onMount(() => {
+    const syncFromHash = () => {
+      const nextSlug = window.location.hash.replace(/^#/, "") || "introduction";
+      if (nextSlug !== activeSlug && findDocSection(nextSlug)) {
+        selectSection(nextSlug, false);
+      }
+    };
+
     initialized = true;
     selectSection(findDocSection(requestedSlug) ? requestedSlug : "introduction", false);
+    window.addEventListener("hashchange", syncFromHash);
+
+    return () => {
+      window.removeEventListener("hashchange", syncFromHash);
+    };
   });
 </script>
 
@@ -72,13 +84,13 @@
       {#each docsGroups as group}
         <span class="side-nav-label">{group.label}</span>
         {#each group.sections as [slug, title]}
-          <button
-            type="button"
-            data-route-hash={`#${slug}`}
+          <a
+            href={`#${slug}`}
+            noroute
             aria-current={activeSlug === slug ? "page" : undefined}
           >
             {title}
-          </button>
+          </a>
         {/each}
       {/each}
     </aside>

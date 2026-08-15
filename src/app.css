@@ -130,6 +130,7 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 
 /* Docs / service layout */
 .service-layout, .docs-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: start; }
+.service-layout > *, .docs-layout > * { min-width: 0; }
 .side-nav { position: sticky; top: 88px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
 .docs-nav { position: static; }
 .side-nav a, .side-nav button { display: block; width: 100%; padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font: 500 .9rem/1.6 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-align: left; cursor: pointer; }
@@ -240,5 +241,6 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
   .section { padding: 56px 0; }
 }
 @media (max-width: 560px) {
+  .markdown-content table { min-width: 0; }
   .service-grid { grid-template-columns: 1fr 1fr; }
 }

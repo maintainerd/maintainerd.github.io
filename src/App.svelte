@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from "svelte";
+  import { links, Route, Router } from "svelte-routing";
   import Footer from "@/components/layout/Footer.svelte";
   import Header from "@/components/layout/Header.svelte";
   import AboutPage from "@/pages/About.svelte";
@@ -12,57 +12,69 @@
   import ServiceDetailPage from "@/pages/services/ServiceDetail.svelte";
   import ServicesPage from "@/pages/services/Services.svelte";
   import { findService } from "@/data/services.js";
-  import { location, startRouter } from "@/utils/router.js";
 
-  let current = { path: "/", hash: "" };
+  const normalizePath = (path) => {
+    if (!path || path === "/") return "/";
+    return path.endsWith("/") ? path : `${path}/`;
+  };
 
-  const unsubscribe = location.subscribe((value) => {
-    current = value;
-  });
+  const serviceForPath = (path) => {
+    const serviceMatch = normalizePath(path).match(/^\/services\/([^/]+)\/$/);
+    return serviceMatch ? findService(serviceMatch[1]) : null;
+  };
 
-  onMount(() => {
-    const stopRouter = startRouter();
-    return () => {
-      unsubscribe();
-      stopRouter();
-    };
-  });
-
-  $: serviceMatch = current.path.match(/^\/services\/([^/]+)\/$/);
-  $: service = serviceMatch ? findService(serviceMatch[1]) : null;
-  $: isKnownRoute =
-    current.path === "/" ||
-    current.path === "/services/" ||
-    current.path === "/community/" ||
-    current.path === "/blog/" ||
-    current.path === "/about/" ||
-    current.path === "/services/auth/docs/" ||
-    current.path === "/services/auth/api/" ||
-    Boolean(service);
+  const isKnownPath = (path) => {
+    const currentPath = normalizePath(path);
+    return (
+      currentPath === "/" ||
+      currentPath === "/services/" ||
+      currentPath === "/community/" ||
+      currentPath === "/blog/" ||
+      currentPath === "/about/" ||
+      currentPath === "/services/auth/docs/" ||
+      currentPath === "/services/auth/api/" ||
+      Boolean(serviceForPath(currentPath))
+    );
+  };
 </script>
 
-<div class="site-shell">
-  <Header pathname={current.path} />
-  {#if current.path === "/"}
-    <HomePage />
-  {:else if current.path === "/services/"}
-    <ServicesPage />
-  {:else if current.path === "/community/"}
-    <CommunityPage />
-  {:else if current.path === "/blog/"}
-    <BlogPage />
-  {:else if current.path === "/about/"}
-    <AboutPage />
-  {:else if current.path === "/services/auth/docs/"}
-    <AuthDocsPage hash={current.hash} />
-  {:else if current.path === "/services/auth/api/"}
-    <AuthApiPage />
-  {:else if service}
-    <ServiceDetailPage {service} />
-  {:else}
-    <NotFoundPage />
-  {/if}
-  {#if isKnownRoute}
-    <Footer />
-  {/if}
-</div>
+<Router let:location>
+  <div class="site-shell" use:links>
+    <Header pathname={normalizePath(location.pathname)} />
+    <Route path="/">
+      <HomePage />
+    </Route>
+    <Route path="/services">
+      <ServicesPage />
+    </Route>
+    <Route path="/community">
+      <CommunityPage />
+    </Route>
+    <Route path="/blog">
+      <BlogPage />
+    </Route>
+    <Route path="/about">
+      <AboutPage />
+    </Route>
+    <Route path="/services/auth/docs">
+      <AuthDocsPage hash={location.hash} />
+    </Route>
+    <Route path="/services/auth/api">
+      <AuthApiPage />
+    </Route>
+    <Route path="/services/:slug" let:params>
+      {@const matchedService = findService(params.slug)}
+      {#if matchedService}
+        <ServiceDetailPage service={matchedService} />
+      {:else}
+        <NotFoundPage />
+      {/if}
+    </Route>
+    <Route>
+      <NotFoundPage />
+    </Route>
+    {#if isKnownPath(location.pathname)}
+      <Footer />
+    {/if}
+  </div>
+</Router>

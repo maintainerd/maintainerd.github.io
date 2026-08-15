@@ -33,7 +33,7 @@
       <a href="/services/">All services</a>
       <span class="side-nav-label">Endpoint groups</span>
       {#each apiGroups as group}
-        <a href={`#${group.slug}`}>
+        <a href={`#${group.slug}`} noroute>
           <span>{group.label}</span>
           <small>{group.endpoints.length}</small>
         </a>
