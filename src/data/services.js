@@ -17,6 +17,7 @@ export const maintainerdServices = [
     href: "/services/auth/docs/",
     docsHref: "/services/auth/docs/",
     apiHref: "/services/auth/api/",
+    grpcHref: "/services/auth/grpc/",
     dockerHref: "https://hub.docker.com/r/xreyc/maintainerd-auth",
     githubHref: "https://github.com/maintainerd/maintainerd-auth",
     features: [

@@ -17,6 +17,7 @@
     ? [
         { href: service.docsHref || `/services/${service.slug}/`, label: "Docs" },
         { href: service.apiHref || "", label: "API Reference", disabled: !service.apiHref },
+        { href: service.grpcHref || "", label: "gRPC Reference", disabled: !service.grpcHref },
         { href: service.githubHref || "https://github.com/maintainerd", label: "Github", external: true }
       ]
     : siteNavItems;

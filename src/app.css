@@ -186,6 +186,10 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 .api-method { display: inline-flex; min-width: 52px; justify-content: center; margin-right: 10px; padding: 3px 6px; border-radius: 5px; background: var(--green-tint); color: var(--green); font-size: .74rem; font-weight: 700; }
 .api-method.post, .api-method.put, .api-method.patch { background: var(--blue-tint); color: var(--blue-strong); }
 .api-method.delete { background: #fbe9ec; color: #b4283b; }
+.api-method.rpc { min-width: auto; background: var(--violet-tint, #ece9fb); color: var(--violet-strong, #5b4bc4); }
+.endpoint-summary.is-static { display: block; cursor: default; }
+.endpoint-summary.is-static:hover { background: transparent; }
+.rpc-arrow { color: var(--faint); font-size: .8rem; }
 .api-nav { position: static; }
 .api-nav a { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .api-nav small { color: var(--faint); font-size: .74rem; }

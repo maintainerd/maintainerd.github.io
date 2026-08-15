@@ -5,6 +5,7 @@
   import AboutPage from "@/pages/About.svelte";
   import AuthApiPage from "@/pages/services/AuthApi.svelte";
   import AuthDocsPage from "@/pages/services/AuthDocs.svelte";
+  import AuthGrpcPage from "@/pages/services/AuthGrpc.svelte";
   import BlogPage from "@/pages/Blog.svelte";
   import CommunityPage from "@/pages/Community.svelte";
   import HomePage from "@/pages/Home.svelte";
@@ -38,6 +39,7 @@
       currentPath === "/about/" ||
       currentPath === "/services/auth/docs/" ||
       currentPath === "/services/auth/api/" ||
+      currentPath === "/services/auth/grpc/" ||
       Boolean(serviceForPath(currentPath))
     );
   };
@@ -66,6 +68,9 @@
     </Route>
     <Route path="/services/auth/api">
       <AuthApiPage />
+    </Route>
+    <Route path="/services/auth/grpc">
+      <AuthGrpcPage />
     </Route>
     <Route path="/services/:slug" let:params>
       {@const matchedService = findService(params.slug)}
