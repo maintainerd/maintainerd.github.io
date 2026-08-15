@@ -23,6 +23,11 @@
     return serviceMatch ? findService(serviceMatch[1]) : null;
   };
 
+  const serviceForHeaderPath = (path) => {
+    const serviceMatch = normalizePath(path).match(/^\/services\/([^/]+)(?:\/|$)/);
+    return serviceMatch ? findService(serviceMatch[1]) : null;
+  };
+
   const isKnownPath = (path) => {
     const currentPath = normalizePath(path);
     return (
@@ -40,7 +45,7 @@
 
 <Router let:location>
   <div class="site-shell" use:links>
-    <Header pathname={normalizePath(location.pathname)} />
+    <Header pathname={normalizePath(location.pathname)} service={serviceForHeaderPath(location.pathname)} />
     <Route path="/">
       <HomePage />
     </Route>

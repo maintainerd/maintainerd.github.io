@@ -2,8 +2,9 @@
   import BrandLogo from "@/components/ui/BrandLogo.svelte";
 
   export let pathname = "/";
+  export let service = null;
 
-  const navItems = [
+  const siteNavItems = [
     { href: "/services/", label: "Services" },
     { href: "/community/", label: "Community" },
     { href: "/blog/", label: "Blog" },
@@ -11,6 +12,14 @@
   ];
 
   let isOpen = false;
+
+  $: navItems = service
+    ? [
+        { href: service.docsHref || `/services/${service.slug}/`, label: "Docs" },
+        { href: service.apiHref || "", label: "API Reference", disabled: !service.apiHref },
+        { href: service.githubHref || "https://github.com/maintainerd", label: "Github", external: true }
+      ]
+    : siteNavItems;
 
   const isActive = (href) => pathname === href || pathname.startsWith(href);
 </script>
@@ -29,9 +38,23 @@
     </button>
     <div class:is-open={isOpen} class="nav-links">
       {#each navItems as item}
-        <a class="nav-link" aria-current={isActive(item.href) ? "page" : undefined} href={item.href}>{item.label}</a>
+        {#if item.disabled}
+          <span class="nav-link is-disabled" aria-disabled="true">{item.label}</span>
+        {:else}
+          <a
+            class="nav-link"
+            aria-current={!item.external && isActive(item.href) ? "page" : undefined}
+            href={item.href}
+            target={item.external ? "_blank" : undefined}
+            rel={item.external ? "noopener noreferrer" : undefined}
+          >
+            {item.label}
+          </a>
+        {/if}
       {/each}
-      <a class="nav-link-muted" href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer">GitHub</a>
+      {#if !service}
+        <a class="nav-link-muted" href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer">Github</a>
+      {/if}
     </div>
   </nav>
 </header>
