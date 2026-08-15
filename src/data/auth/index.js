@@ -54,6 +54,18 @@ export const apiGroupNav = [
     "endpointCount": 32
   },
   {
+    "slug": "roles",
+    "label": "Roles",
+    "description": "Role CRUD, status lifecycle, and role-permission assignment APIs used to define what users receive when a role is assigned.",
+    "endpointCount": 9
+  },
+  {
+    "slug": "invites",
+    "label": "Invites",
+    "description": "Invitation management APIs plus the public invite context endpoint used before invited-user registration.",
+    "endpointCount": 6
+  },
+  {
     "slug": "account-self-service",
     "label": "Account Self-Service",
     "description": "Authenticated user-owned APIs for account details, profile management, devices, sessions, consent, recovery, settings, external identity links, and self-service erasure.",
@@ -90,16 +102,10 @@ export const apiGroupNav = [
     "endpointCount": 9
   },
   {
-    "slug": "invites",
-    "label": "Users and Invites",
-    "description": "Invitation management APIs plus the public invite context endpoint used before invited-user registration.",
-    "endpointCount": 6
-  },
-  {
     "slug": "iam",
     "label": "APIs & Resources",
-    "description": "Resource APIs, permissions, roles, policies, services, policy bindings, policy history, policy bundles, and service-to-service authorization decisions.",
-    "endpointCount": 40
+    "description": "Resource APIs, permissions, policies, services, policy bindings, policy history, policy bundles, and service-to-service authorization decisions.",
+    "endpointCount": 31
   },
   {
     "slug": "mfa",
@@ -146,6 +152,7 @@ const apiGroupLoaders = {
   "tenants-members": () => import("./tenants-members.js"),
   "tenant-settings": () => import("./tenant-settings.js"),
   "users": () => import("./users.js"),
+  "roles": () => import("./roles.js"),
   "account-self-service": () => import("./account-self-service.js"),
   "auth": () => import("./auth.js"),
   "oauth-oidc": () => import("./oauth-oidc.js"),

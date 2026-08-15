@@ -131,7 +131,7 @@ const inviteRowExample = {
 
 const group = {
   "slug": "invites",
-  "label": "Users and Invites",
+  "label": "Invites",
   "description": "Invitation management APIs plus the public invite context endpoint used before invited-user registration.",
   "endpoints": [
     {
