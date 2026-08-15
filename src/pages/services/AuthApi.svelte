@@ -117,10 +117,7 @@
 
   <section class="section docs-layout">
     <aside class="side-nav api-nav" aria-label="Auth API endpoints">
-      <a href="/services/auth/docs/">Docs</a>
-      <a aria-current="page" href="/services/auth/api/">API reference</a>
-      <a href="/services/">All services</a>
-      <span class="side-nav-label">Sections</span>
+      <span class="side-nav-label">Reference</span>
       <a href={`#${baseUrlsSlug}`} noroute aria-current={activeSlug === baseUrlsSlug ? "location" : undefined}>
         <span>Base URLs</span>
       </a>
