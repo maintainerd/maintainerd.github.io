@@ -6,7 +6,7 @@
   const methodClass = (method) => method.toLowerCase();
   const endpointLabel = (count) => `${count} endpoint${count === 1 ? "" : "s"}`;
   const requiredLabel = (value) => (value ? "Required" : "Optional");
-  const prettyJson = (value) => JSON.stringify(value, null, 2);
+  const formatExample = (value) => (typeof value === "string" ? value : JSON.stringify(value, null, 2));
 
   let activeSlug = defaultApiGroupSlug;
   let activeGroup = null;
@@ -214,7 +214,7 @@
                         </div>
                       {/if}
                       {#if endpoint.details.requestBody.example}
-                        <pre><code>{prettyJson(endpoint.details.requestBody.example)}</code></pre>
+                        <pre><code>{formatExample(endpoint.details.requestBody.example)}</code></pre>
                       {/if}
                     </div>
 
@@ -225,7 +225,7 @@
                           <article class="response-card">
                             <h4>{response.status}</h4>
                             <p>{response.description}</p>
-                            <pre><code>{prettyJson(response.example)}</code></pre>
+                            <pre><code>{formatExample(response.example)}</code></pre>
                           </article>
                         {/each}
                       </div>
