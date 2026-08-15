@@ -7743,30 +7743,856 @@ export const grpcGroupNav = [
     "description": "Role CRUD and role-permission assignment.",
     "rpcCount": 9,
     "rpcs": [
-      {         "permission": "role:read",
-"name": "ListRoles", "request": "ListRolesRequest", "response": "ListRolesResponse" },
-      {         "permission": "role:read",
-"name": "GetRole", "request": "GetRoleRequest", "response": "GetRoleResponse" },
-      {         "permission": "role:create",
+      {
+        "permission": "role:read",
+        "name": "ListRoles",
+        "request": "ListRolesRequest",
+        "response": "ListRolesResponse",
+        "details": {
+          "overview": "Lists roles in a tenant with filtering and pagination. List rows do not include permissions.",
+          "notes": [
+            "The status filter is a single exact value."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the role belongs to."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on name."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on description."
+            },
+            {
+              "name": "is_default",
+              "type": "optional bool",
+              "required": false,
+              "description": "Filter by default-role flag."
+            },
+            {
+              "name": "is_system",
+              "type": "optional bool",
+              "required": false,
+              "description": "Filter by system flag."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": false,
+              "description": "Exact status match: active or inactive."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "roles",
+              "type": "repeated Role",
+              "description": "The matching role records."
+            },
+            {
+              "name": "page.total",
+              "type": "int64",
+              "description": "Total matching roles."
+            },
+            {
+              "name": "page.page",
+              "type": "int32",
+              "description": "Current page."
+            },
+            {
+              "name": "page.limit",
+              "type": "int32",
+              "description": "Page size."
+            },
+            {
+              "name": "page.total_pages",
+              "type": "int32",
+              "description": "Total page count."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or an on_behalf_of actor is required and missing."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, role, or permission does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "status": "active",
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "roles": [
+              {
+                "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "name": "billing-admin",
+                "description": "Manages billing operations",
+                "is_default": false,
+                "is_system": false,
+                "status": "active",
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-10T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "role:read",
+        "name": "GetRole",
+        "request": "GetRoleRequest",
+        "response": "GetRoleResponse",
+        "details": {
+          "overview": "Returns one role by UUID in the named tenant.",
+          "notes": [
+            "Roles outside the caller's tenant scope respond as not found."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the role belongs to."
+            },
+            {
+              "name": "role_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the role."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "role",
+              "type": "Role",
+              "description": "The role record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or an on_behalf_of actor is required and missing."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, role, or permission does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "role": {
+              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-admin",
+              "description": "Manages billing operations",
+              "is_default": false,
+              "is_system": false,
+              "status": "active",
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "role:create",
         "actorRequired": true,
-"name": "CreateRole", "request": "CreateRoleRequest", "response": "CreateRoleResponse" },
-      {         "permission": "role:update",
+        "name": "CreateRole",
+        "request": "CreateRoleRequest",
+        "response": "CreateRoleResponse",
+        "details": {
+          "overview": "Creates a role in the named tenant. A newly created role grants nothing until permissions are attached.",
+          "notes": [
+            "Role mutations require a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed.",
+            "is_default and is_system are always false for roles created through this RPC.",
+            "Role names are unique per tenant."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the role belongs to."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Role name. 3-20 characters: lowercase letters, numbers, hyphens, colons."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Description. At most 100 characters."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "role",
+              "type": "Role",
+              "description": "The created role record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or an on_behalf_of actor is required and missing."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, role, or permission does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "name": "billing-admin",
+            "description": "Manages billing operations",
+            "status": "active"
+          },
+          "responseExample": {
+            "role": {
+              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-admin",
+              "description": "Manages billing operations",
+              "is_default": false,
+              "is_system": false,
+              "status": "active",
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "role:update",
         "actorRequired": true,
-"name": "UpdateRole", "request": "UpdateRoleRequest", "response": "UpdateRoleResponse" },
-      {         "permission": "role:update",
+        "name": "UpdateRole",
+        "request": "UpdateRoleRequest",
+        "response": "UpdateRoleResponse",
+        "details": {
+          "overview": "Updates a role's name, description, and status in the named tenant.",
+          "notes": [
+            "Role mutations require a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed.",
+            "System roles cannot be updated.",
+            "The default and system flags cannot be changed through this RPC."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the role belongs to."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            },
+            {
+              "name": "role_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the role."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Role name. 3-20 characters: lowercase letters, numbers, hyphens, colons."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Description. At most 100 characters."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "role",
+              "type": "Role",
+              "description": "The updated role record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or an on_behalf_of actor is required and missing."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, role, or permission does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "name": "billing-admin",
+            "description": "Manages all billing operations",
+            "status": "active"
+          },
+          "responseExample": {
+            "role": {
+              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-admin",
+              "description": "Manages all billing operations",
+              "is_default": false,
+              "is_system": false,
+              "status": "active",
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "role:update",
         "actorRequired": true,
-"name": "SetRoleStatus", "request": "SetRoleStatusRequest", "response": "SetRoleStatusResponse" },
-      {         "permission": "role:delete",
+        "name": "SetRoleStatus",
+        "request": "SetRoleStatusRequest",
+        "response": "SetRoleStatusResponse",
+        "details": {
+          "overview": "Updates only a role's status. Deactivating a role removes what it grants everywhere it is assigned.",
+          "notes": [
+            "Role mutations require a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed.",
+            "System roles cannot be updated, and the tenant default role cannot be deactivated."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the role belongs to."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            },
+            {
+              "name": "role_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the role."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "role",
+              "type": "Role",
+              "description": "The updated role record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or an on_behalf_of actor is required and missing."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, role, or permission does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "status": "inactive"
+          },
+          "responseExample": {
+            "role": {
+              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-admin",
+              "description": "Manages billing operations",
+              "is_default": false,
+              "is_system": false,
+              "status": "inactive",
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "role:delete",
         "actorRequired": true,
-"name": "DeleteRole", "request": "DeleteRoleRequest", "response": "DeleteRoleResponse" },
-      {         "permission": "role:read",
-"name": "ListRolePermissions", "request": "ListRolePermissionsRequest", "response": "ListRolePermissionsResponse" },
-      {         "permission": "role:permission:create",
+        "name": "DeleteRole",
+        "request": "DeleteRoleRequest",
+        "response": "DeleteRoleResponse",
+        "details": {
+          "overview": "Soft-deletes a role in the named tenant. Assignments referencing the role stop granting.",
+          "notes": [
+            "Role mutations require a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed.",
+            "System roles and the tenant default role cannot be deleted."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the role belongs to."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            },
+            {
+              "name": "role_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the role."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "role",
+              "type": "Role",
+              "description": "The deleted role record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or an on_behalf_of actor is required and missing."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, role, or permission does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "role": {
+              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-admin",
+              "description": "Manages billing operations",
+              "is_default": false,
+              "is_system": false,
+              "status": "active",
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "role:read",
+        "name": "ListRolePermissions",
+        "request": "ListRolePermissionsRequest",
+        "response": "ListRolePermissionsResponse",
+        "details": {
+          "overview": "Returns the permissions attached to a role with pagination. Each row carries the owning API projection.",
+          "notes": [
+            "status is a single exact filter with no enum validation."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the role belongs to."
+            },
+            {
+              "name": "role_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the role."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": false,
+              "description": "Exact status match."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "permissions",
+              "type": "repeated Permission",
+              "description": "The role's permissions."
+            },
+            {
+              "name": "page",
+              "type": "PageMetadata",
+              "description": "Pagination metadata."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or an on_behalf_of actor is required and missing."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, role, or permission does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "permissions": [
+              {
+                "permission_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "invoices:read",
+                "description": "Read invoices",
+                "status": "active",
+                "is_system": false,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "role:permission:create",
         "actorRequired": true,
-"name": "AddRolePermissions", "request": "AddRolePermissionsRequest", "response": "AddRolePermissionsResponse" },
-      {         "permission": "role:permission:delete",
+        "name": "AddRolePermissions",
+        "request": "AddRolePermissionsRequest",
+        "response": "AddRolePermissionsResponse",
+        "details": {
+          "overview": "Attaches permissions to a role. This is the privilege-escalation edge: the actor may not attach an elevated permission they do not themselves hold.",
+          "notes": [
+            "Role mutations require a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed.",
+            "Between 1 and 200 permission UUIDs per request.",
+            "System roles cannot be modified.",
+            "Idempotent: already-existing associations are skipped."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the role belongs to."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            },
+            {
+              "name": "role_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the role."
+            },
+            {
+              "name": "permission_uuids",
+              "type": "repeated string",
+              "required": true,
+              "description": "1-200 permission UUIDs to attach."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "role",
+              "type": "Role",
+              "description": "The role with its permissions array populated."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or an on_behalf_of actor is required and missing."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, role, or permission does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "permission_uuids": [
+              "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            ]
+          },
+          "responseExample": {
+            "role": {
+              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-admin",
+              "description": "Manages billing operations",
+              "is_default": false,
+              "is_system": false,
+              "status": "active",
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z",
+              "permissions": [
+                {
+                  "permission_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                  "name": "invoices:read",
+                  "description": "Read invoices",
+                  "status": "active",
+                  "is_system": false,
+                  "created_at": "2026-08-01T09:00:00Z",
+                  "updated_at": "2026-08-01T09:00:00Z"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "permission": "role:permission:delete",
         "actorRequired": true,
-"name": "RemoveRolePermission", "request": "RemoveRolePermissionRequest", "response": "RemoveRolePermissionResponse" }
+        "name": "RemoveRolePermission",
+        "request": "RemoveRolePermissionRequest",
+        "response": "RemoveRolePermissionResponse",
+        "details": {
+          "overview": "Detaches a single permission from a role. Idempotent: removing an association that does not exist still succeeds.",
+          "notes": [
+            "Role mutations require a user actor carried in the token's on_behalf_of claim; service tokens without an actor fail closed.",
+            "System roles cannot be modified."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the role belongs to."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            },
+            {
+              "name": "role_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the role."
+            },
+            {
+              "name": "permission_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the permission to detach."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "role",
+              "type": "Role",
+              "description": "The role with its permissions array populated."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or an on_behalf_of actor is required and missing."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, role, or permission does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "permission_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "role": {
+              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing-admin",
+              "description": "Manages billing operations",
+              "is_default": false,
+              "is_system": false,
+              "status": "active",
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
     ]
   },
   {
