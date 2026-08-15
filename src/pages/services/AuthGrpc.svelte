@@ -164,18 +164,20 @@
         {#key activeGroup}
           {@const links = protoLinks(activeGroup)}
           <section class="api-group" id={activeGroup.slug}>
-          <div class="api-group-head">
-            <div>
-              <p class="eyebrow">{rpcLabel(activeGroup.rpcCount)}</p>
-              <h2>{activeGroup.label}</h2>
-              <p class="section-lede">{activeGroup.description}</p>
-            </div>
-            {#if links}
-              <div class="proto-links">
-                <a href={links.download} target="_blank" rel="noopener noreferrer">Download .proto</a>
+            <div class="api-group-head">
+              <div>
+                <p class="eyebrow">{rpcLabel(activeGroup.rpcCount)}</p>
+                <div class="api-group-title-row">
+                  <h2>{activeGroup.label}</h2>
+                  {#if links}
+                    <div class="proto-links">
+                      <a href={links.download} target="_blank" rel="noopener noreferrer">Download .proto</a>
+                    </div>
+                  {/if}
+                </div>
+                <p class="section-lede">{activeGroup.description}</p>
               </div>
-            {/if}
-          </div>
+            </div>
           <div class="endpoint-list">
             {#each activeGroup.rpcs as rpc}
               {@const currentRpcId = rpcId(activeGroup.slug, rpc)}
