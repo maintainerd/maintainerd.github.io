@@ -8,13 +8,21 @@
   const requiredLabel = (value) => (value ? "Required" : "Optional");
   const formatExample = (value) => (typeof value === "string" ? value : JSON.stringify(value, null, 2));
   const baseUrlsSlug = "base-urls";
+  const slugify = (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const endpointId = (groupSlug, endpoint) => `${groupSlug}-${methodClass(endpoint.method)}-${slugify(endpoint.path)}`;
 
   let activeSlug = baseUrlsSlug;
   let activeGroup = null;
+  let activeEndpointId = "";
   let loadingGroup = false;
   let loadRequestId = 0;
 
-  const normalizeSlug = (slug) => (slug === baseUrlsSlug ? baseUrlsSlug : findApiGroupNav(slug)?.slug || baseUrlsSlug);
+  const normalizeSlug = (slug) => {
+    if (slug === baseUrlsSlug) return baseUrlsSlug;
+    const group = findApiGroupNav(slug);
+    if (group) return group.slug;
+    return apiGroupNav.find((item) => slug.startsWith(`${item.slug}-`))?.slug || baseUrlsSlug;
+  };
 
   const loadActiveGroup = async (slug, shouldScroll = false) => {
     const nextSlug = normalizeSlug(slug);
@@ -24,6 +32,7 @@
 
     if (nextSlug === baseUrlsSlug) {
       activeGroup = null;
+      activeEndpointId = "";
       loadingGroup = false;
 
       if (shouldScroll) {
@@ -43,11 +52,24 @@
     }
 
     activeGroup = group;
+    activeEndpointId = group.endpoints.some((endpoint) => endpointId(group.slug, endpoint) === slug) ? slug : "";
     loadingGroup = false;
 
     if (shouldScroll) {
       await tick();
-      document.getElementById(nextSlug)?.scrollIntoView({ block: "start" });
+      document.getElementById(activeEndpointId || nextSlug)?.scrollIntoView({ block: "start" });
+    }
+  };
+
+  const toggleEndpoint = async (endpoint) => {
+    if (!activeGroup) return;
+    const nextEndpointId = endpointId(activeGroup.slug, endpoint);
+    activeEndpointId = activeEndpointId === nextEndpointId ? "" : nextEndpointId;
+    history.replaceState(null, "", `#${activeEndpointId || activeGroup.slug}`);
+
+    if (activeEndpointId) {
+      await tick();
+      document.getElementById(activeEndpointId)?.scrollIntoView({ block: "nearest" });
     }
   };
 
@@ -153,15 +175,28 @@
           </div>
           <div class="endpoint-list">
             {#each activeGroup.endpoints as endpoint}
-              <article class="endpoint-card">
-                <div class="endpoint-line">
-                  <span class={`api-method ${methodClass(endpoint.method)}`}>{endpoint.method}</span>
-                  <code>{endpoint.path}</code>
-                </div>
-                <span class="surface-pill">{endpoint.surface}</span>
-                <p>{endpoint.summary}</p>
-                {#if endpoint.details}
-                  <div class="endpoint-detail">
+              {@const currentEndpointId = endpointId(activeGroup.slug, endpoint)}
+              {@const isEndpointOpen = activeEndpointId === currentEndpointId}
+              <article class:is-open={isEndpointOpen} class="endpoint-card" id={currentEndpointId}>
+                <button
+                  class="endpoint-summary"
+                  type="button"
+                  aria-expanded={isEndpointOpen}
+                  aria-controls={`${currentEndpointId}-detail`}
+                  onclick={() => toggleEndpoint(endpoint)}
+                >
+                  <span class="endpoint-summary-main">
+                    <span class="endpoint-line">
+                      <span class={`api-method ${methodClass(endpoint.method)}`}>{endpoint.method}</span>
+                      <code>{endpoint.path}</code>
+                    </span>
+                    <span class="endpoint-summary-text">{endpoint.summary}</span>
+                    <span class="surface-pill">{endpoint.surface}</span>
+                  </span>
+                  <span class="accordion-indicator" aria-hidden="true">{isEndpointOpen ? "-" : "+"}</span>
+                </button>
+                {#if endpoint.details && isEndpointOpen}
+                  <div class="endpoint-detail" id={`${currentEndpointId}-detail`}>
                     <p>{endpoint.details.overview}</p>
                     {#if endpoint.details.notes?.length}
                       <ul class="detail-notes">
