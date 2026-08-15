@@ -154,6 +154,12 @@
                       <h3>Headers</h3>
                       <div class="detail-table">
                         <table class="header-table">
+                          <colgroup>
+                            <col class="name-column" />
+                            <col class="value-column" />
+                            <col class="required-column" />
+                            <col class="description-column" />
+                          </colgroup>
                           <thead>
                             <tr>
                               <th>Name</th>
@@ -165,10 +171,10 @@
                           <tbody>
                             {#each endpoint.details.headers as header}
                               <tr>
-                                <td><code>{header.name}</code></td>
-                                <td><code>{header.value}</code></td>
-                                <td>{requiredLabel(header.required)}</td>
-                                <td>{header.description}</td>
+                                <td data-label="Name"><code>{header.name}</code></td>
+                                <td data-label="Value"><code>{header.value}</code></td>
+                                <td data-label="Required">{requiredLabel(header.required)}</td>
+                                <td data-label="Description">{header.description}</td>
                               </tr>
                             {/each}
                           </tbody>
@@ -182,6 +188,12 @@
                       {#if endpoint.details.requestBody.fields.length}
                         <div class="detail-table">
                           <table class="request-table">
+                            <colgroup>
+                              <col class="name-column" />
+                              <col class="value-column" />
+                              <col class="required-column" />
+                              <col class="description-column" />
+                            </colgroup>
                             <thead>
                               <tr>
                                 <th>Field</th>
@@ -193,10 +205,10 @@
                             <tbody>
                               {#each endpoint.details.requestBody.fields as field}
                                 <tr>
-                                  <td><code>{field.name}</code></td>
-                                  <td>{field.type}</td>
-                                  <td>{requiredLabel(field.required)}</td>
-                                  <td>{field.description}</td>
+                                  <td data-label="Field"><code>{field.name}</code></td>
+                                  <td data-label="Type">{field.type}</td>
+                                  <td data-label="Required">{requiredLabel(field.required)}</td>
+                                  <td data-label="Description">{field.description}</td>
                                 </tr>
                               {/each}
                             </tbody>
