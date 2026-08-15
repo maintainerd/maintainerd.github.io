@@ -10006,8 +10006,75 @@ export const grpcGroupNav = [
     "description": "Service-to-service authorization decisions.",
     "rpcCount": 1,
     "rpcs": [
-      {         "permission": "",
-"name": "Authorize", "request": "AuthorizeRequest", "response": "AuthorizeResponse" }
+      {
+        "permission": "",
+        "name": "Authorize",
+        "request": "AuthorizeRequest",
+        "response": "AuthorizeResponse",
+        "details": {
+          "overview": "Evaluates a single authorization decision for the calling service principal against its policy bundle. Wildcards are supported on both action and resource; deny wins; unknown document versions or effects fail closed.",
+          "notes": [
+            "The caller supplies only the question (action + resource). The principal and tenant come from the signed token \u2014 the body-supplied principal is ignored.",
+            "A statement matches only when BOTH action and resource match; document version must be exactly v1.",
+            "Deny responses are still a successful RPC: the decision lives in allowed/reason.",
+            "The mapped permission is empty, so any authenticated service principal may call this RPC."
+          ],
+          "requestFields": [
+            {
+              "name": "principal",
+              "type": "string",
+              "required": false,
+              "description": "Ignored: the principal is taken from the token (svc claim or service subject)."
+            },
+            {
+              "name": "action",
+              "type": "string",
+              "required": true,
+              "description": "The action being asked about, e.g. invoices:read. Wildcards supported."
+            },
+            {
+              "name": "resource",
+              "type": "string",
+              "required": true,
+              "description": "The resource being asked about, e.g. billing-api. Wildcards supported."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "allowed",
+              "type": "bool",
+              "description": "True only when a statement matched."
+            },
+            {
+              "name": "reason",
+              "type": "string",
+              "description": "Why the decision was made: matched allow, explicit deny, no matching allow, missing action or resource, policy document version is not supported, policy statement has an unrecognised effect, or principal bundle unavailable."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No JWT claims are bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The token has no service principal, or it is not bound to a tenant."
+            },
+            {
+              "code": "Internal",
+              "description": "The principal's policy bundle could not be resolved."
+            }
+          ],
+          "requestExample": {
+            "action": "invoices:read",
+            "resource": "billing-api"
+          },
+          "responseExample": {
+            "allowed": true,
+            "reason": "matched allow"
+          }
+        }
+      },
     ]
   },
   {
@@ -10017,8 +10084,118 @@ export const grpcGroupNav = [
     "description": "Token introspection for resource services.",
     "rpcCount": 1,
     "rpcs": [
-      {         "permission": "",
-"name": "Introspect", "request": "IntrospectRequest", "response": "IntrospectResponse" }
+      {
+        "permission": "",
+        "name": "Introspect",
+        "request": "IntrospectRequest",
+        "response": "IntrospectResponse",
+        "details": {
+          "overview": "Introspects a token: returns whether it is currently active plus its metadata. Used by resource services that need revocation-aware checks instead of local JWT validation.",
+          "notes": [
+            "The mapped permission is empty, so any authenticated service principal may call this RPC.",
+            "An inactive, expired, or revoked token returns active=false with no other fields.",
+            "token_type_hint may be access_token or refresh_token; it is a hint only."
+          ],
+          "requestFields": [
+            {
+              "name": "token",
+              "type": "string",
+              "required": true,
+              "description": "The access or refresh token to introspect."
+            },
+            {
+              "name": "token_type_hint",
+              "type": "string",
+              "required": false,
+              "description": "Hint: access_token or refresh_token."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "active",
+              "type": "bool",
+              "description": "Whether the token is currently valid."
+            },
+            {
+              "name": "scope",
+              "type": "string",
+              "description": "Granted scopes."
+            },
+            {
+              "name": "client_id",
+              "type": "string",
+              "description": "Client the token was issued to."
+            },
+            {
+              "name": "username",
+              "type": "string",
+              "description": "Username associated with the token."
+            },
+            {
+              "name": "token_type",
+              "type": "string",
+              "description": "Token type, e.g. Bearer."
+            },
+            {
+              "name": "exp",
+              "type": "int64",
+              "description": "Expiration time (unix seconds)."
+            },
+            {
+              "name": "iat",
+              "type": "int64",
+              "description": "Issued-at time (unix seconds)."
+            },
+            {
+              "name": "sub",
+              "type": "string",
+              "description": "Token subject."
+            },
+            {
+              "name": "aud",
+              "type": "string",
+              "description": "Token audience."
+            },
+            {
+              "name": "iss",
+              "type": "string",
+              "description": "Token issuer."
+            },
+            {
+              "name": "jti",
+              "type": "string",
+              "description": "Token ID."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "token_type_hint": "access_token"
+          },
+          "responseExample": {
+            "active": true,
+            "scope": "openid email profile",
+            "client_id": "app-web-client",
+            "username": "alex@acme.example",
+            "token_type": "Bearer",
+            "exp": 1765213200,
+            "iat": 1765209600,
+            "sub": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "aud": "app-web-client",
+            "iss": "https://identity-api.auth.example.com",
+            "jti": "9d1d5b4d-3a4c-4f0a-9c1d-7e2f1a9b4c3d"
+          }
+        }
+      },
     ]
   },
   {
@@ -10029,10 +10206,86 @@ export const grpcGroupNav = [
     "description": "Standard gRPC health checking for the control plane.",
     "rpcCount": 2,
     "rpcs": [
-      {         "auth": "infrastructure",
-"name": "Check", "request": "HealthCheckRequest", "response": "HealthCheckResponse" },
-      {         "auth": "infrastructure",
-"name": "Watch", "request": "HealthCheckRequest", "response": "stream HealthCheckResponse" }
+      {
+        "auth": "infrastructure",
+        "name": "Check",
+        "request": "HealthCheckRequest",
+        "response": "HealthCheckResponse",
+        "details": {
+          "overview": "Standard gRPC health check. Returns the serving status for the named service (empty service name means overall server health).",
+          "notes": [
+            "Unauthenticated infrastructure call; not part of the application permission map.",
+            "Each registered maintainerd.auth.v1 service reports SERVING; the overall status tracks readiness."
+          ],
+          "requestFields": [
+            {
+              "name": "service",
+              "type": "string",
+              "required": false,
+              "description": "The service to check, e.g. maintainerd.auth.v1.TenantService. Empty means overall server health."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "status",
+              "type": "enum",
+              "description": "UNKNOWN, SERVING, NOT_SERVING, or SERVICE_UNKNOWN."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Internal",
+              "description": "An unexpected server failure."
+            }
+          ],
+          "requestExample": {
+            "service": ""
+          },
+          "responseExample": {
+            "status": "SERVING"
+          }
+        }
+      },
+      {
+        "auth": "infrastructure",
+        "name": "Watch",
+        "request": "HealthCheckRequest",
+        "response": "stream HealthCheckResponse",
+        "details": {
+          "overview": "Streams health status changes for the named service. Each status update is delivered on the stream.",
+          "notes": [
+            "Unauthenticated infrastructure call.",
+            "The overall status refreshes every 5 seconds."
+          ],
+          "requestFields": [
+            {
+              "name": "service",
+              "type": "string",
+              "required": false,
+              "description": "The service to watch; empty means overall server health."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "status",
+              "type": "enum",
+              "description": "UNKNOWN, SERVING, NOT_SERVING, or SERVICE_UNKNOWN."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Internal",
+              "description": "An unexpected server failure."
+            }
+          ],
+          "requestExample": {
+            "service": ""
+          },
+          "responseExample": {
+            "status": "SERVING"
+          }
+        }
+      },
     ]
   }
 ];
