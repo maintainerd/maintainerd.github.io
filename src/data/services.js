@@ -1,4 +1,4 @@
-import { screenshots, serviceIcon } from "@/data/assets.js";
+import { screenshots, serviceIcon, serviceLogo } from "@/data/assets.js";
 
 export const maintainerdServices = [
   {
@@ -321,10 +321,10 @@ export const externalCategories = [
     title: "Databases",
     optionsLabel: "Databases",
     services: [
-      { mark: "Pg", name: "PostgreSQL", image: "postgres", summary: "Relational database for applications that need SQL, transactions, extensions, and durable state." },
-      { mark: "My", name: "MySQL", image: "mysql", summary: "Relational database for common application stacks and managed-compatible workloads." },
-      { mark: "Ma", name: "MariaDB", image: "mariadb", summary: "MySQL-compatible relational database for application deployments." },
-      { mark: "Mo", name: "MongoDB", image: "mongo", summary: "Document database for JSON-style application data and flexible schemas." }
+      { mark: "Pg", icon: serviceLogo("postgresql"), name: "PostgreSQL", image: "postgres", summary: "Relational database for applications that need SQL, transactions, extensions, and durable state." },
+      { mark: "My", icon: serviceLogo("mysql"), name: "MySQL", image: "mysql", summary: "Relational database for common application stacks and managed-compatible workloads." },
+      { mark: "Ma", icon: serviceLogo("mariadb"), name: "MariaDB", image: "mariadb", summary: "MySQL-compatible relational database for application deployments." },
+      { mark: "Mo", icon: serviceLogo("mongodb"), name: "MongoDB", image: "mongo", summary: "Document database for JSON-style application data and flexible schemas." }
     ]
   },
   {
@@ -332,8 +332,8 @@ export const externalCategories = [
     title: "Cache and key-value",
     optionsLabel: "Cache and key-value",
     services: [
-      { mark: "Re", name: "Redis", image: "redis", summary: "Cache, queues, rate limits, sessions, and short-lived state for application services." },
-      { mark: "Va", name: "Valkey", image: "valkey/valkey", summary: "Redis-compatible key-value service for cache and ephemeral runtime data." }
+      { mark: "Re", icon: serviceLogo("redis"), name: "Redis", image: "redis", summary: "Cache, queues, rate limits, sessions, and short-lived state for application services." },
+      { mark: "Va", icon: serviceLogo("valkey"), name: "Valkey", image: "valkey/valkey", summary: "Redis-compatible key-value service for cache and ephemeral runtime data." }
     ]
   },
   {
@@ -341,9 +341,9 @@ export const externalCategories = [
     title: "Edge and proxy",
     optionsLabel: "Edge and proxy",
     services: [
-      { mark: "Nx", name: "nginx", image: "nginx", summary: "Reverse proxy and static edge for applications, APIs, and service hostnames." },
-      { mark: "Cy", name: "Caddy", image: "caddy", summary: "HTTPS-first web server and reverse proxy with automatic certificate support." },
-      { mark: "Tr", name: "Traefik", image: "traefik", summary: "Dynamic reverse proxy for routed containers and service discovery." }
+      { mark: "Nx", icon: serviceLogo("nginx"), name: "nginx", image: "nginx", summary: "Reverse proxy and static edge for applications, APIs, and service hostnames." },
+      { mark: "Cy", icon: serviceLogo("caddy"), name: "Caddy", image: "caddy", summary: "HTTPS-first web server and reverse proxy with automatic certificate support." },
+      { mark: "Tr", icon: serviceLogo("traefik"), name: "Traefik", image: "traefik", summary: "Dynamic reverse proxy for routed containers and service discovery." }
     ]
   },
   {
@@ -351,9 +351,9 @@ export const externalCategories = [
     title: "Observability",
     optionsLabel: "Observability",
     services: [
-      { mark: "Gr", name: "Grafana", image: "grafana/grafana", summary: "Dashboards for metrics, logs, traces, and service health." },
-      { mark: "Pr", name: "Prometheus", image: "prom/prometheus", summary: "Metrics collection and alerting for services and infrastructure." },
-      { mark: "Lo", name: "Loki", image: "grafana/loki", summary: "Log aggregation that pairs naturally with Grafana dashboards." }
+      { mark: "Gr", icon: serviceLogo("grafana"), name: "Grafana", image: "grafana/grafana", summary: "Dashboards for metrics, logs, traces, and service health." },
+      { mark: "Pr", icon: serviceLogo("prometheus"), name: "Prometheus", image: "prom/prometheus", summary: "Metrics collection and alerting for services and infrastructure." },
+      { mark: "Lo", icon: serviceLogo("loki"), name: "Loki", image: "grafana/loki", summary: "Log aggregation that pairs naturally with Grafana dashboards." }
     ]
   },
   {
@@ -361,9 +361,9 @@ export const externalCategories = [
     title: "Messaging and queues",
     optionsLabel: "Messaging and queues",
     services: [
-      { mark: "Rq", name: "RabbitMQ", image: "rabbitmq", summary: "Message broker for queues, event routing, and asynchronous services." },
-      { mark: "Na", name: "NATS", image: "nats", summary: "Lightweight messaging and eventing for distributed services." },
-      { mark: "Kf", name: "Kafka", image: "apache/kafka", summary: "Streaming event backbone for high-throughput event pipelines." }
+      { mark: "Rq", icon: serviceLogo("rabbitmq"), name: "RabbitMQ", image: "rabbitmq", summary: "Message broker for queues, event routing, and asynchronous services." },
+      { mark: "Na", icon: serviceLogo("nats"), name: "NATS", image: "nats", summary: "Lightweight messaging and eventing for distributed services." },
+      { mark: "Kf", icon: serviceLogo("kafka"), name: "Kafka", image: "apache/kafka", summary: "Streaming event backbone for high-throughput event pipelines." }
     ]
   },
   {
@@ -371,8 +371,8 @@ export const externalCategories = [
     title: "Storage",
     optionsLabel: "Storage",
     services: [
-      { mark: "Mi", name: "MinIO", image: "minio/minio", summary: "S3-compatible object storage for files, backups, and application assets." },
-      { mark: "Nc", name: "Nextcloud", image: "nextcloud", summary: "File collaboration and personal cloud storage for teams." }
+      { mark: "Mi", icon: serviceLogo("minio"), name: "MinIO", image: "minio/minio", summary: "S3-compatible object storage for files, backups, and application assets." },
+      { mark: "Nc", icon: serviceLogo("nextcloud"), name: "Nextcloud", image: "nextcloud", summary: "File collaboration and personal cloud storage for teams." }
     ]
   },
   {
@@ -380,8 +380,8 @@ export const externalCategories = [
     title: "Developer tools",
     optionsLabel: "Developer tools",
     services: [
-      { mark: "Gt", name: "Gitea", image: "gitea/gitea", summary: "Self-hosted Git service for repositories, teams, and lightweight project collaboration." },
-      { mark: "Jk", name: "Jenkins", image: "jenkins/jenkins", summary: "Automation server for CI workflows, jobs, and deployment pipelines." }
+      { mark: "Gt", icon: serviceLogo("gitea"), name: "Gitea", image: "gitea/gitea", summary: "Self-hosted Git service for repositories, teams, and lightweight project collaboration." },
+      { mark: "Jk", icon: serviceLogo("jenkins"), name: "Jenkins", image: "jenkins/jenkins", summary: "Automation server for CI workflows, jobs, and deployment pipelines." }
     ]
   },
   {
@@ -389,9 +389,9 @@ export const externalCategories = [
     title: "Content and commerce",
     optionsLabel: "Content and commerce",
     services: [
-      { mark: "Wp", name: "WordPress", image: "wordpress", summary: "Publishing and site management for content-heavy applications." },
-      { mark: "St", name: "Strapi", image: "strapi/strapi", summary: "Headless CMS for content APIs and editorial workflows." },
-      { mark: "Me", name: "Medusa", image: "medusajs/medusa", summary: "Commerce backend for product, cart, order, and storefront workflows." }
+      { mark: "Wp", icon: serviceLogo("wordpress"), name: "WordPress", image: "wordpress", summary: "Publishing and site management for content-heavy applications." },
+      { mark: "St", icon: serviceLogo("strapi"), name: "Strapi", image: "strapi/strapi", summary: "Headless CMS for content APIs and editorial workflows." },
+      { mark: "Me", icon: serviceLogo("medusa"), name: "Medusa", image: "medusajs/medusa", summary: "Commerce backend for product, cart, order, and storefront workflows." }
     ]
   }
 ];

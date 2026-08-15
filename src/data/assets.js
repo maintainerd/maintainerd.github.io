@@ -14,3 +14,5 @@ export const screenshots = {
 };
 
 export const serviceIcon = (slug) => assetPath(`icons/${slug}.svg`);
+
+export const serviceLogo = (slug) => assetPath(`logos/${slug}.svg`);

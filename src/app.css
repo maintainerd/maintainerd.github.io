@@ -98,7 +98,7 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 .service-card:active { transform: translateY(1px); }
 .service-card p { margin: 2px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.5; }
 .service-kicker { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
-.service-icon { width: 40px; height: 40px; }
+.service-icon { width: 40px; height: 40px; object-fit: contain; }
 .service-mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--blue-tint); color: var(--blue); font-weight: 700; }
 .service-card footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; color: var(--faint); font-size: .8rem; font-weight: 600; }
 .service-card footer span { min-width: 0; overflow-wrap: anywhere; }
