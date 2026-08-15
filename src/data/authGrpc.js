@@ -1734,40 +1734,1328 @@ export const grpcGroupNav = [
     "description": "User account lifecycle, verification, roles, and identities.",
     "rpcCount": 14,
     "rpcs": [
-      {         "permission": "user:read",
-"name": "ListUsers", "request": "ListUsersRequest", "response": "ListUsersResponse" },
-      {         "permission": "user:read",
-"name": "GetUser", "request": "GetUserRequest", "response": "GetUserResponse" },
-      {         "permission": "user:create",
-"name": "CreateUser", "request": "CreateUserRequest", "response": "CreateUserResponse" },
-      {         "permission": "user:update",
-"name": "UpdateUser", "request": "UpdateUserRequest", "response": "UpdateUserResponse" },
-      {         "permission": "user:update",
+      {
+        "permission": "user:read",
+        "name": "ListUsers",
+        "request": "ListUsersRequest",
+        "response": "ListUsersResponse",
+        "details": {
+          "overview": "Lists users in a tenant with filtering and pagination.",
+          "notes": [
+            "The tenant is named by tenant_uuid in the request; the caller's token must be bound to a scope that allows reading it.",
+            "username, email, and phone filters are partial-match filters; status accepts multiple values."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "username",
+              "type": "string",
+              "required": false,
+              "description": "Filter by username."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": false,
+              "description": "Filter by email."
+            },
+            {
+              "name": "phone",
+              "type": "string",
+              "required": false,
+              "description": "Filter by phone."
+            },
+            {
+              "name": "status",
+              "type": "repeated string",
+              "required": false,
+              "description": "Filter by status: active, inactive, pending, suspended."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination: page, limit, sort_by, sort_order."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "users",
+              "type": "repeated User",
+              "description": "The matching user records."
+            },
+            {
+              "name": "page.total",
+              "type": "int64",
+              "description": "Total matching users."
+            },
+            {
+              "name": "page.page",
+              "type": "int32",
+              "description": "Current page."
+            },
+            {
+              "name": "page.limit",
+              "type": "int32",
+              "description": "Page size."
+            },
+            {
+              "name": "page.total_pages",
+              "type": "int32",
+              "description": "Total page count."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "status": [
+              "active"
+            ],
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "users": [
+              {
+                "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "username": "alex",
+                "fullname": "Alex Rivera",
+                "email": "alex@acme.example",
+                "phone": "+15551234567",
+                "is_email_verified": true,
+                "is_phone_verified": false,
+                "is_profile_completed": true,
+                "is_account_completed": true,
+                "status": "active",
+                "metadata": {},
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-10T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:read",
+        "name": "GetUser",
+        "request": "GetUserRequest",
+        "response": "GetUserResponse",
+        "details": {
+          "overview": "Returns one user by UUID in the named tenant.",
+          "notes": [
+            "Users outside the caller's scope respond as not found."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "user",
+              "type": "User",
+              "description": "The user record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "user": {
+              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "username": "alex",
+              "fullname": "Alex Rivera",
+              "email": "alex@acme.example",
+              "phone": "+15551234567",
+              "is_email_verified": true,
+              "is_phone_verified": false,
+              "is_profile_completed": true,
+              "is_account_completed": true,
+              "status": "active",
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:create",
+        "name": "CreateUser",
+        "request": "CreateUserRequest",
+        "response": "CreateUserResponse",
+        "details": {
+          "overview": "Creates a user in the named tenant. The acting user comes from the verified token, and the create is replay-guarded: a retry after a lost response returns the original user instead of a conflict.",
+          "notes": [
+            "Password length and complexity are enforced by the tenant's password policy; the DTO only requires a value.",
+            "Duplicate usernames and emails within the tenant answer AlreadyExists.",
+            "The display name lives in the profile, so CreateUser has no fullname field."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "username",
+              "type": "string",
+              "required": true,
+              "description": "Username. 3-50 characters, unique per tenant."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": false,
+              "description": "Email address. Must be valid when present."
+            },
+            {
+              "name": "phone",
+              "type": "string",
+              "required": false,
+              "description": "Phone number. Must be valid when present."
+            },
+            {
+              "name": "password",
+              "type": "string",
+              "required": true,
+              "description": "Initial password. 1-4096 characters; complexity per tenant policy."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "Status: active, inactive, pending, or suspended."
+            },
+            {
+              "name": "metadata",
+              "type": "google.protobuf.Struct",
+              "required": false,
+              "description": "Free-form user metadata."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "user",
+              "type": "User",
+              "description": "The created user record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "username": "alex",
+            "email": "alex@acme.example",
+            "phone": "+15551234567",
+            "password": "CorrectHorseBatteryStaple!1",
+            "status": "active"
+          },
+          "responseExample": {
+            "user": {
+              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "username": "alex",
+              "fullname": "Alex Rivera",
+              "email": "alex@acme.example",
+              "phone": "+15551234567",
+              "is_email_verified": true,
+              "is_phone_verified": false,
+              "is_profile_completed": true,
+              "is_account_completed": true,
+              "status": "active",
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:update",
+        "name": "UpdateUser",
+        "request": "UpdateUserRequest",
+        "response": "UpdateUserResponse",
+        "details": {
+          "overview": "Updates a user's username, email, phone, status, and metadata in the named tenant.",
+          "notes": [
+            "The acting user comes from the verified token, never from actor_user_uuid in the body.",
+            "Duplicate usernames and emails within the tenant answer AlreadyExists."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            },
+            {
+              "name": "username",
+              "type": "string",
+              "required": true,
+              "description": "Username. 3-50 characters."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": false,
+              "description": "Email address. Must be valid when present."
+            },
+            {
+              "name": "phone",
+              "type": "string",
+              "required": false,
+              "description": "Phone number. Must be valid when present."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "Status: active, inactive, pending, or suspended."
+            },
+            {
+              "name": "metadata",
+              "type": "google.protobuf.Struct",
+              "required": false,
+              "description": "Free-form user metadata."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "user",
+              "type": "User",
+              "description": "The updated user record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "username": "alex",
+            "email": "alex@acme.example",
+            "phone": "+15551234567",
+            "status": "active"
+          },
+          "responseExample": {
+            "user": {
+              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "username": "alex",
+              "fullname": "Alex Rivera",
+              "email": "alex@acme.example",
+              "phone": "+15551234567",
+              "is_email_verified": true,
+              "is_phone_verified": false,
+              "is_profile_completed": true,
+              "is_account_completed": true,
+              "status": "active",
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:update",
         "stepUp": true,
-"name": "SetUserStatus", "request": "SetUserStatusRequest", "response": "SetUserStatusResponse" },
-      {         "permission": "user:update",
-"name": "VerifyUserEmail", "request": "VerifyUserEmailRequest", "response": "VerifyUserEmailResponse" },
-      {         "permission": "user:update",
-"name": "VerifyUserPhone", "request": "VerifyUserPhoneRequest", "response": "VerifyUserPhoneResponse" },
-      {         "permission": "user:update",
-"name": "CompleteUserAccount", "request": "CompleteUserAccountRequest", "response": "CompleteUserAccountResponse" },
-      {         "permission": "user:delete",
+        "name": "SetUserStatus",
+        "request": "SetUserStatusRequest",
+        "response": "SetUserStatusResponse",
+        "details": {
+          "overview": "Changes a user's status. Suspending or deactivating a user blocks their sign-in immediately.",
+          "notes": [
+            "Requires a step-up token (acr=2).",
+            "The acting user comes from the verified token."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "Status: active, inactive, pending, or suspended."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "user",
+              "type": "User",
+              "description": "The updated user record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "status": "suspended"
+          },
+          "responseExample": {
+            "user": {
+              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "username": "alex",
+              "fullname": "Alex Rivera",
+              "email": "alex@acme.example",
+              "phone": "+15551234567",
+              "is_email_verified": true,
+              "is_phone_verified": false,
+              "is_profile_completed": true,
+              "is_account_completed": true,
+              "status": "suspended",
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:update",
+        "name": "VerifyUserEmail",
+        "request": "VerifyUserEmailRequest",
+        "response": "VerifyUserEmailResponse",
+        "details": {
+          "overview": "Marks the user's email address as verified by an administrator.",
+          "notes": [
+            "No user actor is required: this is a verification state change, not an impersonation."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "user",
+              "type": "User",
+              "description": "The updated user record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "user": {
+              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "username": "alex",
+              "fullname": "Alex Rivera",
+              "email": "alex@acme.example",
+              "phone": "+15551234567",
+              "is_email_verified": true,
+              "is_phone_verified": false,
+              "is_profile_completed": true,
+              "is_account_completed": true,
+              "status": "active",
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:update",
+        "name": "VerifyUserPhone",
+        "request": "VerifyUserPhoneRequest",
+        "response": "VerifyUserPhoneResponse",
+        "details": {
+          "overview": "Marks the user's phone number as verified by an administrator.",
+          "notes": [
+            "No user actor is required."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "user",
+              "type": "User",
+              "description": "The updated user record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "user": {
+              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "username": "alex",
+              "fullname": "Alex Rivera",
+              "email": "alex@acme.example",
+              "phone": "+15551234567",
+              "is_email_verified": true,
+              "is_phone_verified": true,
+              "is_profile_completed": true,
+              "is_account_completed": true,
+              "status": "active",
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:update",
+        "name": "CompleteUserAccount",
+        "request": "CompleteUserAccountRequest",
+        "response": "CompleteUserAccountResponse",
+        "details": {
+          "overview": "Completes a user's account record, typically after an administrator provisioned it partially.",
+          "notes": [
+            "No user actor is required."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "user",
+              "type": "User",
+              "description": "The updated user record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "user": {
+              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "username": "alex",
+              "fullname": "Alex Rivera",
+              "email": "alex@acme.example",
+              "phone": "+15551234567",
+              "is_email_verified": true,
+              "is_phone_verified": false,
+              "is_profile_completed": true,
+              "is_account_completed": true,
+              "status": "active",
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:delete",
         "stepUp": true,
-"name": "DeleteUser", "request": "DeleteUserRequest", "response": "DeleteUserResponse" },
-      {         "permission": "user:update",
+        "name": "DeleteUser",
+        "request": "DeleteUserRequest",
+        "response": "DeleteUserResponse",
+        "details": {
+          "overview": "Soft-deletes a user in the named tenant. The acting user comes from the verified token.",
+          "notes": [
+            "Requires a step-up token (acr=2)."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            },
+            {
+              "name": "actor_user_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "user",
+              "type": "User",
+              "description": "The deleted user record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "user": {
+              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "username": "alex",
+              "fullname": "Alex Rivera",
+              "email": "alex@acme.example",
+              "phone": "+15551234567",
+              "is_email_verified": true,
+              "is_phone_verified": false,
+              "is_profile_completed": true,
+              "is_account_completed": true,
+              "status": "active",
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:update",
         "stepUp": true,
-"name": "ForceUserPasswordChange", "request": "ForceUserPasswordChangeRequest", "response": "ForceUserPasswordChangeResponse" },
-      {         "permission": "user:read",
-"name": "ListUserRoles", "request": "ListUserRolesRequest", "response": "ListUserRolesResponse" },
-      {         "permission": "user:read",
-"name": "ListUserIdentities", "request": "ListUserIdentitiesRequest", "response": "ListUserIdentitiesResponse" },
-      {         "permission": "user:create",
+        "name": "ForceUserPasswordChange",
+        "request": "ForceUserPasswordChangeRequest",
+        "response": "ForceUserPasswordChangeResponse",
+        "details": {
+          "overview": "Forces (or clears) the require-password-change flag on a user, making the next login require a new password.",
+          "notes": [
+            "Requires a step-up token (acr=2).",
+            "No user actor is required."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            },
+            {
+              "name": "force",
+              "type": "bool",
+              "required": true,
+              "description": "True to require a password change at the next login."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "success",
+              "type": "bool",
+              "description": "Always true on success."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "force": true
+          },
+          "responseExample": {
+            "success": true
+          }
+        }
+      },
+      {
+        "permission": "user:read",
+        "name": "ListUserRoles",
+        "request": "ListUserRolesRequest",
+        "response": "ListUserRolesResponse",
+        "details": {
+          "overview": "Lists the roles assigned to a user with pagination.",
+          "notes": [
+            "Each row is the resolved role record with name, description, and flags."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination: page, limit, sort_by, sort_order."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "roles",
+              "type": "repeated UserRole",
+              "description": "The user's roles."
+            },
+            {
+              "name": "roles[].role_uuid",
+              "type": "string",
+              "description": "Role UUID."
+            },
+            {
+              "name": "roles[].name",
+              "type": "string",
+              "description": "Role name."
+            },
+            {
+              "name": "roles[].description",
+              "type": "string",
+              "description": "Role description."
+            },
+            {
+              "name": "roles[].is_default",
+              "type": "bool",
+              "description": "Default-role flag."
+            },
+            {
+              "name": "roles[].is_system",
+              "type": "bool",
+              "description": "System-role flag."
+            },
+            {
+              "name": "roles[].status",
+              "type": "string",
+              "description": "Role status."
+            },
+            {
+              "name": "page",
+              "type": "PageMetadata",
+              "description": "Pagination metadata."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "roles": [
+              {
+                "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "name": "billing-admin",
+                "description": "Manages billing operations",
+                "is_default": false,
+                "is_system": false,
+                "status": "active",
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:read",
+        "name": "ListUserIdentities",
+        "request": "ListUserIdentitiesRequest",
+        "response": "ListUserIdentitiesResponse",
+        "details": {
+          "overview": "Lists the external provider identities linked to a user with pagination.",
+          "notes": [
+            "Each row carries the provider name and the upstream subject."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination: page, limit, sort_by, sort_order."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "identities",
+              "type": "repeated UserIdentity",
+              "description": "The user's linked identities."
+            },
+            {
+              "name": "identities[].user_identity_uuid",
+              "type": "string",
+              "description": "Identity UUID."
+            },
+            {
+              "name": "identities[].provider",
+              "type": "string",
+              "description": "Provider name, e.g. google."
+            },
+            {
+              "name": "identities[].sub",
+              "type": "string",
+              "description": "Upstream subject identifier."
+            },
+            {
+              "name": "page",
+              "type": "PageMetadata",
+              "description": "Pagination metadata."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "identities": [
+              {
+                "user_identity_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "provider": "google",
+                "sub": "google-oauth2|1234567890",
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:create",
         "stepUp": true,
         "actorRequired": true,
-"name": "AssignUserRoles", "request": "AssignUserRolesRequest", "response": "AssignUserRolesResponse" },
-      {         "permission": "user:create",
+        "name": "AssignUserRoles",
+        "request": "AssignUserRolesRequest",
+        "response": "AssignUserRolesResponse",
+        "details": {
+          "overview": "Assigns one or more roles to a user. The acting user must be a user principal carried in the token's on_behalf_of claim \u2014 service tokens cannot assign roles.",
+          "notes": [
+            "Requires a step-up token (acr=2) and an on_behalf_of user actor.",
+            "Between 1 and 10 role UUIDs per request.",
+            "The escalation guard prevents granting roles the acting user does not hold."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            },
+            {
+              "name": "role_uuids",
+              "type": "repeated string",
+              "required": true,
+              "description": "1-10 role UUIDs to assign."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "user",
+              "type": "User",
+              "description": "The updated user record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_uuids": [
+              "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            ]
+          },
+          "responseExample": {
+            "user": {
+              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "username": "alex",
+              "fullname": "Alex Rivera",
+              "email": "alex@acme.example",
+              "phone": "+15551234567",
+              "is_email_verified": true,
+              "is_phone_verified": false,
+              "is_profile_completed": true,
+              "is_account_completed": true,
+              "status": "active",
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "user:create",
         "stepUp": true,
-"name": "RemoveUserRole", "request": "RemoveUserRoleRequest", "response": "RemoveUserRoleResponse" }
+        "name": "RemoveUserRole",
+        "request": "RemoveUserRoleRequest",
+        "response": "RemoveUserRoleResponse",
+        "details": {
+          "overview": "Removes one role from a user in the named tenant.",
+          "notes": [
+            "Requires a step-up token (acr=2)."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the user belongs to."
+            },
+            {
+              "name": "user_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the target user."
+            },
+            {
+              "name": "role_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the role to remove."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "user",
+              "type": "User",
+              "description": "The updated user record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission, or a step-up/actor requirement failed."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant or user does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "user": {
+              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "username": "alex",
+              "fullname": "Alex Rivera",
+              "email": "alex@acme.example",
+              "phone": "+15551234567",
+              "is_email_verified": true,
+              "is_phone_verified": false,
+              "is_profile_completed": true,
+              "is_account_completed": true,
+              "status": "active",
+              "metadata": {},
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
     ]
   },
   {
