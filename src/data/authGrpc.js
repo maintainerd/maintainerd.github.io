@@ -6459,18 +6459,658 @@ export const grpcGroupNav = [
     "description": "API resource definitions used as token audiences.",
     "rpcCount": 6,
     "rpcs": [
-      {         "permission": "api:read",
-"name": "ListAPIs", "request": "ListAPIsRequest", "response": "ListAPIsResponse" },
-      {         "permission": "api:read",
-"name": "GetAPI", "request": "GetAPIRequest", "response": "GetAPIResponse" },
-      {         "permission": "api:create",
-"name": "CreateAPI", "request": "CreateAPIRequest", "response": "CreateAPIResponse" },
-      {         "permission": "api:update",
-"name": "UpdateAPI", "request": "UpdateAPIRequest", "response": "UpdateAPIResponse" },
-      {         "permission": "api:update",
-"name": "SetAPIStatus", "request": "SetAPIStatusRequest", "response": "SetAPIStatusResponse" },
-      {         "permission": "api:delete",
-"name": "DeleteAPI", "request": "DeleteAPIRequest", "response": "DeleteAPIResponse" }
+      {
+        "permission": "api:read",
+        "name": "ListAPIs",
+        "request": "ListAPIsRequest",
+        "response": "ListAPIsResponse",
+        "details": {
+          "overview": "Lists API resource definitions in a tenant with filtering and pagination. Each API carries its server-generated audience identifier.",
+          "notes": [
+            "The identifier is the audience that token issuance and permission scoping resolve against.",
+            "status accepts multiple values."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the API belongs to."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on name."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": false,
+              "description": "Case-insensitive partial match on display name."
+            },
+            {
+              "name": "identifier",
+              "type": "string",
+              "required": false,
+              "description": "Exact match on the audience identifier."
+            },
+            {
+              "name": "service_uuid",
+              "type": "string",
+              "required": false,
+              "description": "Filter by owning service UUID."
+            },
+            {
+              "name": "status",
+              "type": "repeated string",
+              "required": false,
+              "description": "Filter by status: active, inactive."
+            },
+            {
+              "name": "is_system",
+              "type": "optional bool",
+              "required": false,
+              "description": "Filter by system flag."
+            },
+            {
+              "name": "pagination",
+              "type": "Pagination",
+              "required": false,
+              "description": "Standard pagination."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "apis",
+              "type": "repeated API",
+              "description": "The matching API records."
+            },
+            {
+              "name": "page.total",
+              "type": "int64",
+              "description": "Total matching APIs."
+            },
+            {
+              "name": "page.page",
+              "type": "int32",
+              "description": "Current page."
+            },
+            {
+              "name": "page.limit",
+              "type": "int32",
+              "description": "Page size."
+            },
+            {
+              "name": "page.total_pages",
+              "type": "int32",
+              "description": "Total page count."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, API, or owning service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "status": [
+              "active"
+            ],
+            "pagination": {
+              "page": 1,
+              "limit": 20
+            }
+          },
+          "responseExample": {
+            "apis": [
+              {
+                "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "name": "billing",
+                "display_name": "Billing API",
+                "description": "Billing and invoicing endpoints",
+                "identifier": "api-9d1d5b4d3a7e",
+                "status": "active",
+                "is_system": false,
+                "service": {
+                  "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                  "name": "billing-service",
+                  "display_name": "Billing Service",
+                  "description": "Handles billing operations",
+                  "version": "1.0.0",
+                  "status": "active",
+                  "is_system": false,
+                  "api_count": 2,
+                  "policy_count": 1,
+                  "created_at": "2026-08-01T09:00:00Z",
+                  "updated_at": "2026-08-01T09:00:00Z"
+                },
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-10T09:00:00Z"
+              }
+            ],
+            "page": {
+              "total": 1,
+              "page": 1,
+              "limit": 20,
+              "total_pages": 1
+            }
+          }
+        }
+      },
+      {
+        "permission": "api:read",
+        "name": "GetAPI",
+        "request": "GetAPIRequest",
+        "response": "GetAPIResponse",
+        "details": {
+          "overview": "Returns one API resource definition by UUID in the named tenant.",
+          "notes": [
+            "APIs outside the caller's tenant scope respond as not found."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the API belongs to."
+            },
+            {
+              "name": "api_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the API resource."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "api",
+              "type": "API",
+              "description": "The API record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, API, or owning service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "api": {
+              "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing",
+              "display_name": "Billing API",
+              "description": "Billing and invoicing endpoints",
+              "identifier": "api-9d1d5b4d3a7e",
+              "status": "active",
+              "is_system": false,
+              "service": {
+                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "billing-service",
+                "display_name": "Billing Service",
+                "description": "Handles billing operations",
+                "version": "1.0.0",
+                "status": "active",
+                "is_system": false,
+                "api_count": 2,
+                "policy_count": 1,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "api:create",
+        "name": "CreateAPI",
+        "request": "CreateAPIRequest",
+        "response": "CreateAPIResponse",
+        "details": {
+          "overview": "Creates an API resource definition in the named tenant. The server generates the audience identifier (api-<random>).",
+          "notes": [
+            "The identifier is the audience that token issuance and permission scoping resolve against.",
+            "API names are unique per tenant."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the API belongs to."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Machine name. 3-50 characters, unique per tenant."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": true,
+              "description": "Human-readable name. 3-50 characters."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Description. At most 200 characters."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            },
+            {
+              "name": "service_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the owning service."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "api",
+              "type": "API",
+              "description": "The created API record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, API, or owning service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "name": "billing",
+            "display_name": "Billing API",
+            "description": "Billing and invoicing endpoints",
+            "status": "active",
+            "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "api": {
+              "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing",
+              "display_name": "Billing API",
+              "description": "Billing and invoicing endpoints",
+              "identifier": "api-9d1d5b4d3a7e",
+              "status": "active",
+              "is_system": false,
+              "service": {
+                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "billing-service",
+                "display_name": "Billing Service",
+                "description": "Handles billing operations",
+                "version": "1.0.0",
+                "status": "active",
+                "is_system": false,
+                "api_count": 2,
+                "policy_count": 1,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "api:update",
+        "name": "UpdateAPI",
+        "request": "UpdateAPIRequest",
+        "response": "UpdateAPIResponse",
+        "details": {
+          "overview": "Replaces an API resource definition. Because the identifier is the audience that token issuance and permission scoping resolve against, editing an existing API is sensitive.",
+          "notes": [
+            "System APIs cannot be updated."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the API belongs to."
+            },
+            {
+              "name": "api_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the API resource."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Machine name. 3-50 characters, unique per tenant."
+            },
+            {
+              "name": "display_name",
+              "type": "string",
+              "required": true,
+              "description": "Human-readable name. 3-50 characters."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Description. At most 200 characters."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            },
+            {
+              "name": "service_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the owning service."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "api",
+              "type": "API",
+              "description": "The updated API record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, API, or owning service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "name": "billing",
+            "display_name": "Billing API",
+            "description": "Billing and invoicing endpoints (updated)",
+            "status": "active",
+            "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+          },
+          "responseExample": {
+            "api": {
+              "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing",
+              "display_name": "Billing API",
+              "description": "Billing and invoicing endpoints",
+              "identifier": "api-9d1d5b4d3a7e",
+              "status": "active",
+              "is_system": false,
+              "service": {
+                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "billing-service",
+                "display_name": "Billing Service",
+                "description": "Handles billing operations",
+                "version": "1.0.0",
+                "status": "active",
+                "is_system": false,
+                "api_count": 2,
+                "policy_count": 1,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "api:update",
+        "name": "SetAPIStatus",
+        "request": "SetAPIStatusRequest",
+        "response": "SetAPIStatusResponse",
+        "details": {
+          "overview": "Updates only an API's status. Deactivating an API stops its permissions from being issuable in tokens.",
+          "notes": [
+            "System API status cannot be updated."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the API belongs to."
+            },
+            {
+              "name": "api_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the API resource."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "One of active or inactive."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "api",
+              "type": "API",
+              "description": "The updated API record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, API, or owning service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "status": "inactive"
+          },
+          "responseExample": {
+            "api": {
+              "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing",
+              "display_name": "Billing API",
+              "description": "Billing and invoicing endpoints",
+              "identifier": "api-9d1d5b4d3a7e",
+              "status": "inactive",
+              "is_system": false,
+              "service": {
+                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "billing-service",
+                "display_name": "Billing Service",
+                "description": "Handles billing operations",
+                "version": "1.0.0",
+                "status": "active",
+                "is_system": false,
+                "api_count": 2,
+                "policy_count": 1,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "permission": "api:delete",
+        "name": "DeleteAPI",
+        "request": "DeleteAPIRequest",
+        "response": "DeleteAPIResponse",
+        "details": {
+          "overview": "Soft-deletes an API resource definition. All permissions belonging to the API within the tenant are soft-deleted in the same transaction.",
+          "notes": [
+            "System APIs cannot be deleted."
+          ],
+          "requestFields": [
+            {
+              "name": "tenant_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the tenant the API belongs to."
+            },
+            {
+              "name": "api_uuid",
+              "type": "string",
+              "required": true,
+              "description": "UUID of the API resource."
+            }
+          ],
+          "responseFields": [
+            {
+              "name": "api",
+              "type": "API",
+              "description": "The deleted API record."
+            }
+          ],
+          "errors": [
+            {
+              "code": "Unauthenticated",
+              "description": "No authenticated actor is bound to the request."
+            },
+            {
+              "code": "PermissionDenied",
+              "description": "The caller's policy does not allow the mapped permission."
+            },
+            {
+              "code": "InvalidArgument",
+              "description": "A UUID is missing or invalid, or a field fails validation."
+            },
+            {
+              "code": "NotFound",
+              "description": "The tenant, API, or owning service does not exist in scope."
+            },
+            {
+              "code": "Internal",
+              "description": "An unexpected storage or service error occurred."
+            }
+          ],
+          "requestExample": {
+            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "responseExample": {
+            "api": {
+              "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "name": "billing",
+              "display_name": "Billing API",
+              "description": "Billing and invoicing endpoints",
+              "identifier": "api-9d1d5b4d3a7e",
+              "status": "active",
+              "is_system": false,
+              "service": {
+                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "name": "billing-service",
+                "display_name": "Billing Service",
+                "description": "Handles billing operations",
+                "version": "1.0.0",
+                "status": "active",
+                "is_system": false,
+                "api_count": 2,
+                "policy_count": 1,
+                "created_at": "2026-08-01T09:00:00Z",
+                "updated_at": "2026-08-01T09:00:00Z"
+              },
+              "created_at": "2026-08-01T09:00:00Z",
+              "updated_at": "2026-08-10T09:00:00Z"
+            }
+          }
+        }
+      },
     ]
   },
   {
