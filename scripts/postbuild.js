@@ -10,6 +10,7 @@ const routes = [
   "/services/auth/",
   "/services/auth/docs/",
   "/services/auth/api/",
+  "/services/auth/grpc/",
   "/services/core/",
   "/services/docker/",
   "/services/kubernetes/",
