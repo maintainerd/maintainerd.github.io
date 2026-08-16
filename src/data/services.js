@@ -5,7 +5,7 @@ export const maintainerdServices = [
     slug: "auth",
     name: "Auth",
     eyebrow: "Identity & Access",
-    status: "v0.1.1",
+    status: "v0.1.0",
     statusKind: "version",
     icon: serviceIcon("auth"),
     summary: "Identity and access: OAuth/OIDC, hosted login, MFA, SAML, clients, policies, users, and API authorization.",
