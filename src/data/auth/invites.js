@@ -241,7 +241,7 @@ const group = {
               "description": "Email address of the invited user. 3-100 characters, valid email format."
             },
             {
-              "name": "registration_flow_uuid",
+              "name": "registration_flow_id",
               "type": "string (UUID)",
               "required": false,
               "description": "Registration flow the invited user will onboard through. Defaults to standard registration when omitted."
@@ -255,7 +255,7 @@ const group = {
           ],
           "example": {
             "email": "alex@example.com",
-            "registration_flow_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "registration_flow_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "callback_url": "https://app.example.com/welcome"
           }
         },

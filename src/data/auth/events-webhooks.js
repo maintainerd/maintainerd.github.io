@@ -653,7 +653,7 @@ const group = {
         "overview": "Returns the explicit event-type subscriptions for a webhook endpoint. Subscriptions matter only when subscribe_all is false.",
         "notes": [
           "Requires the webhook-endpoint:read permission.",
-          "The response is a plain array of { event_type_uuid, event_type_key } pairs; no pagination."
+          "The response is a plain array of { event_type_id, event_type_key } pairs; no pagination."
         ],
         "parameters": [
           {
@@ -674,7 +674,7 @@ const group = {
               "success": true,
               "data": [
                 {
-                  "event_type_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                  "event_type_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                   "event_type_key": "user.created"
                 }
               ],
@@ -723,14 +723,14 @@ const group = {
           "description": "Subscription payload.",
           "fields": [
             {
-              "name": "event_type_uuid",
+              "name": "event_type_id",
               "type": "string (UUID)",
               "required": true,
               "description": "UUID of the event type to subscribe to."
             }
           ],
           "example": {
-            "event_type_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "event_type_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           }
         },
         "responses": [
@@ -740,7 +740,7 @@ const group = {
             "example": {
               "success": true,
               "data": {
-                "event_type_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "event_type_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "event_type_key": "user.created"
               },
               "message": "Subscription added successfully"
@@ -752,10 +752,10 @@ const group = {
           invalidBodyResponse,
           {
             "status": "400 Bad Request",
-            "description": "event_type_uuid is missing.",
+            "description": "event_type_id is missing.",
             "example": {
               "success": false,
-              "error": "event_type_uuid is required"
+              "error": "event_type_id is required"
             }
           },
           {
@@ -795,14 +795,14 @@ const group = {
           "description": "Subscription removal payload.",
           "fields": [
             {
-              "name": "event_type_uuid",
+              "name": "event_type_id",
               "type": "string (UUID)",
               "required": true,
               "description": "UUID of the event type to unsubscribe."
             }
           ],
           "example": {
-            "event_type_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "event_type_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           }
         },
         "responses": [
@@ -821,10 +821,10 @@ const group = {
           invalidBodyResponse,
           {
             "status": "400 Bad Request",
-            "description": "event_type_uuid is missing.",
+            "description": "event_type_id is missing.",
             "example": {
               "success": false,
-              "error": "event_type_uuid is required"
+              "error": "event_type_id is required"
             }
           },
           {
@@ -879,7 +879,7 @@ const group = {
               "success": true,
               "data": [
                 {
-                  "delivery_history_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                  "delivery_history_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                   "event_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
                   "event_type": "user.created",
                   "attempt_count": 2,
@@ -1307,9 +1307,9 @@ const group = {
               "success": true,
               "data": [
                 {
-                  "tenant_event_type_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                  "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-                  "event_type_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                  "tenant_event_type_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                  "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+                  "event_type_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                   "event_type_key": "user.created",
                   "enabled": false
                 }
@@ -1349,7 +1349,7 @@ const group = {
           "description": "Tenant event-type toggle payload.",
           "fields": [
             {
-              "name": "event_type_uuid",
+              "name": "event_type_id",
               "type": "string (UUID)",
               "required": true,
               "description": "UUID of the event type to toggle."
@@ -1362,7 +1362,7 @@ const group = {
             }
           ],
           "example": {
-            "event_type_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "event_type_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "enabled": false
           }
         },
@@ -1373,9 +1373,9 @@ const group = {
             "example": {
               "success": true,
               "data": {
-                "tenant_event_type_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-                "event_type_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "tenant_event_type_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+                "event_type_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "event_type_key": "user.created",
                 "enabled": false
               },
@@ -1435,7 +1435,7 @@ const group = {
               "data": [
                 {
                   "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                  "event_type_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                  "event_type_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                   "event_type_key": "user.created",
                   "channel": "rabbitmq",
                   "enabled": true,
@@ -1489,7 +1489,7 @@ const group = {
               "success": true,
               "data": {
                 "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                "event_type_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "event_type_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "event_type_key": "user.created",
                 "channel": "rabbitmq",
                 "enabled": true,
@@ -1540,7 +1540,7 @@ const group = {
           "description": "Event route creation payload.",
           "fields": [
             {
-              "name": "event_type_uuid",
+              "name": "event_type_id",
               "type": "string (UUID)",
               "required": true,
               "description": "UUID of the event type to route."
@@ -1553,7 +1553,7 @@ const group = {
             }
           ],
           "example": {
-            "event_type_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "event_type_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           }
         },
         "responses": [
@@ -1564,7 +1564,7 @@ const group = {
               "success": true,
               "data": {
                 "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                "event_type_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "event_type_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "event_type_key": "user.created",
                 "channel": "rabbitmq",
                 "enabled": true,
@@ -1579,7 +1579,7 @@ const group = {
           invalidBodyResponse,
           {
             "status": "400 Bad Request",
-            "description": "event_type_uuid is missing, or the event type is inactive.",
+            "description": "event_type_id is missing, or the event type is inactive.",
             "example": {
               "success": false,
               "error": "event type is not active and cannot be routed"
@@ -1619,7 +1619,7 @@ const group = {
       "summary": "Update an event route.",
       "surface": management,
       "details": {
-        "overview": "Updates an event route's enabled state. The event_type_uuid field is parsed but ignored: routes cannot be re-pointed at another event type.",
+        "overview": "Updates an event route's enabled state. The event_type_id field is parsed but ignored: routes cannot be re-pointed at another event type.",
         "notes": [
           "Requires the webhook-endpoint:update permission.",
           "enabled defaults to true when omitted, which silently re-enables a disabled route — send the field explicitly when intending to disable."
@@ -1645,7 +1645,7 @@ const group = {
               "description": "Route enabled state. Defaults to true when omitted."
             },
             {
-              "name": "event_type_uuid",
+              "name": "event_type_id",
               "type": "string (UUID)",
               "required": false,
               "description": "Ignored on update."
@@ -1663,7 +1663,7 @@ const group = {
               "success": true,
               "data": {
                 "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                "event_type_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "event_type_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "event_type_key": "user.created",
                 "channel": "rabbitmq",
                 "enabled": false,

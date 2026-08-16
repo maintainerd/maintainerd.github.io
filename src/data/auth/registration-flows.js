@@ -655,14 +655,14 @@ const group = {
           "description": "Role assignment payload.",
           "fields": [
             {
-              "name": "role_uuids",
+              "name": "role_ids",
               "type": "array of UUID strings",
               "required": true,
               "description": "Between 1 and 50 role UUIDs to assign."
             }
           ],
           "example": {
-            "role_uuids": ["f47ac10b-58cc-4372-a567-0e02b2c3d479"]
+            "role_ids": ["f47ac10b-58cc-4372-a567-0e02b2c3d479"]
           }
         },
         "responses": [

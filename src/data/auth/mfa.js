@@ -106,7 +106,7 @@ const mfaStatusExample = {
   "backup_codes_count": 7,
   "webauthn_keys": [
     {
-      "credential_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "credential_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
       "name": "Security key",
       "transport": "usb,internal",
       "last_used_at": "2026-08-14T09:00:00Z",
@@ -272,7 +272,7 @@ const group = {
             "example": {
               "success": true,
               "data": {
-                "credential_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "credential_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "name": "Security key"
               },
               "message": "WebAuthn authentication succeeded"
@@ -808,7 +808,7 @@ const group = {
             "example": {
               "success": true,
               "data": {
-                "credential_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "credential_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "name": "Security key",
                 "transport": "usb,internal",
                 "created_at": "2026-08-15T09:00:00Z"
@@ -907,7 +907,7 @@ const group = {
             "example": {
               "success": true,
               "data": {
-                "credential_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "credential_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "name": "Security key",
                 "credential_key_id": "Y3JlZGVudGlhbC1rZXktaWQ",
                 "public_key_base64": "cHVibGljLWtleQ",

@@ -558,7 +558,7 @@ const group = {
               "data": {
                 "challenge_id": "b0e9a882-308a-44c4-bb4d-7615975d5d2a",
                 "client_name": "Example App",
-                "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "scopes": ["openid", "email", "profile"],
                 "redirect_uri": "https://app.example.com/auth/callback",
                 "expires_at": 1765209600
@@ -706,7 +706,7 @@ const group = {
       "details": {
         "overview": "Completes a brokered OAuth flow after the user confirms an account link that was triggered by a social-login email collision. It redeems the confirmed link token and the pending broker session, issues an authorization code for the linked user, and returns the downstream redirect URL.",
         "notes": [
-          "Both broker_session_uuid and account_link_token are required.",
+          "Both broker_session_id and account_link_token are required.",
           "When the resume issues an SSO access token, it is also delivered as httpOnly auth cookies.",
           "The response exposes the downstream redirect_url, not internal IDs."
         ],
@@ -717,7 +717,7 @@ const group = {
           "description": "Broker resume payload.",
           "fields": [
             {
-              "name": "broker_session_uuid",
+              "name": "broker_session_id",
               "type": "string (UUID)",
               "required": true,
               "description": "UUID of the pending broker session created during the upstream provider leg."
@@ -730,7 +730,7 @@ const group = {
             }
           ],
           "example": {
-            "broker_session_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "broker_session_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "account_link_token": "linktoken_9d1d5b4d3a"
           }
         },
@@ -750,10 +750,10 @@ const group = {
           authRequiredResponse,
           {
             "status": "400 Bad Request",
-            "description": "broker_session_uuid or account_link_token is missing.",
+            "description": "broker_session_id or account_link_token is missing.",
             "example": {
               "success": false,
-              "error": "broker_session_uuid and account_link_token are required"
+              "error": "broker_session_id and account_link_token are required"
             }
           },
           invalidBodyResponse,
@@ -826,7 +826,7 @@ const group = {
                 {
                   "consent_grant_id": "b0e9a882-308a-44c4-bb4d-7615975d5d2a",
                   "client_name": "Example App",
-                  "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                  "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                   "scopes": ["openid", "email", "profile"],
                   "granted_at": "2026-08-01T09:00:00Z",
                   "updated_at": "2026-08-01T09:00:00Z"

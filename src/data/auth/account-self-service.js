@@ -311,7 +311,7 @@ const profileExample = {
 };
 
 const identityExample = {
-  "identity_uuid": "0198b950-c097-7466-b26b-84f0f756a346",
+  "identity_id": "0198b950-c097-7466-b26b-84f0f756a346",
   "provider": "oidc",
   "sub": "00u1abcd2EFGHijk3456",
   "is_default": false,
@@ -349,7 +349,7 @@ const tokenExample = {
 };
 
 const accountExportExample = {
-  "user_uuid": "0198b91f-b129-7ad1-a5b2-37d18ad0e2ec",
+  "user_id": "0198b91f-b129-7ad1-a5b2-37d18ad0e2ec",
   "username": "jane.admin",
   "email": "jane.admin@example.com",
   "phone": "+15551234567",

@@ -994,7 +994,7 @@ const group = {
             "backup_codes_count": 8,
             "webauthn_keys": [
               {
-                "credential_uuid": "0198b9a7-e065-7956-a315-d48a7cf4a7f8",
+                "credential_id": "0198b9a7-e065-7956-a315-d48a7cf4a7f8",
                 "name": "Security Key",
                 "transport": "usb",
                 "last_used_at": "2026-08-15T02:18:10Z",

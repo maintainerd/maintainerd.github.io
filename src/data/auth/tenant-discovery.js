@@ -117,7 +117,7 @@ const bootstrapExample = {
   "success": true,
   "data": {
     "tenant": {
-      "tenant_uuid": "018f5e1c-8a44-7c21-b22e-69a7f7f4d421",
+      "tenant_id": "018f5e1c-8a44-7c21-b22e-69a7f7f4d421",
       "name": "acme",
       "display_name": "Acme",
       "description": "Acme workspace",

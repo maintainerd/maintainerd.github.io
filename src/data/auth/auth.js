@@ -25,7 +25,7 @@ const tokenDeliveryHeader = {
 
 const sessionHeader = {
   "name": "X-Session-ID",
-  "value": "<session_uuid>",
+  "value": "<session_id>",
   "required": false,
   "description": "Optional refresh-token session hint. If omitted, cookie-based clients can derive the session from the access-token cookie."
 };
@@ -251,7 +251,7 @@ const group = {
         "notes": [
           "This is the only endpoint in this section that requires an authenticated user token.",
           "The token path value is server-issued and should be treated as an opaque confirmation secret.",
-          "The response exposes the public account_link_request_uuid and provider name, not internal IDs."
+          "The response exposes the public account_link_request_id and provider name, not internal IDs."
         ],
         "parameters": [
           {
@@ -271,7 +271,7 @@ const group = {
             "example": {
               "success": true,
               "data": {
-                "account_link_request_uuid": "b0e9a882-308a-44c4-bb4d-7615975d5d2a",
+                "account_link_request_id": "b0e9a882-308a-44c4-bb4d-7615975d5d2a",
                 "provider": "google",
                 "status": "confirmed"
               },

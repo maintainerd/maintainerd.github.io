@@ -219,10 +219,10 @@ const group = {
             "example": {
               "success": true,
               "data": {
-                "service_uuid": "0f25a746-44f3-4f95-98d4-72dfb41c87cc",
+                "service_id": "0f25a746-44f3-4f95-98d4-72dfb41c87cc",
                 "name": "core",
                 "display_name": "Maintainerd Core",
-                "policy_uuid": "64b71589-a8c5-4c85-84cc-52c28a70e019",
+                "policy_id": "64b71589-a8c5-4c85-84cc-52c28a70e019",
                 "policy_name": "control-service-policy",
                 "already_existed": false,
                 "policy_was_attached": true

@@ -712,8 +712,8 @@ const group = {
                   "updated_at": "2026-08-15T09:00:00Z"
                 },
                 "credentials": {
-                  "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                  "client_id": "app-web-client",
+                  "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                  "oauth_client_id": "app-web-client",
                   "client_secret": "secret_9d1d5b4d3a"
                 }
               },
@@ -1664,7 +1664,7 @@ const group = {
         "overview": "Assigns one or more resource APIs to a client. After assignment, the client may request tokens addressed to those API audiences and receive the permissions configured for them.",
         "notes": [
           "Requires the client:api:create permission and step-up authentication.",
-          "api_uuids must be a non-empty list of valid UUIDs.",
+          "api_ids must be a non-empty list of valid UUIDs.",
           "The tenant and the acting user are both trust boundaries on this grant mutation."
         ],
         "parameters": [
@@ -1682,14 +1682,14 @@ const group = {
           "description": "API assignment payload.",
           "fields": [
             {
-              "name": "api_uuids",
+              "name": "api_ids",
               "type": "array of UUID strings",
               "required": true,
               "description": "Non-empty list of resource API UUIDs to assign."
             }
           ],
           "example": {
-            "api_uuids": ["f47ac10b-58cc-4372-a567-0e02b2c3d479"]
+            "api_ids": ["f47ac10b-58cc-4372-a567-0e02b2c3d479"]
           }
         },
         "responses": [
@@ -1831,7 +1831,7 @@ const group = {
         "overview": "Grants one or more permissions under an assigned API to the client. The permissions are resolved into the client's access tokens for that API audience.",
         "notes": [
           "Requires the client:api:permission:create permission and step-up authentication.",
-          "permission_uuids must be a non-empty list of valid UUIDs belonging to the API.",
+          "permission_ids must be a non-empty list of valid UUIDs belonging to the API.",
           "The tenant and the acting user are both trust boundaries on this grant mutation."
         ],
         "parameters": [
@@ -1856,14 +1856,14 @@ const group = {
           "description": "Permission assignment payload.",
           "fields": [
             {
-              "name": "permission_uuids",
+              "name": "permission_ids",
               "type": "array of UUID strings",
               "required": true,
               "description": "Non-empty list of permission UUIDs to grant under the API."
             }
           ],
           "example": {
-            "permission_uuids": ["e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"]
+            "permission_ids": ["e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"]
           }
         },
         "responses": [
@@ -1974,8 +1974,8 @@ const group = {
               "success": true,
               "data": [
                 {
-                  "client_role_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-                  "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                  "client_role_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+                  "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                   "name": "billing-service",
                   "description": "Billing service role",
                   "created_at": "2026-08-01T09:00:00Z"
@@ -2008,7 +2008,7 @@ const group = {
         "overview": "Assigns a role to a client. A role grant decides what the client may do, so it is attributable: the acting user is recorded on the grant.",
         "notes": [
           "Requires the client:role:create permission and step-up authentication.",
-          "role_uuid must be a valid UUID of a role in the caller's tenant.",
+          "role_id must be a valid UUID of a role in the caller's tenant.",
           "The acting user becomes the grant's created_by stamp."
         ],
         "parameters": [
@@ -2026,14 +2026,14 @@ const group = {
           "description": "Role assignment payload.",
           "fields": [
             {
-              "name": "role_uuid",
+              "name": "role_id",
               "type": "string (UUID)",
               "required": true,
               "description": "UUID of the role to assign."
             }
           ],
           "example": {
-            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           }
         },
         "responses": [
@@ -2043,8 +2043,8 @@ const group = {
             "example": {
               "success": true,
               "data": {
-                "client_role_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-                "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "client_role_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+                "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "created_at": "2026-08-15T09:00:00Z"
               },
               "message": "Role assigned to client successfully"

@@ -100,8 +100,8 @@ const invalidWifUuidResponse = {
 };
 
 const wifExample = {
-  "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-  "client_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+  "workload_identity_federation_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "client_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
   "name": "github-actions-ci",
   "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
   "issuer_url": "https://token.actions.githubusercontent.com",
@@ -336,7 +336,7 @@ const group = {
           "description": "Workload identity federation creation payload.",
           "fields": [
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string (UUID)",
               "required": true,
               "description": "UUID of the mapped OAuth client. Immutable after creation."
@@ -344,7 +344,7 @@ const group = {
             ...createUpdateFields
           ],
           "example": {
-            "client_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "name": "github-actions-ci",
             "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
             "issuer_url": "https://token.actions.githubusercontent.com",
