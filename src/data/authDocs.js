@@ -3,6 +3,8 @@ export const docsGroups = [
     label: "Start",
     sections: [
       ["introduction", "Introduction"],
+      ["feature-inventory", "Features"],
+      ["identity-types", "Identity types"],
       ["quickstart", "Quickstart"],
       ["setup", "Setup"]
     ]
@@ -15,7 +17,9 @@ export const docsGroups = [
       ["secrets", "Secrets & keys"],
       ["database-redis", "Database & Redis"],
       ["surfaces-hostnames", "Hostnames & tenant URLs"],
-      ["messaging", "Messaging"]
+      ["transport-security", "Transport security"],
+      ["messaging", "Messaging"],
+      ["system-defaults", "System defaults"]
     ]
   },
   {
@@ -25,7 +29,8 @@ export const docsGroups = [
       ["users-invites", "Users & invites"],
       ["registration-flows", "Registration flows"],
       ["login-registration", "Login & registration"],
-      ["account", "Account self-service"]
+      ["account", "Account self-service"],
+      ["mfa", "MFA & step-up"]
     ]
   },
   {
@@ -33,8 +38,31 @@ export const docsGroups = [
     sections: [
       ["clients", "Applications & clients"],
       ["identity-providers", "Identity providers"],
+      ["federated-login-client", "Federated login"],
+      ["hosted-login-flow", "Hosted login flow"],
       ["oauth-oidc", "OAuth & OIDC"],
+      ["tokens-sessions", "Tokens & sessions"],
       ["protect-api", "Protect an API"]
+    ]
+  },
+  {
+    label: "Authorization",
+    sections: [
+      ["authorization-model", "Authorization model"],
+      ["policies", "Policies"],
+      ["resources", "Services, APIs & permissions"],
+      ["service-auth", "Service auth"],
+      ["workload-identity", "Workload identity"]
+    ]
+  },
+  {
+    label: "Developer integration",
+    sections: [
+      ["developer-integration", "Integration overview"],
+      ["external-app-setup", "External app setup"],
+      ["example-workflows", "Example workflows"],
+      ["api-map", "API map"],
+      ["grpc", "gRPC"]
     ]
   },
   {
@@ -43,11 +71,16 @@ export const docsGroups = [
       ["events-webhooks", "Events & webhooks"],
       ["audit", "Auth events"],
       ["security", "Security controls"],
+      ["observability", "Observability"],
+      ["data-lifecycle", "Data lifecycle"],
+      ["branding", "Branding & templates"],
+      ["control-plane", "Control plane"],
+      ["lifecycle-runners", "Lifecycle runners"],
       ["troubleshooting", "Troubleshooting"]
     ]
   },
   {
-    label: "Developer reference",
+    label: "Reference",
     sections: [
       ["architecture", "Architecture"],
       ["glossary", "Glossary"]
@@ -61,71 +94,5 @@ export const docsSections = docsGroups.flatMap((group) =>
     title
   }))
 );
-
-export const docAnchors = [
-  "account",
-  "account-and-step-up-issues",
-  "api-map",
-  "architecture",
-  "audit",
-  "auth-events-and-audit",
-  "authorization-issues",
-  "authorization-model",
-  "branding",
-  "clients",
-  "complete-event-catalog",
-  "control-plane",
-  "data-lifecycle",
-  "database-and-redis",
-  "database-redis",
-  "deployment",
-  "developer-integration",
-  "edge-and-proxy-issues",
-  "environment",
-  "events-and-webhooks",
-  "events-webhooks",
-  "example-workflows",
-  "external-api-token-validation",
-  "external-app-setup",
-  "feature-inventory",
-  "federated-login-client",
-  "glossary",
-  "grpc",
-  "grpc-issues",
-  "hosted-login-flow",
-  "identity-providers",
-  "identity-types",
-  "introduction",
-  "lifecycle-runners",
-  "login-issues",
-  "login-registration",
-  "messaging",
-  "messaging-issues",
-  "mfa",
-  "oauth-and-oidc-issues",
-  "oauth-oidc",
-  "observability",
-  "policies",
-  "protect-api",
-  "quickstart",
-  "readiness-failures",
-  "registration-flows",
-  "registration-issues",
-  "resources",
-  "secrets",
-  "security",
-  "service-auth",
-  "session-and-cookie-issues",
-  "setup",
-  "startup-failures",
-  "surfaces-hostnames",
-  "system-defaults",
-  "tenants-members",
-  "tokens-sessions",
-  "transport-security",
-  "troubleshooting",
-  "users-invites",
-  "workload-identity"
-];
 
 export const findDocSection = (slug) => docsSections.find((section) => section.slug === slug);

@@ -148,7 +148,7 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 .content-flow li + li { margin-top: 6px; }
 .markdown-panel { min-height: 520px; }
 .markdown-content { max-width: 920px; }
-.hash-targets { position: absolute; width: 1px; height: 1px; overflow: hidden; }
+.markdown-content :is(h1, h2, h3, h4) { scroll-margin-top: 96px; }
 .markdown-content > * + * { margin-top: 18px; }
 .markdown-content h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2.15rem, 3vw, 3rem); line-height: 1.08; letter-spacing: -0.025em; }
 .markdown-content h1 + p { max-width: 760px; color: var(--ink); font-size: 1.1rem; line-height: 1.72; }

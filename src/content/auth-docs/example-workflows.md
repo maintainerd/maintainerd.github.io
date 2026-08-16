@@ -1,6 +1,6 @@
 # Example Workflows
 
-These are the guide-level examples that should be expanded into full walkthroughs.
+Guide-level walkthroughs for the most common integration patterns. Each one lists the steps end to end; follow the linked reference pages for the detailed configuration behind each step.
 
 ## Basic Web App Login
 

@@ -1,9 +1,9 @@
 <script>
   import { onMount, tick } from "svelte";
-  import { marked } from "marked";
   import PageHero from "@/components/ui/PageHero.svelte";
-  import { docAnchors, docsGroups, docsSections, findDocSection } from "@/data/authDocs.js";
-  import { loadDocContent } from "@/utils/docContent.js";
+  import { docsGroups, docsSections, findDocSection } from "@/data/authDocs.js";
+  import { loadDocContent, hasDoc } from "@/utils/docContent.js";
+  import { renderMarkdown } from "@/utils/renderMarkdown.js";
 
   export let hash = "";
 
@@ -14,14 +14,14 @@
   let initialized = false;
 
   $: requestedSlug = hash.replace(/^#/, "") || "introduction";
-  $: if (initialized && requestedSlug !== activeSlug && findDocSection(requestedSlug)) {
+  $: if (initialized && requestedSlug !== activeSlug && hasDoc(requestedSlug)) {
     selectSection(requestedSlug, false);
   }
   $: activeSection = findDocSection(activeSlug) || docsSections[0];
-  $: rendered = activeContent ? marked.parse(activeContent, { gfm: true }) : "";
+  $: rendered = activeContent ? renderMarkdown(activeContent) : "";
 
   async function selectSection(slug, updateHash = true) {
-    if (!findDocSection(slug)) return;
+    if (!hasDoc(slug)) return;
     const requestId = ++contentRequest;
     activeSlug = slug;
     isLoading = true;
@@ -40,13 +40,13 @@
   onMount(() => {
     const syncFromHash = () => {
       const nextSlug = window.location.hash.replace(/^#/, "") || "introduction";
-      if (nextSlug !== activeSlug && findDocSection(nextSlug)) {
+      if (nextSlug !== activeSlug && hasDoc(nextSlug)) {
         selectSection(nextSlug, false);
       }
     };
 
     initialized = true;
-    selectSection(findDocSection(requestedSlug) ? requestedSlug : "introduction", false);
+    selectSection(hasDoc(requestedSlug) ? requestedSlug : "introduction", false);
     window.addEventListener("hashchange", syncFromHash);
 
     return () => {
@@ -73,11 +73,6 @@
   />
 
   <section class="section docs-layout">
-    <div class="hash-targets" aria-hidden="true">
-      {#each docAnchors as slug}
-        <span id={slug}></span>
-      {/each}
-    </div>
     <aside class="side-nav docs-nav" aria-label="Auth documentation">
       {#each docsGroups as group}
         <span class="side-nav-label">{group.label}</span>
