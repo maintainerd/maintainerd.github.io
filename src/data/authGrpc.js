@@ -72,7 +72,7 @@ export const grpcGroupNav = [
             { "name": "metadata.term_of_service_url", "type": "string", "required": false, "description": "Terms of service URL. Valid URL, at most 500 characters." }
           ],
           "responseFields": [
-            { "name": "tenant_uuid", "type": "string", "description": "UUID of the created system tenant." },
+            { "name": "tenant_id", "type": "string", "description": "UUID of the created system tenant." },
             { "name": "name", "type": "string", "description": "Tenant name as stored." },
             { "name": "display_name", "type": "string", "description": "Tenant display name as stored." },
             { "name": "default_client_id", "type": "string", "description": "OAuth client identifier of the tenant's seeded default client." },
@@ -89,7 +89,7 @@ export const grpcGroupNav = [
             }
           },
           "responseExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "name": "acme",
             "display_name": "Acme Inc.",
             "default_client_id": "console-acme",
@@ -121,7 +121,7 @@ export const grpcGroupNav = [
             { "name": "email", "type": "string", "required": true, "description": "Email address. Valid format, at most 100 characters." }
           ],
           "responseFields": [
-            { "name": "user_uuid", "type": "string", "description": "UUID of the created administrator." },
+            { "name": "user_id", "type": "string", "description": "UUID of the created administrator." },
             { "name": "username", "type": "string", "description": "Username as stored." },
             { "name": "fullname", "type": "string", "description": "Full name as stored." },
             { "name": "email", "type": "string", "description": "Email address as stored." },
@@ -134,7 +134,7 @@ export const grpcGroupNav = [
             "email": "admin@acme.example"
           },
           "responseExample": {
-            "user_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "user_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "username": "admin",
             "fullname": "Acme Administrator",
             "email": "admin@acme.example",
@@ -180,7 +180,7 @@ export const grpcGroupNav = [
             { "name": "metadata", "type": "google.protobuf.Struct", "required": false, "description": "Free-form profile metadata." }
           ],
           "responseFields": [
-            { "name": "profile_uuid", "type": "string", "description": "UUID of the created profile." },
+            { "name": "profile_id", "type": "string", "description": "UUID of the created profile." },
             { "name": "first_name", "type": "string", "description": "First name as stored." },
             { "name": "display_name", "type": "string", "description": "Display name as resolved (empty when not set)." }
           ],
@@ -206,7 +206,7 @@ export const grpcGroupNav = [
             }
           },
           "responseExample": {
-            "profile_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "profile_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "first_name": "Acme",
             "display_name": "Acme Admin"
           },
@@ -239,10 +239,10 @@ export const grpcGroupNav = [
             { "name": "policy_name", "type": "string", "required": false, "description": "Name of the control policy. Empty means auth-control." }
           ],
           "responseFields": [
-            { "name": "service_uuid", "type": "string", "description": "UUID of the registered service principal." },
+            { "name": "service_id", "type": "string", "description": "UUID of the registered service principal." },
             { "name": "name", "type": "string", "description": "Service name as stored." },
             { "name": "display_name", "type": "string", "description": "Display name as stored." },
-            { "name": "policy_uuid", "type": "string", "description": "UUID of the control policy." },
+            { "name": "policy_id", "type": "string", "description": "UUID of the control policy." },
             { "name": "policy_name", "type": "string", "description": "Name of the control policy as stored." },
             { "name": "already_existed", "type": "bool", "description": "True when the service already existed and was returned unchanged." },
             { "name": "policy_was_attached", "type": "bool", "description": "True when this call attached the policy to the service." }
@@ -262,10 +262,10 @@ export const grpcGroupNav = [
             "policy_name": "core-control"
           },
           "responseExample": {
-            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "name": "maintainerd-core",
             "display_name": "Maintainerd Core",
-            "policy_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "policy_name": "core-control",
             "already_existed": false,
             "policy_was_attached": true
@@ -300,10 +300,10 @@ export const grpcGroupNav = [
             { "name": "audience", "type": "string", "required": false, "description": "API identifier tokens for this client are minted for. Empty means the instance's own management audience." }
           ],
           "responseFields": [
-            { "name": "client_uuid", "type": "string", "description": "UUID of the control client." },
-            { "name": "client_id", "type": "string", "description": "OAuth client identifier the orchestrator authenticates with." },
+            { "name": "client_id", "type": "string", "description": "UUID of the control client." },
+            { "name": "oauth_client_id", "type": "string", "description": "OAuth client identifier the orchestrator authenticates with." },
             { "name": "token_endpoint_auth_method", "type": "string", "description": "The authentication method configured for this client (private_key_jwt)." },
-            { "name": "service_uuid", "type": "string", "description": "UUID of the bound service principal." },
+            { "name": "service_id", "type": "string", "description": "UUID of the bound service principal." },
             { "name": "already_existed", "type": "bool", "description": "True when the client already existed and was returned unchanged." }
           ],
                     "requestExample": {
@@ -314,10 +314,10 @@ export const grpcGroupNav = [
             "audience": "maintainerd-auth"
           },
           "responseExample": {
-            "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_id": "core-maintainerd-core",
+            "client_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "oauth_client_id": "core-maintainerd-core",
             "token_endpoint_auth_method": "private_key_jwt",
-            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "already_existed": false
           },
 "errors": [
@@ -351,8 +351,8 @@ export const grpcGroupNav = [
             { "name": "permissions[].description", "type": "string", "required": false, "description": "Permission description." }
           ],
           "responseFields": [
-            { "name": "service_uuid", "type": "string", "description": "UUID of the owning service principal." },
-            { "name": "api_uuid", "type": "string", "description": "UUID of the registered API." },
+            { "name": "service_id", "type": "string", "description": "UUID of the owning service principal." },
+            { "name": "api_id", "type": "string", "description": "UUID of the registered API." },
             { "name": "identifier", "type": "string", "description": "The API audience identifier." },
             { "name": "permission_names", "type": "repeated string", "description": "Names of the permissions registered under the API." },
             { "name": "already_existed", "type": "bool", "description": "True when the API already existed and was returned unchanged." }
@@ -375,8 +375,8 @@ export const grpcGroupNav = [
             ]
           },
           "responseExample": {
-            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "identifier": "maintainerd-core-api",
             "permission_names": [
               "projects:read",
@@ -400,17 +400,17 @@ export const grpcGroupNav = [
         "details": {
           "overview": "Declaratively creates a role carrying the given permissions and optionally grants it to a user — how Core gives its first administrator full access to itself.",
           "notes": [
-            "assign_to_user_uuid is a UUID rather than a username so it can only name a principal the caller already created in this same setup window.",
+            "assign_to_user_id is a UUID rather than a username so it can only name a principal the caller already created in this same setup window.",
             "Get-or-create and grant semantics: assigned and already_existed let a retry tell a fresh grant from a replay."
           ],
           "requestFields": [
             { "name": "name", "type": "string", "required": true, "description": "Role name." },
             { "name": "description", "type": "string", "required": false, "description": "Role description." },
             { "name": "permission_names", "type": "repeated string", "required": false, "description": "Permission names the role carries." },
-            { "name": "assign_to_user_uuid", "type": "string", "required": false, "description": "UUID of the user the role should be granted to." }
+            { "name": "assign_to_user_id", "type": "string", "required": false, "description": "UUID of the user the role should be granted to." }
           ],
           "responseFields": [
-            { "name": "role_uuid", "type": "string", "description": "UUID of the role." },
+            { "name": "role_id", "type": "string", "description": "UUID of the role." },
             { "name": "name", "type": "string", "description": "Role name as stored." },
             { "name": "permission_names", "type": "repeated string", "description": "Permission names the role carries." },
             { "name": "assigned", "type": "bool", "description": "True when the role was granted to the requested user." },
@@ -423,10 +423,10 @@ export const grpcGroupNav = [
               "projects:read",
               "projects:write"
             ],
-            "assign_to_user_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "assign_to_user_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
-            "role_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "name": "core-admin",
             "permission_names": [
               "projects:read",
@@ -437,7 +437,7 @@ export const grpcGroupNav = [
           },
 "errors": [
             { "code": "InvalidArgument", "description": "A required field is missing or fails validation." },
-            { "code": "NotFound", "description": "The user named by assign_to_user_uuid was not found." },
+            { "code": "NotFound", "description": "The user named by assign_to_user_id was not found." },
             { "code": "AlreadyExists", "description": "Setup has completed and is locked." },
             { "code": "PermissionDenied", "description": "The orchestrated setup window has expired." },
             { "code": "Internal", "description": "An unexpected storage or service error occurred." }
@@ -464,8 +464,8 @@ export const grpcGroupNav = [
             { "name": "post_logout_redirect_uris", "type": "repeated string", "required": false, "description": "Registered post-logout return URLs." }
           ],
           "responseFields": [
-            { "name": "client_uuid", "type": "string", "description": "UUID of the console client." },
-            { "name": "client_id", "type": "string", "description": "OAuth client identifier the console authenticates with." },
+            { "name": "client_id", "type": "string", "description": "UUID of the console client." },
+            { "name": "oauth_client_id", "type": "string", "description": "OAuth client identifier the console authenticates with." },
             { "name": "redirect_uris", "type": "repeated string", "description": "Registered redirect URIs as stored." },
             { "name": "post_logout_redirect_uris", "type": "repeated string", "description": "Registered post-logout redirect URIs as stored." },
             { "name": "already_existed", "type": "bool", "description": "True when the client already existed and was returned unchanged." }
@@ -482,8 +482,8 @@ export const grpcGroupNav = [
             ]
           },
           "responseExample": {
-            "client_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_id": "console-core-console",
+            "client_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "oauth_client_id": "console-core-console",
             "redirect_uris": [
               "https://console.acme.example/auth/callback"
             ],
@@ -549,7 +549,7 @@ export const grpcGroupNav = [
           "requestFields": [],
           "responseFields": [
             { "name": "tenant", "type": "Tenant", "description": "The system tenant record." },
-            { "name": "tenant.tenant_uuid", "type": "string", "description": "UUID of the tenant." },
+            { "name": "tenant.tenant_id", "type": "string", "description": "UUID of the tenant." },
             { "name": "tenant.name", "type": "string", "description": "Tenant name (the DNS subdomain slug)." },
             { "name": "tenant.display_name", "type": "string", "description": "Human-readable tenant name." },
             { "name": "tenant.description", "type": "string", "description": "Tenant description." },
@@ -562,7 +562,7 @@ export const grpcGroupNav = [
                     "requestExample": {},
           "responseExample": {
             "tenant": {
-              "tenant_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "tenant_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "system",
               "display_name": "System",
               "description": "The platform system tenant.",
@@ -624,7 +624,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "tenants": [
               {
-                "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+                "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "acme",
                 "display_name": "Acme Inc.",
                 "description": "Acme tenant",
@@ -660,17 +660,17 @@ export const grpcGroupNav = [
             "A tenant-bound principal requesting another tenant's record is refused, not silently scoped."
           ],
           "requestFields": [
-            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the tenant to read." }
+            { "name": "tenant_id", "type": "string", "required": true, "description": "UUID of the tenant to read." }
           ],
           "responseFields": [
             { "name": "tenant", "type": "Tenant", "description": "The tenant record." }
           ],
                     "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "tenant": {
-              "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+              "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
               "name": "acme",
               "display_name": "Acme Inc.",
               "description": "Acme tenant",
@@ -683,7 +683,7 @@ export const grpcGroupNav = [
           },
 "errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
-            { "code": "InvalidArgument", "description": "tenant_uuid is missing or not a valid UUID." },
+            { "code": "InvalidArgument", "description": "tenant_id is missing or not a valid UUID." },
             { "code": "PermissionDenied", "description": "The caller is not the system tenant and requested another tenant's record." },
             { "code": "NotFound", "description": "No tenant matches the UUID." },
             { "code": "Internal", "description": "An unexpected storage or service error occurred." }
@@ -719,7 +719,7 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "tenant": {
-              "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "tenant_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "name": "beta",
               "display_name": "Beta Program",
               "description": "Beta program tenant",
@@ -751,7 +751,7 @@ export const grpcGroupNav = [
             "The tenant-management boundary is enforced before any field is touched."
           ],
           "requestFields": [
-            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the tenant to update." },
+            { "name": "tenant_id", "type": "string", "required": true, "description": "UUID of the tenant to update." },
             { "name": "name", "type": "string", "required": true, "description": "Tenant name. 3-63 characters DNS-safe slug; reserved slugs rejected." },
             { "name": "display_name", "type": "string", "required": false, "description": "Human-readable tenant name." },
             { "name": "description", "type": "string", "required": true, "description": "Description. 8-200 characters." },
@@ -761,7 +761,7 @@ export const grpcGroupNav = [
             { "name": "tenant", "type": "Tenant", "description": "The updated tenant record." }
           ],
                     "requestExample": {
-            "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "name": "beta",
             "display_name": "Beta Program",
             "description": "Beta program tenant (updated)",
@@ -769,7 +769,7 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "tenant": {
-              "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "tenant_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "name": "beta",
               "display_name": "Beta Program",
               "description": "Beta program tenant (updated)",
@@ -803,19 +803,19 @@ export const grpcGroupNav = [
             "The system tenant's active status is the durable setup-complete fact, so it cannot be moved to inactive through this RPC."
           ],
           "requestFields": [
-            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the tenant." },
+            { "name": "tenant_id", "type": "string", "required": true, "description": "UUID of the tenant." },
             { "name": "status", "type": "string", "required": true, "description": "Status: active, inactive, pending, or suspended." }
           ],
           "responseFields": [
             { "name": "tenant", "type": "Tenant", "description": "The updated tenant record." }
           ],
                     "requestExample": {
-            "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "status": "suspended"
           },
           "responseExample": {
             "tenant": {
-              "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "tenant_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "name": "beta",
               "display_name": "Beta Program",
               "description": "Beta program tenant (updated)",
@@ -829,7 +829,7 @@ export const grpcGroupNav = [
 "errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller cannot manage the target tenant." },
-            { "code": "InvalidArgument", "description": "tenant_uuid or status is missing or invalid." },
+            { "code": "InvalidArgument", "description": "tenant_id or status is missing or invalid." },
             { "code": "NotFound", "description": "No tenant matches the UUID." },
             { "code": "Internal", "description": "An unexpected storage or service error occurred." }
           ]
@@ -845,22 +845,22 @@ export const grpcGroupNav = [
         "details": {
           "overview": "Soft-deletes a tenant. Only system-tenant principals may delete tenants, and the system tenant itself cannot be deleted.",
           "notes": [
-            "The acting user must be resolvable from the verified token — the request body's actor_user_uuid is never trusted for attribution.",
+            "The acting user must be resolvable from the verified token — the request body's actor_user_id is never trusted for attribution.",
             "Deleting a tenant takes its users, clients, and configuration out of service."
           ],
           "requestFields": [
-            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the tenant to delete." },
-            { "name": "actor_user_uuid", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token, never from the body." }
+            { "name": "tenant_id", "type": "string", "required": true, "description": "UUID of the tenant to delete." },
+            { "name": "actor_user_id", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token, never from the body." }
           ],
           "responseFields": [
             { "name": "tenant", "type": "Tenant", "description": "The deleted tenant record." }
           ],
                     "requestExample": {
-            "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "tenant": {
-              "tenant_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "tenant_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "name": "beta",
               "display_name": "Beta Program",
               "description": "Beta program tenant (updated)",
@@ -874,7 +874,7 @@ export const grpcGroupNav = [
 "errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller is not a system-tenant principal or administrator." },
-            { "code": "InvalidArgument", "description": "tenant_uuid is missing or invalid, or the target is the system tenant." },
+            { "code": "InvalidArgument", "description": "tenant_id is missing or invalid, or the target is the system tenant." },
             { "code": "NotFound", "description": "No tenant matches the UUID." },
             { "code": "Internal", "description": "An unexpected storage or service error occurred." }
           ]
@@ -891,16 +891,16 @@ export const grpcGroupNav = [
             "Each member row carries the resolved user projection (username, email, verification flags, status)."
           ],
           "requestFields": [
-            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the tenant whose members are listed." },
+            { "name": "tenant_id", "type": "string", "required": true, "description": "UUID of the tenant whose members are listed." },
             { "name": "role", "type": "string", "required": false, "description": "Filter by role: owner, admin, or member." },
             { "name": "pagination", "type": "Pagination", "required": false, "description": "Standard pagination." }
           ],
           "responseFields": [
             { "name": "members", "type": "repeated TenantMember", "description": "The matching member records." },
-            { "name": "members[].tenant_member_uuid", "type": "string", "description": "UUID of the membership record." },
+            { "name": "members[].tenant_member_id", "type": "string", "description": "UUID of the membership record." },
             { "name": "members[].role", "type": "string", "description": "Membership role: owner, admin, or member." },
             { "name": "members[].user", "type": "TenantMemberUser", "description": "The resolved user record." },
-            { "name": "members[].user.user_uuid", "type": "string", "description": "UUID of the user." },
+            { "name": "members[].user.user_id", "type": "string", "description": "UUID of the user." },
             { "name": "members[].user.username", "type": "string", "description": "Username." },
             { "name": "members[].user.fullname", "type": "string", "description": "Full name." },
             { "name": "members[].user.email", "type": "string", "description": "Email address." },
@@ -913,7 +913,7 @@ export const grpcGroupNav = [
             { "name": "page", "type": "PageMetadata", "description": "Pagination metadata." }
           ],
                     "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "role": "admin",
             "pagination": {
               "page": 1,
@@ -923,10 +923,10 @@ export const grpcGroupNav = [
           "responseExample": {
             "members": [
               {
-                "tenant_member_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "tenant_member_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "role": "admin",
                 "user": {
-                  "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                  "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                   "username": "admin",
                   "fullname": "Acme Administrator",
                   "email": "admin@acme.example",
@@ -954,7 +954,7 @@ export const grpcGroupNav = [
 "errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller cannot manage the target tenant." },
-            { "code": "InvalidArgument", "description": "tenant_uuid or the role filter is invalid." },
+            { "code": "InvalidArgument", "description": "tenant_id or the role filter is invalid." },
             { "code": "NotFound", "description": "No tenant matches the UUID." },
             { "code": "Internal", "description": "An unexpected storage or service error occurred." }
           ]
@@ -970,29 +970,29 @@ export const grpcGroupNav = [
           "overview": "Adds a user to a tenant with a membership role. The user must already exist in the system tenant before they can be added to another tenant.",
           "notes": [
             "Assigning the owner role is restricted to system-tenant administrators, and a tenant can hold only one owner — use UpdateTenantMemberRole for ownership transfers.",
-            "The acting user comes from the verified token, never from actor_user_uuid in the body.",
+            "The acting user comes from the verified token, never from actor_user_id in the body.",
             "System-tenant ownership can only be established during initial setup."
           ],
           "requestFields": [
-            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the target tenant." },
-            { "name": "user_uuid", "type": "string", "required": true, "description": "UUID of the user to add." },
+            { "name": "tenant_id", "type": "string", "required": true, "description": "UUID of the target tenant." },
+            { "name": "user_id", "type": "string", "required": true, "description": "UUID of the user to add." },
             { "name": "role", "type": "string", "required": true, "description": "Role: owner, admin, or member." },
-            { "name": "actor_user_uuid", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token." }
+            { "name": "actor_user_id", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token." }
           ],
           "responseFields": [
             { "name": "member", "type": "TenantMember", "description": "The created membership record." }
           ],
                     "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "role": "member"
           },
           "responseExample": {
             "member": {
-              "tenant_member_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "tenant_member_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "role": "member",
               "user": {
-                "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "username": "admin",
                 "fullname": "Acme Administrator",
                 "email": "admin@acme.example",
@@ -1033,25 +1033,25 @@ export const grpcGroupNav = [
             "The acting user comes from the verified token."
           ],
           "requestFields": [
-            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the target tenant." },
-            { "name": "tenant_member_uuid", "type": "string", "required": true, "description": "UUID of the membership record." },
+            { "name": "tenant_id", "type": "string", "required": true, "description": "UUID of the target tenant." },
+            { "name": "tenant_member_id", "type": "string", "required": true, "description": "UUID of the membership record." },
             { "name": "role", "type": "string", "required": true, "description": "New role: owner, admin, or member." },
-            { "name": "actor_user_uuid", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token." }
+            { "name": "actor_user_id", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token." }
           ],
           "responseFields": [
             { "name": "member", "type": "TenantMember", "description": "The updated membership record." }
           ],
                     "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "tenant_member_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_member_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "role": "admin"
           },
           "responseExample": {
             "member": {
-              "tenant_member_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "tenant_member_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "role": "admin",
               "user": {
-                "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "username": "admin",
                 "fullname": "Acme Administrator",
                 "email": "admin@acme.example",
@@ -1090,16 +1090,16 @@ export const grpcGroupNav = [
             "Removal is guarded by the same tenant-management boundary as the other member RPCs."
           ],
           "requestFields": [
-            { "name": "tenant_uuid", "type": "string", "required": true, "description": "UUID of the target tenant." },
-            { "name": "tenant_member_uuid", "type": "string", "required": true, "description": "UUID of the membership record to remove." },
-            { "name": "actor_user_uuid", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token." }
+            { "name": "tenant_id", "type": "string", "required": true, "description": "UUID of the target tenant." },
+            { "name": "tenant_member_id", "type": "string", "required": true, "description": "UUID of the membership record to remove." },
+            { "name": "actor_user_id", "type": "string", "required": false, "description": "Reserved field; attribution is taken from the authenticated token." }
           ],
           "responseFields": [
             { "name": "removed", "type": "bool", "description": "Always true on success." }
           ],
                     "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "tenant_member_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_member_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "removed": true
@@ -1107,7 +1107,7 @@ export const grpcGroupNav = [
 "errors": [
             { "code": "Unauthenticated", "description": "No authenticated actor is bound to the request." },
             { "code": "PermissionDenied", "description": "The caller cannot manage the target tenant." },
-            { "code": "InvalidArgument", "description": "tenant_uuid or tenant_member_uuid is missing or invalid." },
+            { "code": "InvalidArgument", "description": "tenant_id or tenant_member_id is missing or invalid." },
             { "code": "NotFound", "description": "The tenant or membership record does not exist." },
             { "code": "Internal", "description": "An unexpected storage or service error occurred." }
           ]
@@ -1131,12 +1131,12 @@ export const grpcGroupNav = [
           "overview": "Returns the tenant's rate-limit configuration: the per-window request budget, window length, per-IP enforcement, exempt IPs, and per-endpoint overrides.",
           "notes": [
             "The tenant-management boundary applies: the caller must be a system-tenant principal or a member of the target tenant.",
-            "Unlike the REST surface (which resolves the tenant from context), the tenant is named by tenant_uuid in the request.",
+            "Unlike the REST surface (which resolves the tenant from context), the tenant is named by tenant_id in the request.",
             "If the tenant setting row does not exist yet, the default config is created before returning it."
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant whose settings are being read or updated."
@@ -1196,7 +1196,7 @@ export const grpcGroupNav = [
             },
             {
               "code": "InvalidArgument",
-              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+              "description": "tenant_id is missing or invalid, or the config contains unknown or invalid fields."
             },
             {
               "code": "NotFound",
@@ -1208,7 +1208,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "config": {}
           },
           "responseExample": {
@@ -1238,7 +1238,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant whose settings are being read or updated."
@@ -1304,7 +1304,7 @@ export const grpcGroupNav = [
             },
             {
               "code": "InvalidArgument",
-              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+              "description": "tenant_id is missing or invalid, or the config contains unknown or invalid fields."
             },
             {
               "code": "NotFound",
@@ -1316,7 +1316,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "config": {
               "enabled": true,
               "requests_per_window": 300,
@@ -1350,12 +1350,12 @@ export const grpcGroupNav = [
           "overview": "Returns the tenant's audit configuration: audit enablement, PII masking, retention, log level, and audited event types.",
           "notes": [
             "The tenant-management boundary applies: the caller must be a system-tenant principal or a member of the target tenant.",
-            "Unlike the REST surface (which resolves the tenant from context), the tenant is named by tenant_uuid in the request.",
+            "Unlike the REST surface (which resolves the tenant from context), the tenant is named by tenant_id in the request.",
             "If the tenant setting row does not exist yet, the default config is created before returning it."
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant whose settings are being read or updated."
@@ -1409,7 +1409,7 @@ export const grpcGroupNav = [
             },
             {
               "code": "InvalidArgument",
-              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+              "description": "tenant_id is missing or invalid, or the config contains unknown or invalid fields."
             },
             {
               "code": "NotFound",
@@ -1421,7 +1421,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "config": {}
           },
           "responseExample": {
@@ -1450,7 +1450,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant whose settings are being read or updated."
@@ -1510,7 +1510,7 @@ export const grpcGroupNav = [
             },
             {
               "code": "InvalidArgument",
-              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+              "description": "tenant_id is missing or invalid, or the config contains unknown or invalid fields."
             },
             {
               "code": "NotFound",
@@ -1522,7 +1522,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "config": {
               "retention_days": 180,
               "log_level": "warn"
@@ -1548,12 +1548,12 @@ export const grpcGroupNav = [
           "overview": "Returns the tenant's maintenance configuration: the maintenance flag, user-facing message, and optional scheduled window.",
           "notes": [
             "The tenant-management boundary applies: the caller must be a system-tenant principal or a member of the target tenant.",
-            "Unlike the REST surface (which resolves the tenant from context), the tenant is named by tenant_uuid in the request.",
+            "Unlike the REST surface (which resolves the tenant from context), the tenant is named by tenant_id in the request.",
             "If the tenant setting row does not exist yet, the default config is created before returning it."
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant whose settings are being read or updated."
@@ -1601,7 +1601,7 @@ export const grpcGroupNav = [
             },
             {
               "code": "InvalidArgument",
-              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+              "description": "tenant_id is missing or invalid, or the config contains unknown or invalid fields."
             },
             {
               "code": "NotFound",
@@ -1613,7 +1613,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "config": {}
           },
           "responseExample": {
@@ -1641,7 +1641,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant whose settings are being read or updated."
@@ -1695,7 +1695,7 @@ export const grpcGroupNav = [
             },
             {
               "code": "InvalidArgument",
-              "description": "tenant_uuid is missing or invalid, or the config contains unknown or invalid fields."
+              "description": "tenant_id is missing or invalid, or the config contains unknown or invalid fields."
             },
             {
               "code": "NotFound",
@@ -1707,7 +1707,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "config": {
               "enabled": true,
               "message": "Scheduled maintenance from 02:00 to 04:00 UTC.",
@@ -1742,12 +1742,12 @@ export const grpcGroupNav = [
         "details": {
           "overview": "Lists users in a tenant with filtering and pagination.",
           "notes": [
-            "The tenant is named by tenant_uuid in the request; the caller's token must be bound to a scope that allows reading it.",
+            "The tenant is named by tenant_id in the request; the caller's token must be bound to a scope that allows reading it.",
             "username, email, and phone filters are partial-match filters; status accepts multiple values."
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
@@ -1833,7 +1833,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "status": [
               "active"
             ],
@@ -1845,7 +1845,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "users": [
               {
-                "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "username": "alex",
                 "fullname": "Alex Rivera",
                 "email": "alex@acme.example",
@@ -1881,13 +1881,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
@@ -1923,12 +1923,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "user": {
-              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "username": "alex",
               "fullname": "Alex Rivera",
               "email": "alex@acme.example",
@@ -1959,7 +1959,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
@@ -2001,7 +2001,7 @@ export const grpcGroupNav = [
               "description": "Free-form user metadata."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -2037,7 +2037,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "username": "alex",
             "email": "alex@acme.example",
             "phone": "+15551234567",
@@ -2046,7 +2046,7 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "user": {
-              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "username": "alex",
               "fullname": "Alex Rivera",
               "email": "alex@acme.example",
@@ -2071,18 +2071,18 @@ export const grpcGroupNav = [
         "details": {
           "overview": "Updates a user's username, email, phone, status, and metadata in the named tenant.",
           "notes": [
-            "The acting user comes from the verified token, never from actor_user_uuid in the body.",
+            "The acting user comes from the verified token, never from actor_user_id in the body.",
             "Duplicate usernames and emails within the tenant answer AlreadyExists."
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
@@ -2118,7 +2118,7 @@ export const grpcGroupNav = [
               "description": "Free-form user metadata."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -2154,8 +2154,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "username": "alex",
             "email": "alex@acme.example",
             "phone": "+15551234567",
@@ -2163,7 +2163,7 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "user": {
-              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "username": "alex",
               "fullname": "Alex Rivera",
               "email": "alex@acme.example",
@@ -2194,13 +2194,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
@@ -2212,7 +2212,7 @@ export const grpcGroupNav = [
               "description": "Status: active, inactive, pending, or suspended."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -2248,13 +2248,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "status": "suspended"
           },
           "responseExample": {
             "user": {
-              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "username": "alex",
               "fullname": "Alex Rivera",
               "email": "alex@acme.example",
@@ -2283,13 +2283,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
@@ -2325,12 +2325,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "user": {
-              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "username": "alex",
               "fullname": "Alex Rivera",
               "email": "alex@acme.example",
@@ -2359,13 +2359,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
@@ -2401,12 +2401,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "user": {
-              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "username": "alex",
               "fullname": "Alex Rivera",
               "email": "alex@acme.example",
@@ -2435,13 +2435,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
@@ -2477,12 +2477,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "user": {
-              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "username": "alex",
               "fullname": "Alex Rivera",
               "email": "alex@acme.example",
@@ -2512,19 +2512,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -2560,12 +2560,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "user": {
-              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "username": "alex",
               "fullname": "Alex Rivera",
               "email": "alex@acme.example",
@@ -2596,13 +2596,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
@@ -2644,8 +2644,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "force": true
           },
           "responseExample": {
@@ -2665,13 +2665,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
@@ -2690,7 +2690,7 @@ export const grpcGroupNav = [
               "description": "The user's roles."
             },
             {
-              "name": "roles[].role_uuid",
+              "name": "roles[].role_id",
               "type": "string",
               "description": "Role UUID."
             },
@@ -2748,8 +2748,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "pagination": {
               "page": 1,
               "limit": 20
@@ -2758,7 +2758,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "roles": [
               {
-                "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "name": "billing-admin",
                 "description": "Manages billing operations",
                 "is_default": false,
@@ -2789,13 +2789,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
@@ -2814,7 +2814,7 @@ export const grpcGroupNav = [
               "description": "The user's linked identities."
             },
             {
-              "name": "identities[].user_identity_uuid",
+              "name": "identities[].user_identity_id",
               "type": "string",
               "description": "Identity UUID."
             },
@@ -2857,8 +2857,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "pagination": {
               "page": 1,
               "limit": 20
@@ -2867,7 +2867,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "identities": [
               {
-                "user_identity_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "user_identity_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "provider": "google",
                 "sub": "google-oauth2|1234567890",
                 "created_at": "2026-08-01T09:00:00Z",
@@ -2899,19 +2899,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
             },
             {
-              "name": "role_uuids",
+              "name": "role_ids",
               "type": "repeated string",
               "required": true,
               "description": "1-10 role UUIDs to assign."
@@ -2947,15 +2947,15 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
-            "role_uuids": [
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_ids": [
               "f47ac10b-58cc-4372-a567-0e02b2c3d479"
             ]
           },
           "responseExample": {
             "user": {
-              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "username": "alex",
               "fullname": "Alex Rivera",
               "email": "alex@acme.example",
@@ -2985,19 +2985,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the target user."
             },
             {
-              "name": "role_uuid",
+              "name": "role_id",
               "type": "string",
               "required": true,
               "description": "UUID of the role to remove."
@@ -3033,13 +3033,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
-            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "user": {
-              "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "username": "alex",
               "fullname": "Alex Rivera",
               "email": "alex@acme.example",
@@ -3074,17 +3074,17 @@ export const grpcGroupNav = [
           "overview": "Lists a user's profiles with filtering and pagination.",
           "notes": [
             "The effective filters are first_name, last_name, and email. The request message also declares phone, city, country, and is_default fields, which the current implementation does not apply.",
-            "Profiles are scoped to the user_uuid in the request."
+            "Profiles are scoped to the user_id in the request."
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the user who owns the profile."
@@ -3164,8 +3164,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "pagination": {
               "page": 1,
               "limit": 20
@@ -3174,7 +3174,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "profiles": [
               {
-                "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "profile_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "first_name": "Alex",
                 "middle_name": "J.",
                 "last_name": "Rivera",
@@ -3210,23 +3210,23 @@ export const grpcGroupNav = [
         "details": {
           "overview": "Returns one profile by UUID, scoped to the named user.",
           "notes": [
-            "The profile must belong to the user_uuid in the request; a mismatch is refused."
+            "The profile must belong to the user_id in the request; a mismatch is refused."
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the user who owns the profile."
             },
             {
-              "name": "profile_uuid",
+              "name": "profile_id",
               "type": "string",
               "required": true,
               "description": "UUID of the profile."
@@ -3262,13 +3262,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
-            "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "profile_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "profile": {
-              "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "profile_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "first_name": "Alex",
               "middle_name": "J.",
               "last_name": "Rivera",
@@ -3297,19 +3297,19 @@ export const grpcGroupNav = [
         "details": {
           "overview": "Creates a profile for the named user. The create is replay-guarded: the profile UUID is minted per call, so the ledger is what prevents a retry from creating a duplicate profile.",
           "notes": [
-            "The tenant is named by tenant_uuid and the profile is always scoped to the user_uuid in the request.",
+            "The tenant is named by tenant_id and the profile is always scoped to the user_id in the request.",
             "The request message declares additional fields (suffix, bio, phone, address, city, country); the current implementation stores the fields listed above only.",
             "Create is replay-guarded: a retry after a lost response returns the original profile instead of minting a duplicate."
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the user who owns the profile."
@@ -3411,8 +3411,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "first_name": "Alex",
             "last_name": "Rivera",
             "email": "alex@acme.example",
@@ -3421,7 +3421,7 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "profile": {
-              "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "profile_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "first_name": "Alex",
               "middle_name": "J.",
               "last_name": "Rivera",
@@ -3450,25 +3450,25 @@ export const grpcGroupNav = [
         "details": {
           "overview": "Updates a profile for the named user. The operation is create-or-update against the named profile UUID and the same validation rules as creation apply.",
           "notes": [
-            "The tenant is named by tenant_uuid and the profile is always scoped to the user_uuid in the request.",
+            "The tenant is named by tenant_id and the profile is always scoped to the user_id in the request.",
             "The request message declares additional fields (suffix, bio, phone, address, city, country); the current implementation stores the fields listed above only.",
             "Create is replay-guarded: a retry after a lost response returns the original profile instead of minting a duplicate."
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the user who owns the profile."
             },
             {
-              "name": "profile_uuid",
+              "name": "profile_id",
               "type": "string",
               "required": true,
               "description": "UUID of the profile."
@@ -3570,16 +3570,16 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
-            "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "profile_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "first_name": "Alex",
             "last_name": "Rivera",
             "display_name": "Alex J. Rivera"
           },
           "responseExample": {
             "profile": {
-              "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "profile_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "first_name": "Alex",
               "middle_name": "J.",
               "last_name": "Rivera",
@@ -3612,19 +3612,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the user who owns the profile."
             },
             {
-              "name": "profile_uuid",
+              "name": "profile_id",
               "type": "string",
               "required": true,
               "description": "UUID of the profile."
@@ -3660,13 +3660,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
-            "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "profile_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "profile": {
-              "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "profile_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "first_name": "Alex",
               "middle_name": "J.",
               "last_name": "Rivera",
@@ -3699,19 +3699,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the user belongs to."
             },
             {
-              "name": "user_uuid",
+              "name": "user_id",
               "type": "string",
               "required": true,
               "description": "UUID of the user who owns the profile."
             },
             {
-              "name": "profile_uuid",
+              "name": "profile_id",
               "type": "string",
               "required": true,
               "description": "UUID of the profile."
@@ -3747,13 +3747,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "user_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
-            "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "user_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "profile_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "profile": {
-              "profile_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "profile_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "first_name": "Alex",
               "middle_name": "J.",
               "last_name": "Rivera",
@@ -3796,7 +3796,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
@@ -3820,7 +3820,7 @@ export const grpcGroupNav = [
               "description": "Filter by client type: traditional, spa, mobile, m2m."
             },
             {
-              "name": "identity_provider_uuid",
+              "name": "identity_provider_id",
               "type": "string",
               "required": false,
               "description": "Filter by a connected identity provider UUID."
@@ -3900,7 +3900,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "status": [
               "active"
             ],
@@ -3912,7 +3912,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "clients": [
               {
-                "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "name": "app-web",
                 "display_name": "Example Web Application",
                 "client_type": "traditional",
@@ -3946,13 +3946,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
@@ -3988,12 +3988,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "client": {
-              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "app-web",
               "display_name": "Example Web Application",
               "client_type": "traditional",
@@ -4022,13 +4022,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
@@ -4036,7 +4036,7 @@ export const grpcGroupNav = [
           ],
           "responseFields": [
             {
-              "name": "client_id",
+              "name": "oauth_client_id",
               "type": "string",
               "description": "Never populated; the RPC always fails."
             },
@@ -4070,8 +4070,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {}
         }
@@ -4090,19 +4090,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -4149,8 +4149,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "grace_period_hours": 24
           },
           "responseExample": {
@@ -4171,13 +4171,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
@@ -4213,8 +4213,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "config": {
@@ -4250,7 +4250,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
@@ -4292,7 +4292,7 @@ export const grpcGroupNav = [
               "description": "One of active or inactive."
             },
             {
-              "name": "identity_provider_uuid",
+              "name": "identity_provider_id",
               "type": "string",
               "required": false,
               "description": "Legacy single identity-provider binding."
@@ -4310,7 +4310,7 @@ export const grpcGroupNav = [
               "description": "Self-registration flag. Defaults to true."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -4323,12 +4323,12 @@ export const grpcGroupNav = [
               "description": "The created client record."
             },
             {
-              "name": "credentials.client_uuid",
+              "name": "credentials.client_id",
               "type": "string",
               "description": "Management UUID of the client."
             },
             {
-              "name": "credentials.client_id",
+              "name": "credentials.oauth_client_id",
               "type": "string",
               "description": "The OAuth client identifier."
             },
@@ -4361,7 +4361,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "name": "app-web",
             "display_name": "Example Web Application",
             "client_type": "traditional",
@@ -4383,7 +4383,7 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "client": {
-              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "app-web",
               "display_name": "Example Web Application",
               "client_type": "traditional",
@@ -4396,8 +4396,8 @@ export const grpcGroupNav = [
               "updated_at": "2026-08-10T09:00:00Z"
             },
             "credentials": {
-              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-              "client_id": "app-web-client",
+              "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "oauth_client_id": "app-web-client",
               "client_secret": "secret_9d1d5b4d3a"
             }
           }
@@ -4416,13 +4416,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
@@ -4476,7 +4476,7 @@ export const grpcGroupNav = [
               "description": "Self-registration flag."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -4512,8 +4512,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "name": "app-web",
             "display_name": "Example Web Application",
             "client_type": "traditional",
@@ -4522,7 +4522,7 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "client": {
-              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "app-web",
               "display_name": "Example Web Application",
               "client_type": "traditional",
@@ -4549,13 +4549,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
@@ -4567,7 +4567,7 @@ export const grpcGroupNav = [
               "description": "One of active or inactive."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -4603,13 +4603,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "status": "inactive"
           },
           "responseExample": {
             "client": {
-              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "app-web",
               "display_name": "Example Web Application",
               "client_type": "traditional",
@@ -4636,19 +4636,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -4684,12 +4684,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "client": {
-              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "app-web",
               "display_name": "Example Web Application",
               "client_type": "traditional",
@@ -4716,13 +4716,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
@@ -4735,7 +4735,7 @@ export const grpcGroupNav = [
               "description": "The client's URI records."
             },
             {
-              "name": "uris[].client_uri_uuid",
+              "name": "uris[].client_uri_id",
               "type": "string",
               "description": "URI record UUID."
             },
@@ -4773,13 +4773,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "uris": [
               {
-                "client_uri_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "client_uri_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "uri": "https://app.acme.example/auth/callback",
                 "type": "redirect_uri",
                 "created_at": "2026-08-01T09:00:00Z",
@@ -4801,13 +4801,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
@@ -4825,7 +4825,7 @@ export const grpcGroupNav = [
               "description": "URI type: redirect_uri, origin_uri, logout_uri, login_uri, or cors_origin_uri."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -4833,7 +4833,7 @@ export const grpcGroupNav = [
           ],
           "responseFields": [
             {
-              "name": "uri.client_uri_uuid",
+              "name": "uri.client_uri_id",
               "type": "string",
               "description": "URI record UUID."
             },
@@ -4871,14 +4871,14 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "uri": "https://app.acme.example/auth/callback",
             "type": "redirect_uri"
           },
           "responseExample": {
             "uri": {
-              "client_uri_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "client_uri_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "uri": "https://app.acme.example/auth/callback",
               "type": "redirect_uri",
               "created_at": "2026-08-15T09:00:00Z",
@@ -4899,19 +4899,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
             },
             {
-              "name": "client_uri_uuid",
+              "name": "client_uri_id",
               "type": "string",
               "required": true,
               "description": "UUID of the URI record."
@@ -4929,7 +4929,7 @@ export const grpcGroupNav = [
               "description": "URI type: redirect_uri, origin_uri, logout_uri, login_uri, or cors_origin_uri."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -4937,7 +4937,7 @@ export const grpcGroupNav = [
           ],
           "responseFields": [
             {
-              "name": "uri.client_uri_uuid",
+              "name": "uri.client_uri_id",
               "type": "string",
               "description": "URI record UUID."
             },
@@ -4975,15 +4975,15 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "client_uri_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "client_uri_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "uri": "https://app.acme.example/auth/callback",
             "type": "redirect_uri"
           },
           "responseExample": {
             "uri": {
-              "client_uri_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "client_uri_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "uri": "https://app.acme.example/auth/callback",
               "type": "redirect_uri",
               "created_at": "2026-08-01T09:00:00Z",
@@ -5004,25 +5004,25 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
             },
             {
-              "name": "client_uri_uuid",
+              "name": "client_uri_id",
               "type": "string",
               "required": true,
               "description": "UUID of the URI record."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -5058,13 +5058,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "client_uri_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "client_uri_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "client": {
-              "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "app-web",
               "display_name": "Example Web Application",
               "client_type": "traditional",
@@ -5091,13 +5091,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
@@ -5110,12 +5110,12 @@ export const grpcGroupNav = [
               "description": "The client's API assignments."
             },
             {
-              "name": "apis[].client_api_uuid",
+              "name": "apis[].client_api_id",
               "type": "string",
               "description": "Assignment UUID."
             },
             {
-              "name": "apis[].api.api_uuid",
+              "name": "apis[].api.api_id",
               "type": "string",
               "description": "API UUID."
             },
@@ -5163,15 +5163,15 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "apis": [
               {
-                "client_api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "client_api_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "api": {
-                  "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+                  "api_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
                   "name": "billing",
                   "display_name": "Billing API",
                   "description": "Billing endpoints",
@@ -5182,7 +5182,7 @@ export const grpcGroupNav = [
                 },
                 "permissions": [
                   {
-                    "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                    "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                     "name": "invoices:read",
                     "description": "Read invoices",
                     "status": "active",
@@ -5209,25 +5209,25 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
             },
             {
-              "name": "api_uuids",
+              "name": "api_ids",
               "type": "repeated string",
               "required": true,
               "description": "API UUIDs to assign."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -5263,9 +5263,9 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "api_uuids": [
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_ids": [
               "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d"
             ]
           },
@@ -5286,25 +5286,25 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
             },
             {
-              "name": "api_uuid",
+              "name": "api_id",
               "type": "string",
               "required": true,
               "description": "UUID of the assigned API."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -5340,9 +5340,9 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "message": "API removed from auth client successfully"
@@ -5361,19 +5361,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
             },
             {
-              "name": "api_uuid",
+              "name": "api_id",
               "type": "string",
               "required": true,
               "description": "UUID of the assigned API."
@@ -5386,7 +5386,7 @@ export const grpcGroupNav = [
               "description": "The client's permissions for the API."
             },
             {
-              "name": "permissions[].permission_uuid",
+              "name": "permissions[].permission_id",
               "type": "string",
               "description": "Permission UUID."
             },
@@ -5429,14 +5429,14 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "permissions": [
               {
-                "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "name": "invoices:read",
                 "description": "Read invoices",
                 "status": "active",
@@ -5460,31 +5460,31 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
             },
             {
-              "name": "api_uuid",
+              "name": "api_id",
               "type": "string",
               "required": true,
               "description": "UUID of the assigned API."
             },
             {
-              "name": "permission_uuids",
+              "name": "permission_ids",
               "type": "repeated string",
               "required": true,
               "description": "Permission UUIDs to grant."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -5520,10 +5520,10 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "permission_uuids": [
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_ids": [
               "f47ac10b-58cc-4372-a567-0e02b2c3d479"
             ]
           },
@@ -5544,31 +5544,31 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the client belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "Management UUID of the client."
             },
             {
-              "name": "api_uuid",
+              "name": "api_id",
               "type": "string",
               "required": true,
               "description": "UUID of the assigned API."
             },
             {
-              "name": "permission_uuid",
+              "name": "permission_id",
               "type": "string",
               "required": true,
               "description": "UUID of the permission to revoke."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -5604,10 +5604,10 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "api_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "api_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "message": "Permission removed from auth client API successfully"
@@ -5739,7 +5739,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the service belongs to."
@@ -5837,7 +5837,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "status": [
               "active"
             ],
@@ -5849,7 +5849,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "services": [
               {
-                "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "name": "billing-service",
                 "display_name": "Billing Service",
                 "description": "Handles billing operations",
@@ -5883,13 +5883,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the service belongs to."
             },
             {
-              "name": "service_uuid",
+              "name": "service_id",
               "type": "string",
               "required": true,
               "description": "UUID of the service principal."
@@ -5925,12 +5925,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "service": {
-              "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-service",
               "display_name": "Billing Service",
               "description": "Handles billing operations",
@@ -5957,7 +5957,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the service belongs to."
@@ -6023,7 +6023,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "name": "billing-service",
             "display_name": "Billing Service",
             "description": "Handles billing operations",
@@ -6032,7 +6032,7 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "service": {
-              "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-service",
               "display_name": "Billing Service",
               "description": "Handles billing operations",
@@ -6059,13 +6059,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the service belongs to."
             },
             {
-              "name": "service_uuid",
+              "name": "service_id",
               "type": "string",
               "required": true,
               "description": "UUID of the service principal."
@@ -6131,8 +6131,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "name": "billing-service",
             "display_name": "Billing Service",
             "description": "Handles billing and payments",
@@ -6141,7 +6141,7 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "service": {
-              "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-service",
               "display_name": "Billing Service",
               "description": "Handles billing operations",
@@ -6168,13 +6168,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the service belongs to."
             },
             {
-              "name": "service_uuid",
+              "name": "service_id",
               "type": "string",
               "required": true,
               "description": "UUID of the service principal."
@@ -6216,13 +6216,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "status": "maintenance"
           },
           "responseExample": {
             "service": {
-              "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-service",
               "display_name": "Billing Service",
               "description": "Handles billing operations",
@@ -6249,13 +6249,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the service belongs to."
             },
             {
-              "name": "service_uuid",
+              "name": "service_id",
               "type": "string",
               "required": true,
               "description": "UUID of the service principal."
@@ -6291,12 +6291,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "service": {
-              "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-service",
               "display_name": "Billing Service",
               "description": "Handles billing operations",
@@ -6324,19 +6324,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the service belongs to."
             },
             {
-              "name": "service_uuid",
+              "name": "service_id",
               "type": "string",
               "required": true,
               "description": "UUID of the service principal."
             },
             {
-              "name": "policy_uuid",
+              "name": "policy_id",
               "type": "string",
               "required": true,
               "description": "UUID of the policy to bind."
@@ -6372,9 +6372,9 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "policy_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "policy_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "assigned": true
@@ -6393,19 +6393,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the service belongs to."
             },
             {
-              "name": "service_uuid",
+              "name": "service_id",
               "type": "string",
               "required": true,
               "description": "UUID of the service principal."
             },
             {
-              "name": "policy_uuid",
+              "name": "policy_id",
               "type": "string",
               "required": true,
               "description": "UUID of the policy to unbind."
@@ -6441,9 +6441,9 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "service_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "policy_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "service_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "policy_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "removed": true
@@ -6472,7 +6472,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the API belongs to."
@@ -6496,7 +6496,7 @@ export const grpcGroupNav = [
               "description": "Exact match on the audience identifier."
             },
             {
-              "name": "service_uuid",
+              "name": "service_id",
               "type": "string",
               "required": false,
               "description": "Filter by owning service UUID."
@@ -6570,7 +6570,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "status": [
               "active"
             ],
@@ -6582,7 +6582,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "apis": [
               {
-                "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "api_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "name": "billing",
                 "display_name": "Billing API",
                 "description": "Billing and invoicing endpoints",
@@ -6590,7 +6590,7 @@ export const grpcGroupNav = [
                 "status": "active",
                 "is_system": false,
                 "service": {
-                  "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                  "service_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                   "name": "billing-service",
                   "display_name": "Billing Service",
                   "description": "Handles billing operations",
@@ -6627,13 +6627,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the API belongs to."
             },
             {
-              "name": "api_uuid",
+              "name": "api_id",
               "type": "string",
               "required": true,
               "description": "UUID of the API resource."
@@ -6669,12 +6669,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "api_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "api": {
-              "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "api_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing",
               "display_name": "Billing API",
               "description": "Billing and invoicing endpoints",
@@ -6682,7 +6682,7 @@ export const grpcGroupNav = [
               "status": "active",
               "is_system": false,
               "service": {
-                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "service_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "billing-service",
                 "display_name": "Billing Service",
                 "description": "Handles billing operations",
@@ -6713,7 +6713,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the API belongs to."
@@ -6743,7 +6743,7 @@ export const grpcGroupNav = [
               "description": "One of active or inactive."
             },
             {
-              "name": "service_uuid",
+              "name": "service_id",
               "type": "string",
               "required": true,
               "description": "UUID of the owning service."
@@ -6779,16 +6779,16 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "name": "billing",
             "display_name": "Billing API",
             "description": "Billing and invoicing endpoints",
             "status": "active",
-            "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "service_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "api": {
-              "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "api_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing",
               "display_name": "Billing API",
               "description": "Billing and invoicing endpoints",
@@ -6796,7 +6796,7 @@ export const grpcGroupNav = [
               "status": "active",
               "is_system": false,
               "service": {
-                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "service_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "billing-service",
                 "display_name": "Billing Service",
                 "description": "Handles billing operations",
@@ -6826,13 +6826,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the API belongs to."
             },
             {
-              "name": "api_uuid",
+              "name": "api_id",
               "type": "string",
               "required": true,
               "description": "UUID of the API resource."
@@ -6862,7 +6862,7 @@ export const grpcGroupNav = [
               "description": "One of active or inactive."
             },
             {
-              "name": "service_uuid",
+              "name": "service_id",
               "type": "string",
               "required": true,
               "description": "UUID of the owning service."
@@ -6898,17 +6898,17 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "api_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "name": "billing",
             "display_name": "Billing API",
             "description": "Billing and invoicing endpoints (updated)",
             "status": "active",
-            "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "service_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "api": {
-              "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "api_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing",
               "display_name": "Billing API",
               "description": "Billing and invoicing endpoints",
@@ -6916,7 +6916,7 @@ export const grpcGroupNav = [
               "status": "active",
               "is_system": false,
               "service": {
-                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "service_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "billing-service",
                 "display_name": "Billing Service",
                 "description": "Handles billing operations",
@@ -6946,13 +6946,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the API belongs to."
             },
             {
-              "name": "api_uuid",
+              "name": "api_id",
               "type": "string",
               "required": true,
               "description": "UUID of the API resource."
@@ -6994,13 +6994,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "api_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "status": "inactive"
           },
           "responseExample": {
             "api": {
-              "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "api_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing",
               "display_name": "Billing API",
               "description": "Billing and invoicing endpoints",
@@ -7008,7 +7008,7 @@ export const grpcGroupNav = [
               "status": "inactive",
               "is_system": false,
               "service": {
-                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "service_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "billing-service",
                 "display_name": "Billing Service",
                 "description": "Handles billing operations",
@@ -7038,13 +7038,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the API belongs to."
             },
             {
-              "name": "api_uuid",
+              "name": "api_id",
               "type": "string",
               "required": true,
               "description": "UUID of the API resource."
@@ -7080,12 +7080,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "api_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "api": {
-              "api_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "api_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing",
               "display_name": "Billing API",
               "description": "Billing and invoicing endpoints",
@@ -7093,7 +7093,7 @@ export const grpcGroupNav = [
               "status": "active",
               "is_system": false,
               "service": {
-                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "service_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "billing-service",
                 "display_name": "Billing Service",
                 "description": "Handles billing operations",
@@ -7128,12 +7128,12 @@ export const grpcGroupNav = [
         "details": {
           "overview": "Lists permissions in a tenant with filtering and pagination. Each permission carries its owning API projection.",
           "notes": [
-            "api_uuid and role_uuid filters resolve by UUID; unknown or cross-tenant references answer NotFound.",
-            "The legacy client_uuid filter is unsupported."
+            "api_id and role_id filters resolve by UUID; unknown or cross-tenant references answer NotFound.",
+            "The legacy client_id filter is unsupported."
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the permission belongs to."
@@ -7151,19 +7151,19 @@ export const grpcGroupNav = [
               "description": "Case-insensitive partial match on description."
             },
             {
-              "name": "api_uuid",
+              "name": "api_id",
               "type": "string",
               "required": false,
               "description": "Filter by owning API UUID."
             },
             {
-              "name": "role_uuid",
+              "name": "role_id",
               "type": "string",
               "required": false,
               "description": "Filter by role assignment."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": false,
               "description": "Unsupported legacy filter."
@@ -7237,8 +7237,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "api_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "pagination": {
               "page": 1,
               "limit": 20
@@ -7247,11 +7247,11 @@ export const grpcGroupNav = [
           "responseExample": {
             "permissions": [
               {
-                "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "name": "invoices:read",
                 "description": "Read invoices",
                 "api": {
-                  "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                  "api_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                   "name": "billing",
                   "display_name": "Billing API",
                   "description": "Billing and invoicing endpoints",
@@ -7288,13 +7288,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the permission belongs to."
             },
             {
-              "name": "permission_uuid",
+              "name": "permission_id",
               "type": "string",
               "required": true,
               "description": "UUID of the permission."
@@ -7330,16 +7330,16 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "permission": {
-              "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "invoices:read",
               "description": "Read invoices",
               "api": {
-                "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "api_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "billing",
                 "display_name": "Billing API",
                 "description": "Billing and invoicing endpoints",
@@ -7372,7 +7372,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the permission belongs to."
@@ -7396,7 +7396,7 @@ export const grpcGroupNav = [
               "description": "One of active or inactive."
             },
             {
-              "name": "api_uuid",
+              "name": "api_id",
               "type": "string",
               "required": true,
               "description": "UUID of the owning API resource. Immutable after creation."
@@ -7432,19 +7432,19 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "name": "invoices:read",
             "description": "Read invoices",
             "status": "active",
-            "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "api_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "permission": {
-              "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "invoices:read",
               "description": "Read invoices",
               "api": {
-                "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "api_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "billing",
                 "display_name": "Billing API",
                 "description": "Billing and invoicing endpoints",
@@ -7475,13 +7475,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the permission belongs to."
             },
             {
-              "name": "permission_uuid",
+              "name": "permission_id",
               "type": "string",
               "required": true,
               "description": "UUID of the permission."
@@ -7535,19 +7535,19 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "name": "invoices:read",
             "description": "Read all invoices",
             "status": "active"
           },
           "responseExample": {
             "permission": {
-              "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "invoices:read",
               "description": "Read all invoices",
               "api": {
-                "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "api_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "billing",
                 "display_name": "Billing API",
                 "description": "Billing and invoicing endpoints",
@@ -7577,13 +7577,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the permission belongs to."
             },
             {
-              "name": "permission_uuid",
+              "name": "permission_id",
               "type": "string",
               "required": true,
               "description": "UUID of the permission."
@@ -7625,17 +7625,17 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "status": "inactive"
           },
           "responseExample": {
             "permission": {
-              "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "invoices:read",
               "description": "Read invoices",
               "api": {
-                "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "api_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "billing",
                 "display_name": "Billing API",
                 "description": "Billing and invoicing endpoints",
@@ -7665,13 +7665,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the permission belongs to."
             },
             {
-              "name": "permission_uuid",
+              "name": "permission_id",
               "type": "string",
               "required": true,
               "description": "UUID of the permission."
@@ -7707,16 +7707,16 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "permission": {
-              "permission_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "permission_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "invoices:read",
               "description": "Read invoices",
               "api": {
-                "api_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "api_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "billing",
                 "display_name": "Billing API",
                 "description": "Billing and invoicing endpoints",
@@ -7755,7 +7755,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the role belongs to."
@@ -7847,7 +7847,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "status": "active",
             "pagination": {
               "page": 1,
@@ -7857,7 +7857,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "roles": [
               {
-                "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "name": "billing-admin",
                 "description": "Manages billing operations",
                 "is_default": false,
@@ -7888,13 +7888,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the role belongs to."
             },
             {
-              "name": "role_uuid",
+              "name": "role_id",
               "type": "string",
               "required": true,
               "description": "UUID of the role."
@@ -7930,12 +7930,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "role": {
-              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-admin",
               "description": "Manages billing operations",
               "is_default": false,
@@ -7962,13 +7962,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the role belongs to."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
@@ -8022,14 +8022,14 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "name": "billing-admin",
             "description": "Manages billing operations",
             "status": "active"
           },
           "responseExample": {
             "role": {
-              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-admin",
               "description": "Manages billing operations",
               "is_default": false,
@@ -8056,19 +8056,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the role belongs to."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
             },
             {
-              "name": "role_uuid",
+              "name": "role_id",
               "type": "string",
               "required": true,
               "description": "UUID of the role."
@@ -8122,15 +8122,15 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "name": "billing-admin",
             "description": "Manages all billing operations",
             "status": "active"
           },
           "responseExample": {
             "role": {
-              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-admin",
               "description": "Manages all billing operations",
               "is_default": false,
@@ -8156,19 +8156,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the role belongs to."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
             },
             {
-              "name": "role_uuid",
+              "name": "role_id",
               "type": "string",
               "required": true,
               "description": "UUID of the role."
@@ -8210,13 +8210,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "status": "inactive"
           },
           "responseExample": {
             "role": {
-              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-admin",
               "description": "Manages billing operations",
               "is_default": false,
@@ -8242,19 +8242,19 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the role belongs to."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
             },
             {
-              "name": "role_uuid",
+              "name": "role_id",
               "type": "string",
               "required": true,
               "description": "UUID of the role."
@@ -8290,12 +8290,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "role": {
-              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-admin",
               "description": "Manages billing operations",
               "is_default": false,
@@ -8319,13 +8319,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the role belongs to."
             },
             {
-              "name": "role_uuid",
+              "name": "role_id",
               "type": "string",
               "required": true,
               "description": "UUID of the role."
@@ -8378,8 +8378,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "pagination": {
               "page": 1,
               "limit": 20
@@ -8388,7 +8388,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "permissions": [
               {
-                "permission_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "permission_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "invoices:read",
                 "description": "Read invoices",
                 "status": "active",
@@ -8422,25 +8422,25 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the role belongs to."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
             },
             {
-              "name": "role_uuid",
+              "name": "role_id",
               "type": "string",
               "required": true,
               "description": "UUID of the role."
             },
             {
-              "name": "permission_uuids",
+              "name": "permission_ids",
               "type": "repeated string",
               "required": true,
               "description": "1-200 permission UUIDs to attach."
@@ -8476,15 +8476,15 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "permission_uuids": [
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "permission_ids": [
               "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
             ]
           },
           "responseExample": {
             "role": {
-              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-admin",
               "description": "Manages billing operations",
               "is_default": false,
@@ -8494,7 +8494,7 @@ export const grpcGroupNav = [
               "updated_at": "2026-08-10T09:00:00Z",
               "permissions": [
                 {
-                  "permission_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                  "permission_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                   "name": "invoices:read",
                   "description": "Read invoices",
                   "status": "active",
@@ -8521,25 +8521,25 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the role belongs to."
             },
             {
-              "name": "actor_user_uuid",
+              "name": "actor_user_id",
               "type": "string",
               "required": false,
               "description": "Reserved field; attribution is taken from the authenticated token, never from the body."
             },
             {
-              "name": "role_uuid",
+              "name": "role_id",
               "type": "string",
               "required": true,
               "description": "UUID of the role."
             },
             {
-              "name": "permission_uuid",
+              "name": "permission_id",
               "type": "string",
               "required": true,
               "description": "UUID of the permission to detach."
@@ -8575,13 +8575,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-            "permission_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "permission_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d"
           },
           "responseExample": {
             "role": {
-              "role_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "role_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-admin",
               "description": "Manages billing operations",
               "is_default": false,
@@ -8611,11 +8611,11 @@ export const grpcGroupNav = [
           "overview": "Lists policies in a tenant with filtering and pagination.",
           "notes": [
             "status accepts multiple values (at most 2).",
-            "service_uuid joins through service_policies and live services."
+            "service_id joins through service_policies and live services."
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the policy belongs to."
@@ -8651,7 +8651,7 @@ export const grpcGroupNav = [
               "description": "Filter by system flag."
             },
             {
-              "name": "service_uuid",
+              "name": "service_id",
               "type": "string",
               "required": false,
               "description": "Filter by a bound service UUID."
@@ -8713,7 +8713,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "status": [
               "active"
             ],
@@ -8725,7 +8725,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "policies": [
               {
-                "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "policy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                 "name": "billing-read",
                 "description": "Allows read access to billing",
                 "document": {
@@ -8770,13 +8770,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the policy belongs to."
             },
             {
-              "name": "policy_uuid",
+              "name": "policy_id",
               "type": "string",
               "required": true,
               "description": "UUID of the policy."
@@ -8812,12 +8812,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "policy": {
-              "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "policy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-read",
               "description": "Allows read access to billing",
               "document": {
@@ -8855,13 +8855,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the policy belongs to."
             },
             {
-              "name": "policy_uuid",
+              "name": "policy_id",
               "type": "string",
               "required": true,
               "description": "UUID of the policy."
@@ -8926,8 +8926,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "pagination": {
               "page": 1,
               "limit": 20
@@ -8936,7 +8936,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "services": [
               {
-                "service_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "service_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "billing-service",
                 "display_name": "Billing Service",
                 "description": "Handles billing operations",
@@ -8972,7 +8972,7 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the policy belongs to."
@@ -9038,7 +9038,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "name": "billing-read",
             "description": "Allows read access to billing",
             "document": {
@@ -9060,7 +9060,7 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "policy": {
-              "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "policy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-read",
               "description": "Allows read access to billing",
               "document": {
@@ -9099,13 +9099,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the policy belongs to."
             },
             {
-              "name": "policy_uuid",
+              "name": "policy_id",
               "type": "string",
               "required": true,
               "description": "UUID of the policy."
@@ -9171,8 +9171,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "name": "billing-read",
             "description": "Allows read access to billing",
             "document": {
@@ -9194,7 +9194,7 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "policy": {
-              "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "policy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-read",
               "description": "Allows read access to billing",
               "document": {
@@ -9232,13 +9232,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the policy belongs to."
             },
             {
-              "name": "policy_uuid",
+              "name": "policy_id",
               "type": "string",
               "required": true,
               "description": "UUID of the policy."
@@ -9280,13 +9280,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "status": "inactive"
           },
           "responseExample": {
             "policy": {
-              "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "policy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-read",
               "description": "Allows read access to billing",
               "document": {
@@ -9324,13 +9324,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the policy belongs to."
             },
             {
-              "name": "policy_uuid",
+              "name": "policy_id",
               "type": "string",
               "required": true,
               "description": "UUID of the policy."
@@ -9366,12 +9366,12 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "policy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "policy": {
-              "policy_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "policy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
               "name": "billing-read",
               "description": "Allows read access to billing",
               "document": {
@@ -9418,13 +9418,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the federation belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": false,
               "description": "Filter by the mapped client UUID."
@@ -9498,7 +9498,7 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
             "is_active": true,
             "pagination": {
               "page": 1,
@@ -9508,8 +9508,8 @@ export const grpcGroupNav = [
           "responseExample": {
             "federations": [
               {
-                "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+                "workload_identity_federation_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "client_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
                 "name": "github-actions-ci",
                 "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
                 "issuer_url": "https://token.actions.githubusercontent.com",
@@ -9548,13 +9548,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the federation belongs to."
             },
             {
-              "name": "workload_identity_federation_uuid",
+              "name": "workload_identity_federation_id",
               "type": "string",
               "required": true,
               "description": "UUID of the federation trust rule."
@@ -9590,13 +9590,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "workload_identity_federation_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "federation": {
-              "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-              "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "workload_identity_federation_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "name": "github-actions-ci",
               "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
               "issuer_url": "https://token.actions.githubusercontent.com",
@@ -9633,13 +9633,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the federation belongs to."
             },
             {
-              "name": "client_uuid",
+              "name": "client_id",
               "type": "string",
               "required": true,
               "description": "UUID of the mapped OAuth client. Immutable after creation."
@@ -9729,8 +9729,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "client_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
             "name": "github-actions-ci",
             "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
             "issuer_url": "https://token.actions.githubusercontent.com",
@@ -9747,8 +9747,8 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "federation": {
-              "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-              "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "workload_identity_federation_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "name": "github-actions-ci",
               "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
               "issuer_url": "https://token.actions.githubusercontent.com",
@@ -9784,13 +9784,13 @@ export const grpcGroupNav = [
           ],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the federation belongs to."
             },
             {
-              "name": "workload_identity_federation_uuid",
+              "name": "workload_identity_federation_id",
               "type": "string",
               "required": true,
               "description": "UUID of the federation trust rule."
@@ -9880,8 +9880,8 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "workload_identity_federation_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             "name": "github-actions-ci",
             "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline (updated)",
             "issuer_url": "https://token.actions.githubusercontent.com",
@@ -9898,8 +9898,8 @@ export const grpcGroupNav = [
           },
           "responseExample": {
             "federation": {
-              "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-              "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "workload_identity_federation_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "name": "github-actions-ci",
               "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
               "issuer_url": "https://token.actions.githubusercontent.com",
@@ -9929,13 +9929,13 @@ export const grpcGroupNav = [
           "notes": [],
           "requestFields": [
             {
-              "name": "tenant_uuid",
+              "name": "tenant_id",
               "type": "string",
               "required": true,
               "description": "UUID of the tenant the federation belongs to."
             },
             {
-              "name": "workload_identity_federation_uuid",
+              "name": "workload_identity_federation_id",
               "type": "string",
               "required": true,
               "description": "UUID of the federation trust rule."
@@ -9971,13 +9971,13 @@ export const grpcGroupNav = [
             }
           ],
           "requestExample": {
-            "tenant_uuid": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
-            "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            "tenant_id": "d8b4f2e0-3c5b-4f0a-9c1d-7e2f1a9b4c3d",
+            "workload_identity_federation_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "responseExample": {
             "federation": {
-              "workload_identity_federation_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-              "client_uuid": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
+              "workload_identity_federation_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "client_id": "e1c2a3b4-5d6e-4f0a-9c1d-7e2f1a9b4c3d",
               "name": "github-actions-ci",
               "description": "Trusts GitHub Actions OIDC tokens for the CI pipeline",
               "issuer_url": "https://token.actions.githubusercontent.com",
@@ -10122,7 +10122,7 @@ export const grpcGroupNav = [
               "description": "Granted scopes."
             },
             {
-              "name": "client_id",
+              "name": "oauth_client_id",
               "type": "string",
               "description": "Client the token was issued to."
             },
@@ -10184,7 +10184,7 @@ export const grpcGroupNav = [
           "responseExample": {
             "active": true,
             "scope": "openid email profile",
-            "client_id": "app-web-client",
+            "oauth_client_id": "app-web-client",
             "username": "alex@acme.example",
             "token_type": "Bearer",
             "exp": 1765213200,

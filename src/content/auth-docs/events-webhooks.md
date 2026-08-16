@@ -570,12 +570,12 @@ async function processEvent(client, event) {
   }
 }
 
-async function enqueueUserSync(client, event, subjectUuid) {
+async function enqueueUserSync(client, event, subjectId) {
   await client.query(
     `INSERT INTO maintainerd_webhook_jobs
        (event_id, job_type, subject_id, tenant_id)
      VALUES ($1, 'sync_user', $2, $3)`,
-    [event.event_id, subjectUuid, event.tenant_id]
+    [event.event_id, subjectId, event.tenant_id]
   );
 }
 
