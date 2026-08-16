@@ -189,42 +189,6 @@ export const maintainerdServices = [
     ]
   },
   {
-    slug: "cms",
-    name: "M9d CMS",
-    shortName: "CMS",
-    eyebrow: "Content & Sites",
-    status: "Planned",
-    statusKind: "idea",
-    icon: serviceIcon("cms"),
-    summary: "Content models, publishing, sites, media, and structured editorial workflows.",
-    description: "CMS is the content layer for product pages, announcements, knowledge bases, marketing surfaces, public delivery, and structured app content models.",
-    headline: "Structured content, sites, and publishing workflows.",
-    command: "docker pull maintainerd/maintainerd-cms",
-    features: [
-      "Structured content models",
-      "Editorial and developer console",
-      "Public API or static delivery"
-    ]
-  },
-  {
-    slug: "workflow",
-    name: "M9d Workflow",
-    shortName: "Workflow",
-    eyebrow: "Approvals & State Machines",
-    status: "Planned",
-    statusKind: "planned",
-    icon: serviceIcon("workflow"),
-    summary: "Approvals, automations, state machines, and business process orchestration.",
-    description: "Workflow coordinates business processes, approvals, state machines, and event-driven automations across Maintainerd services and customer applications.",
-    headline: "Approval chains, state machines, and automations.",
-    command: "docker pull maintainerd/maintainerd-workflow",
-    features: [
-      "Approval chains",
-      "Event triggers and service webhooks",
-      "Workflow design and operations console"
-    ]
-  },
-  {
     slug: "jobs",
     name: "M9d Jobs",
     shortName: "Jobs",
@@ -278,42 +242,6 @@ export const maintainerdServices = [
       "Invoices and provider connections"
     ]
   },
-  {
-    slug: "project",
-    name: "M9d Project",
-    shortName: "Project",
-    eyebrow: "Issues, Boards & Roadmaps",
-    status: "Planned",
-    statusKind: "idea",
-    icon: serviceIcon("project"),
-    summary: "Issues, boards, roadmaps, development planning, and product workflow.",
-    description: "Project is a first-party planning product for issues, boards, milestones, roadmaps, release planning, and developer workflow connections.",
-    headline: "Issue tracking, boards, roadmaps, and development workflow.",
-    command: "docker pull maintainerd/maintainerd-project",
-    features: [
-      "Issues, epics, priorities, labels, and owners",
-      "Boards, milestones, and roadmaps",
-      "Repository, deployment, and support handoffs"
-    ]
-  },
-  {
-    slug: "support",
-    name: "M9d Support",
-    shortName: "Support",
-    eyebrow: "Tickets & Feedback",
-    status: "Planned",
-    statusKind: "idea",
-    icon: serviceIcon("support"),
-    summary: "Tickets, customer feedback, support workflows, and conversation history.",
-    description: "Support captures customer tickets, feedback, issue intake, and helpdesk workflows, then links customer-facing work to Project and product operations.",
-    headline: "Customer tickets, feedback, and support workflows.",
-    command: "docker pull maintainerd/maintainerd-support",
-    features: [
-      "Ticket and feedback intake",
-      "Assignment, priority, comments, and responses",
-      "Escalation into product or engineering workflows"
-    ]
-  }
 ];
 
 export const externalCategories = [

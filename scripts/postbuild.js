@@ -19,13 +19,9 @@ const routes = [
   "/services/gateway/",
   "/services/storage/",
   "/services/messaging/",
-  "/services/cms/",
-  "/services/workflow/",
   "/services/jobs/",
   "/services/observability/",
-  "/services/billing/",
-  "/services/project/",
-  "/services/support/"
+  "/services/billing/"
 ];
 
 async function copyIndex(route) {
