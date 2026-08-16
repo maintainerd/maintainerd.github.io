@@ -6,7 +6,6 @@
   import AuthApiPage from "@/pages/services/AuthApi.svelte";
   import AuthDocsPage from "@/pages/services/AuthDocs.svelte";
   import AuthGrpcPage from "@/pages/services/AuthGrpc.svelte";
-  import BlogPage from "@/pages/Blog.svelte";
   import CommunityPage from "@/pages/Community.svelte";
   import HomePage from "@/pages/Home.svelte";
   import NotFoundPage from "@/pages/NotFound.svelte";
@@ -35,7 +34,6 @@
       currentPath === "/" ||
       currentPath === "/services/" ||
       currentPath === "/community/" ||
-      currentPath === "/blog/" ||
       currentPath === "/about/" ||
       currentPath === "/services/auth/docs/" ||
       currentPath === "/services/auth/api/" ||
@@ -56,9 +54,6 @@
     </Route>
     <Route path="/community">
       <CommunityPage />
-    </Route>
-    <Route path="/blog">
-      <BlogPage />
     </Route>
     <Route path="/about">
       <AboutPage />

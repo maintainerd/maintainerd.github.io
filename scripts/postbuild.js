@@ -5,7 +5,6 @@ const dist = "dist";
 const routes = [
   "/services/",
   "/community/",
-  "/blog/",
   "/about/",
   "/services/auth/",
   "/services/auth/docs/",

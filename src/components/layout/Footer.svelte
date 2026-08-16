@@ -23,8 +23,12 @@
     <div>
       <h3>Community</h3>
       <a href="/community/">Community</a>
-      <a href="/blog/">Blog</a>
+      <a href="https://github.com/maintainerd/maintainerd-auth/issues" target="_blank" rel="noopener noreferrer">Issues</a>
       <a href="https://github.com/maintainerd" target="_blank" rel="noopener noreferrer">GitHub</a>
     </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Maintainerd</span>
+    <span>Apache-2.0 licensed</span>
   </div>
 </footer>

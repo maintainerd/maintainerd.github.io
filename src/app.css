@@ -264,6 +264,7 @@ h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.01em; }
 .footer h3 { margin-bottom: 8px; font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; color: var(--faint); }
 .footer a, .footer p { display: block; margin: 7px 0; color: var(--muted); font-size: .92rem; }
 .footer a:hover { color: var(--ink); }
+.footer-bottom { display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; width: min(var(--wrap), calc(100% - 40px)); margin: 0 auto; padding: 18px 0; border-top: 1px solid var(--line); color: var(--faint); font-size: .85rem; }
 
 @media (max-width: 900px) {
   .menu-button { display: inline-flex; }

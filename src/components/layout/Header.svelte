@@ -7,7 +7,6 @@
   const siteNavItems = [
     { href: "/services/", label: "Services" },
     { href: "/community/", label: "Community" },
-    { href: "/blog/", label: "Blog" },
     { href: "/about/", label: "About" }
   ];
 
