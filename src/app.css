@@ -43,6 +43,9 @@ button, input { font: inherit; }
 .nav-link.is-disabled { color: var(--faint); cursor: not-allowed; }
 .nav-link.is-disabled:hover { background: transparent; color: var(--faint); }
 .nav-link-muted { color: var(--blue); }
+.nav-github { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; margin-left: 4px; border-radius: var(--radius-sm); color: var(--muted); }
+.nav-github:hover { background: var(--panel); color: var(--ink); }
+.nav-github svg { display: block; }
 .menu-button { display: none; align-items: center; justify-content: center; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); cursor: pointer; }
 .menu-button span, .menu-button span::before, .menu-button span::after { display: block; width: 17px; height: 2px; background: currentColor; border-radius: 2px; content: ""; }
 .menu-button span::before { transform: translateY(-5px); }
