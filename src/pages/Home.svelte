@@ -32,6 +32,64 @@
     </div>
   </section>
 
+  <section class="section">
+    <p class="eyebrow">One platform, any infrastructure</p>
+    <h2>You learn Maintainerd. It handles the rest.</h2>
+    <p class="section-lede">
+      Teams juggle a different playbook for every provider. Maintainerd sits in the middle — you build
+      against one platform, and it runs on whatever infrastructure you bring.
+    </p>
+    <div class="flow-diagram">
+      <svg viewBox="0 0 960 460" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Developers and ops interact only with Maintainerd, which runs on any infrastructure: on-premise, AWS, Azure, GCP, and more.">
+        <defs>
+          <marker id="ahb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M1 1 L9 5 L1 9" fill="none" stroke="var(--blue)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M1 1 L9 5 L1 9" fill="none" stroke="var(--line-strong)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <text x="140" y="150" text-anchor="middle" font-size="13" font-weight="600" letter-spacing="0.07em" fill="var(--faint)">YOU</text>
+        <text x="820" y="40" text-anchor="middle" font-size="13" font-weight="600" letter-spacing="0.07em" fill="var(--faint)">YOUR INFRASTRUCTURE</text>
+
+        <line x1="582" y1="230" x2="714" y2="93"  stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <line x1="582" y1="230" x2="714" y2="165" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <line x1="582" y1="230" x2="714" y2="237" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <line x1="582" y1="230" x2="714" y2="309" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <line x1="582" y1="230" x2="714" y2="381" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+
+        <line x1="244" y1="230" x2="374" y2="230" stroke="var(--blue)" stroke-width="2.5" marker-end="url(#ahb)"/>
+        <text x="309" y="219" text-anchor="middle" font-size="12.5" fill="var(--muted)">build &amp; deploy</text>
+
+        <rect x="40" y="194" width="200" height="72" rx="12" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.5"/>
+        <text x="140" y="228" text-anchor="middle" font-size="19" font-weight="600" fill="var(--ink)">Developers &amp; Ops</text>
+        <text x="140" y="250" text-anchor="middle" font-size="13" fill="var(--muted)">one platform to learn</text>
+
+        <rect x="380" y="158" width="202" height="144" rx="16" fill="var(--blue)"/>
+        <g fill="#ffffff" opacity="0.96" transform="translate(481,197)">
+          <circle cx="-10" cy="3" r="8"/>
+          <circle cx="2" cy="-4" r="11"/>
+          <circle cx="13" cy="3" r="7"/>
+          <rect x="-18" y="3" width="37" height="10" rx="5"/>
+        </g>
+        <text x="481" y="250" text-anchor="middle" font-size="24" font-weight="600" fill="#ffffff">Maintainerd</text>
+        <text x="481" y="272" text-anchor="middle" font-size="13" fill="#ffffff" opacity="0.85">the cloud platform</text>
+
+        <rect x="720" y="66"  width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
+        <text x="820" y="99"  text-anchor="middle" font-size="18" font-weight="500" fill="var(--ink)">On-premise</text>
+        <rect x="720" y="138" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
+        <text x="820" y="171" text-anchor="middle" font-size="18" font-weight="500" fill="var(--ink)">AWS</text>
+        <rect x="720" y="210" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
+        <text x="820" y="243" text-anchor="middle" font-size="18" font-weight="500" fill="var(--ink)">Azure</text>
+        <rect x="720" y="282" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
+        <text x="820" y="315" text-anchor="middle" font-size="18" font-weight="500" fill="var(--ink)">GCP</text>
+        <rect x="720" y="354" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25" stroke-dasharray="5 5"/>
+        <text x="820" y="387" text-anchor="middle" font-size="18" font-weight="500" fill="var(--muted)">…and many more</text>
+      </svg>
+    </div>
+  </section>
+
   <section class="band">
     <div class="section" id="services" style="padding-top:64px;padding-bottom:64px">
       <p class="eyebrow">Service catalog</p>

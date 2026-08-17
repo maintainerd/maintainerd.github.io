@@ -54,6 +54,8 @@ button, input { font: inherit; }
 /* Layout */
 .section { width: min(var(--wrap), calc(100% - 40px)); margin: 0 auto; padding: 72px 0; }
 .band { background: var(--panel); border-block: 1px solid var(--line); }
+.flow-diagram { max-width: 940px; margin: 34px auto 0; }
+.flow-diagram svg { display: block; width: 100%; height: auto; }
 h1, h2, h3, p { margin-top: 0; }
 h1 { margin: 0 0 18px; font-size: clamp(2.4rem, 5vw, 3.6rem); line-height: 1.05; letter-spacing: -0.03em; }
 h2 { margin: 0 0 12px; font-size: clamp(1.6rem, 3vw, 2.2rem); line-height: 1.12; letter-spacing: -0.02em; }
