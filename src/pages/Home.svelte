@@ -67,12 +67,7 @@
         <text x="95" y="231" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">Developers &amp; Ops</text>
 
         <circle cx="410" cy="185" r="40" fill="var(--blue)"/>
-        <g fill="#ffffff" opacity="0.97" transform="translate(410,179) scale(0.95)">
-          <circle cx="-10" cy="3" r="8"/>
-          <circle cx="2" cy="-4" r="11"/>
-          <circle cx="13" cy="3" r="7"/>
-          <rect x="-18" y="3" width="37" height="10" rx="5"/>
-        </g>
+        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4C9.11 4 6.6 5.64 5.35 8.04C2.34 8.36 0 10.91 0 14C0 17.31 2.69 20 6 20H19C21.76 20 24 17.76 24 15C24 12.36 21.95 10.22 19.35 10.04Z" fill="#ffffff" transform="translate(410 184) scale(1.5) translate(-12 -12)"/>
         <text x="410" y="243" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">Maintainerd</text>
 
         <circle cx="700" cy="53" r="28" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
