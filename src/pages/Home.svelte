@@ -40,7 +40,7 @@
       against one platform, and it runs on whatever infrastructure you bring.
     </p>
     <div class="flow-diagram">
-      <svg viewBox="0 0 860 380" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Developers and ops interact with Maintainerd, which runs on any infrastructure: on-premise, AWS, Azure, GCP, and more.">
+      <svg viewBox="0 0 896 380" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Developers and ops interact with Maintainerd, which runs on any infrastructure: on-premise, AWS, Azure, GCP, and more.">
         <defs>
           <marker id="ahb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M1 1 L9 5 L1 9" fill="none" stroke="var(--blue)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -50,7 +50,7 @@
           </marker>
         </defs>
 
-        <text x="700" y="20" text-anchor="middle" font-size="12.5" font-weight="600" letter-spacing="0.07em" fill="var(--faint)">YOUR INFRASTRUCTURE</text>
+        <rect x="10" y="8" width="876" height="364" rx="18" fill="none" stroke="var(--line-strong)" stroke-width="1.25" stroke-dasharray="6 6"/>
 
         <path d="M450 185 C575 185 575 53 672 53"   fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
         <path d="M450 185 C575 185 575 119 672 119" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
