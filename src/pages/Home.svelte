@@ -58,8 +58,8 @@
         <path d="M466 185 C585 185 585 251 672 251" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
         <path d="M466 185 C585 185 585 317 672 317" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
 
-        <path d="M137 185 Q245 160 354 185" fill="none" stroke="var(--blue)" stroke-width="2.5" marker-end="url(#ahb)"/>
-        <text x="245" y="150" text-anchor="middle" font-size="12" fill="var(--muted)">build &amp; deploy</text>
+        <line x1="137" y1="185" x2="354" y2="185" stroke="var(--blue)" stroke-width="2.5" marker-end="url(#ahb)"/>
+        <text x="245" y="176" text-anchor="middle" font-size="12" fill="var(--muted)">build &amp; deploy</text>
 
         <circle cx="95" cy="185" r="40" fill="var(--blue-tint)" stroke="var(--blue)" stroke-width="1.5"/>
         <circle cx="95" cy="176" r="8" fill="var(--blue)"/>
