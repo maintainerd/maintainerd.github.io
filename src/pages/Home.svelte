@@ -52,28 +52,28 @@
 
         <text x="700" y="20" text-anchor="middle" font-size="12.5" font-weight="600" letter-spacing="0.07em" fill="var(--faint)">YOUR INFRASTRUCTURE</text>
 
-        <path d="M466 185 C585 185 585 53 672 53"   fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
-        <path d="M466 185 C585 185 585 119 672 119" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
-        <path d="M466 185 C600 185 600 185 672 185" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
-        <path d="M466 185 C585 185 585 251 672 251" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
-        <path d="M466 185 C585 185 585 317 672 317" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <path d="M450 185 C575 185 575 53 672 53"   fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <path d="M450 185 C575 185 575 119 672 119" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <path d="M450 185 C590 185 590 185 672 185" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <path d="M450 185 C575 185 575 251 672 251" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <path d="M450 185 C575 185 575 317 672 317" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
 
-        <line x1="137" y1="185" x2="354" y2="185" stroke="var(--blue)" stroke-width="2.5" marker-end="url(#ahb)"/>
-        <text x="245" y="176" text-anchor="middle" font-size="12" fill="var(--muted)">build &amp; deploy</text>
+        <line x1="123" y1="185" x2="370" y2="185" stroke="var(--blue)" stroke-width="2.5" marker-end="url(#ahb)"/>
+        <text x="246" y="176" text-anchor="middle" font-size="12" fill="var(--muted)">build &amp; deploy</text>
 
-        <circle cx="95" cy="185" r="40" fill="var(--blue-tint)" stroke="var(--blue)" stroke-width="1.5"/>
-        <circle cx="95" cy="176" r="8" fill="var(--blue)"/>
-        <path d="M81 202 c0 -13 28 -13 28 0 z" fill="var(--blue)"/>
-        <text x="95" y="248" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">Developers &amp; Ops</text>
+        <circle cx="95" cy="185" r="28" fill="var(--blue-tint)" stroke="var(--blue)" stroke-width="1.5"/>
+        <circle cx="95" cy="180" r="6" fill="var(--blue)"/>
+        <path d="M84 197 c0 -9 22 -9 22 0 z" fill="var(--blue)"/>
+        <text x="95" y="231" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">Developers &amp; Ops</text>
 
-        <circle cx="410" cy="185" r="54" fill="var(--blue)"/>
-        <g fill="#ffffff" opacity="0.97" transform="translate(410,176) scale(1.25)">
+        <circle cx="410" cy="185" r="40" fill="var(--blue)"/>
+        <g fill="#ffffff" opacity="0.97" transform="translate(410,179) scale(0.95)">
           <circle cx="-10" cy="3" r="8"/>
           <circle cx="2" cy="-4" r="11"/>
           <circle cx="13" cy="3" r="7"/>
           <rect x="-18" y="3" width="37" height="10" rx="5"/>
         </g>
-        <text x="410" y="266" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">Maintainerd</text>
+        <text x="410" y="243" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">Maintainerd</text>
 
         <circle cx="700" cy="53" r="28" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
         <image href="/assets/logos/on-premise.svg" x="685" y="38" width="30" height="30"/>
