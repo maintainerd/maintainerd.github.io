@@ -49,11 +49,11 @@
     <div class="two-col">
       <div>
         <p class="eyebrow">How it works</p>
-        <h2>Not a cloud provider — the services on top of it.</h2>
+        <h2>Maintainerd runs the platform. You bring the infrastructure.</h2>
         <p class="section-lede">
-          You bring your own infrastructure — a Docker host, a Kubernetes cluster, a database, whatever you
-          already run — and Maintainerd gives you the services that sit on top. Plug into your existing setup
-          instead of replacing it, and own every layer yourself.
+          Maintainerd is the software that turns infrastructure into a complete cloud platform. Point it at
+          whatever you run — on-premise, your own servers, or any cloud provider — and it gives you the
+          services to build and operate on top. Same platform, anywhere you host it.
         </p>
       </div>
       <div class="compact-grid" style="grid-template-columns:1fr">
