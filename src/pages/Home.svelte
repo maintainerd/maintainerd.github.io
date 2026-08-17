@@ -77,15 +77,20 @@
         <text x="481" y="272" text-anchor="middle" font-size="13" fill="#ffffff" opacity="0.85">the cloud platform</text>
 
         <rect x="720" y="66"  width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
-        <text x="820" y="99"  text-anchor="middle" font-size="18" font-weight="500" fill="var(--ink)">On-premise</text>
+        <image href="/assets/logos/on-premise.svg" x="742" y="79" width="28" height="28"/>
+        <text x="782" y="99"  text-anchor="start" font-size="18" font-weight="500" fill="var(--ink)">On-premise</text>
         <rect x="720" y="138" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
-        <text x="820" y="171" text-anchor="middle" font-size="18" font-weight="500" fill="var(--ink)">AWS</text>
+        <image href="/assets/logos/aws.svg" x="742" y="151" width="28" height="28"/>
+        <text x="782" y="171" text-anchor="start" font-size="18" font-weight="500" fill="var(--ink)">AWS</text>
         <rect x="720" y="210" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
-        <text x="820" y="243" text-anchor="middle" font-size="18" font-weight="500" fill="var(--ink)">Azure</text>
+        <image href="/assets/logos/azure.svg" x="742" y="223" width="28" height="28"/>
+        <text x="782" y="243" text-anchor="start" font-size="18" font-weight="500" fill="var(--ink)">Azure</text>
         <rect x="720" y="282" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
-        <text x="820" y="315" text-anchor="middle" font-size="18" font-weight="500" fill="var(--ink)">GCP</text>
+        <image href="/assets/logos/gcp.svg" x="742" y="295" width="28" height="28"/>
+        <text x="782" y="315" text-anchor="start" font-size="18" font-weight="500" fill="var(--ink)">GCP</text>
         <rect x="720" y="354" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25" stroke-dasharray="5 5"/>
-        <text x="820" y="387" text-anchor="middle" font-size="18" font-weight="500" fill="var(--muted)">…and many more</text>
+        <g stroke="var(--faint)" stroke-width="2.4" stroke-linecap="round"><line x1="749" y1="381" x2="763" y2="381"/><line x1="756" y1="374" x2="756" y2="388"/></g>
+        <text x="784" y="387" text-anchor="start" font-size="18" font-weight="500" fill="var(--muted)">and many more</text>
       </svg>
     </div>
   </section>
