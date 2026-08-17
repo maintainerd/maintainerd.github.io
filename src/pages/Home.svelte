@@ -40,7 +40,7 @@
       against one platform, and it runs on whatever infrastructure you bring.
     </p>
     <div class="flow-diagram">
-      <svg viewBox="0 0 960 460" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Developers and ops interact only with Maintainerd, which runs on any infrastructure: on-premise, AWS, Azure, GCP, and more.">
+      <svg viewBox="0 0 860 380" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Developers and ops interact with Maintainerd, which runs on any infrastructure: on-premise, AWS, Azure, GCP, and more.">
         <defs>
           <marker id="ahb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M1 1 L9 5 L1 9" fill="none" stroke="var(--blue)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -50,47 +50,46 @@
           </marker>
         </defs>
 
-        <text x="140" y="150" text-anchor="middle" font-size="13" font-weight="600" letter-spacing="0.07em" fill="var(--faint)">YOU</text>
-        <text x="820" y="40" text-anchor="middle" font-size="13" font-weight="600" letter-spacing="0.07em" fill="var(--faint)">YOUR INFRASTRUCTURE</text>
+        <text x="700" y="20" text-anchor="middle" font-size="12.5" font-weight="600" letter-spacing="0.07em" fill="var(--faint)">YOUR INFRASTRUCTURE</text>
 
-        <line x1="582" y1="230" x2="714" y2="93"  stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
-        <line x1="582" y1="230" x2="714" y2="165" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
-        <line x1="582" y1="230" x2="714" y2="237" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
-        <line x1="582" y1="230" x2="714" y2="309" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
-        <line x1="582" y1="230" x2="714" y2="381" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <path d="M466 185 C585 185 585 53 672 53"   fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <path d="M466 185 C585 185 585 119 672 119" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <path d="M466 185 C600 185 600 185 672 185" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <path d="M466 185 C585 185 585 251 672 251" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
+        <path d="M466 185 C585 185 585 317 672 317" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#ahg)"/>
 
-        <line x1="244" y1="230" x2="374" y2="230" stroke="var(--blue)" stroke-width="2.5" marker-end="url(#ahb)"/>
-        <text x="309" y="219" text-anchor="middle" font-size="12.5" fill="var(--muted)">build &amp; deploy</text>
+        <path d="M137 185 Q245 160 354 185" fill="none" stroke="var(--blue)" stroke-width="2.5" marker-end="url(#ahb)"/>
+        <text x="245" y="150" text-anchor="middle" font-size="12" fill="var(--muted)">build &amp; deploy</text>
 
-        <rect x="40" y="194" width="200" height="72" rx="12" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.5"/>
-        <text x="140" y="228" text-anchor="middle" font-size="19" font-weight="600" fill="var(--ink)">Developers &amp; Ops</text>
-        <text x="140" y="250" text-anchor="middle" font-size="13" fill="var(--muted)">one platform to learn</text>
+        <circle cx="95" cy="185" r="40" fill="var(--blue-tint)" stroke="var(--blue)" stroke-width="1.5"/>
+        <circle cx="95" cy="176" r="8" fill="var(--blue)"/>
+        <path d="M81 202 c0 -13 28 -13 28 0 z" fill="var(--blue)"/>
+        <text x="95" y="248" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)">Developers &amp; Ops</text>
 
-        <rect x="380" y="158" width="202" height="144" rx="16" fill="var(--blue)"/>
-        <g fill="#ffffff" opacity="0.96" transform="translate(481,197)">
+        <circle cx="410" cy="185" r="54" fill="var(--blue)"/>
+        <g fill="#ffffff" opacity="0.97" transform="translate(410,176) scale(1.25)">
           <circle cx="-10" cy="3" r="8"/>
           <circle cx="2" cy="-4" r="11"/>
           <circle cx="13" cy="3" r="7"/>
           <rect x="-18" y="3" width="37" height="10" rx="5"/>
         </g>
-        <text x="481" y="250" text-anchor="middle" font-size="24" font-weight="600" fill="#ffffff">Maintainerd</text>
-        <text x="481" y="272" text-anchor="middle" font-size="13" fill="#ffffff" opacity="0.85">the cloud platform</text>
+        <text x="410" y="266" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">Maintainerd</text>
 
-        <rect x="720" y="66"  width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
-        <image href="/assets/logos/on-premise.svg" x="742" y="79" width="28" height="28"/>
-        <text x="782" y="99"  text-anchor="start" font-size="18" font-weight="500" fill="var(--ink)">On-premise</text>
-        <rect x="720" y="138" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
-        <image href="/assets/logos/aws.svg" x="742" y="151" width="28" height="28"/>
-        <text x="782" y="171" text-anchor="start" font-size="18" font-weight="500" fill="var(--ink)">AWS</text>
-        <rect x="720" y="210" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
-        <image href="/assets/logos/azure.svg" x="742" y="223" width="28" height="28"/>
-        <text x="782" y="243" text-anchor="start" font-size="18" font-weight="500" fill="var(--ink)">Azure</text>
-        <rect x="720" y="282" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
-        <image href="/assets/logos/gcp.svg" x="742" y="295" width="28" height="28"/>
-        <text x="782" y="315" text-anchor="start" font-size="18" font-weight="500" fill="var(--ink)">GCP</text>
-        <rect x="720" y="354" width="200" height="54" rx="10" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25" stroke-dasharray="5 5"/>
-        <g stroke="var(--faint)" stroke-width="2.4" stroke-linecap="round"><line x1="749" y1="381" x2="763" y2="381"/><line x1="756" y1="374" x2="756" y2="388"/></g>
-        <text x="784" y="387" text-anchor="start" font-size="18" font-weight="500" fill="var(--muted)">and many more</text>
+        <circle cx="700" cy="53" r="28" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
+        <image href="/assets/logos/on-premise.svg" x="685" y="38" width="30" height="30"/>
+        <text x="740" y="58" text-anchor="start" font-size="16" font-weight="500" fill="var(--ink)">On-premise</text>
+        <circle cx="700" cy="119" r="28" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
+        <image href="/assets/logos/aws.svg" x="685" y="104" width="30" height="30"/>
+        <text x="740" y="124" text-anchor="start" font-size="16" font-weight="500" fill="var(--ink)">AWS</text>
+        <circle cx="700" cy="185" r="28" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
+        <image href="/assets/logos/azure.svg" x="685" y="170" width="30" height="30"/>
+        <text x="740" y="190" text-anchor="start" font-size="16" font-weight="500" fill="var(--ink)">Azure</text>
+        <circle cx="700" cy="251" r="28" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25"/>
+        <image href="/assets/logos/gcp.svg" x="685" y="236" width="30" height="30"/>
+        <text x="740" y="256" text-anchor="start" font-size="16" font-weight="500" fill="var(--ink)">GCP</text>
+        <circle cx="700" cy="317" r="28" fill="var(--paper)" stroke="var(--line-strong)" stroke-width="1.25" stroke-dasharray="5 5"/>
+        <g stroke="var(--faint)" stroke-width="2.6" stroke-linecap="round"><line x1="692" y1="317" x2="708" y2="317"/><line x1="700" y1="309" x2="700" y2="325"/></g>
+        <text x="740" y="322" text-anchor="start" font-size="16" font-weight="500" fill="var(--muted)">and many more</text>
       </svg>
     </div>
   </section>
