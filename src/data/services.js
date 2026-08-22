@@ -20,6 +20,8 @@ export const maintainerdServices = [
     grpcHref: "/services/auth/grpc/",
     dockerHref: "https://hub.docker.com/r/xreyc/maintainerd-auth",
     githubHref: "https://github.com/maintainerd/maintainerd-auth",
+    docsBlurb:
+      "Use them for setup, client configuration, identity providers, OAuth/OIDC integration, tenant management, security controls, and troubleshooting.",
     features: [
       "Hosted login, registration, and account self-service",
       "Built-in Maintainerd identity plus external OAuth, OIDC, and SAML providers",
@@ -175,17 +177,22 @@ export const maintainerdServices = [
     name: "M9d Secret",
     shortName: "Secret",
     eyebrow: "Secrets Layer",
-    status: "Planned",
-    statusKind: "idea",
+    status: "Building",
+    statusKind: "building",
     icon: serviceIcon("secret"),
-    summary: "Secrets and keys with encryption and rotation — the built-in vault, or a secrets manager you already run.",
-    description: "Secret can run as a Maintainerd-managed secret store or delegate to an external secrets manager or KMS you already run while preserving a consistent service contract.",
-    headline: "Internal or external secrets management.",
+    summary: "A first-party vault: envelope-encrypted, versioned secrets with audited reveals, rotation, and its own console.",
+    description: "Secret is Maintainerd's own secret manager. It stores secrets in a tenant, project, environment, and folder hierarchy, encrypts every version under its own data key, records every access including reads and denials, and enforces permissions on each secret's resource name.",
+    headline: "Envelope-encrypted, versioned secrets with audited reveals.",
     command: "docker pull maintainerd/maintainerd-secret",
+    href: "/services/secret/docs/",
+    docsHref: "/services/secret/docs/",
+    githubHref: "https://github.com/maintainerd/maintainerd-secret",
+    docsBlurb:
+      "Use them for the run modes, the standalone runbook, the permission reference, environment variables, the console, and the security guarantees.",
     features: [
-      "Internal secret store option",
-      "External provider bridges",
-      "Rotation hooks and secret references"
+      "Envelope encryption with a pluggable root key, and append-only versions",
+      "Browsing metadata and revealing a value are separate grants, and every reveal is audited",
+      "Adoptable alone: Auth plus Secret is a complete deployment"
     ]
   },
   {

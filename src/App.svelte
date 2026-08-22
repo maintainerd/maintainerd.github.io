@@ -9,6 +9,7 @@
   import CommunityPage from "@/pages/Community.svelte";
   import HomePage from "@/pages/Home.svelte";
   import NotFoundPage from "@/pages/NotFound.svelte";
+  import SecretDocsPage from "@/pages/services/SecretDocs.svelte";
   import ServiceDetailPage from "@/pages/services/ServiceDetail.svelte";
   import ServicesPage from "@/pages/services/Services.svelte";
   import { findService } from "@/data/services.js";
@@ -38,6 +39,7 @@
       currentPath === "/services/auth/docs/" ||
       currentPath === "/services/auth/api/" ||
       currentPath === "/services/auth/grpc/" ||
+      currentPath === "/services/secret/docs/" ||
       Boolean(serviceForPath(currentPath))
     );
   };
@@ -66,6 +68,9 @@
     </Route>
     <Route path="/services/auth/grpc">
       <AuthGrpcPage />
+    </Route>
+    <Route path="/services/secret/docs">
+      <SecretDocsPage hash={location.hash} />
     </Route>
     <Route path="/services/:slug" let:params>
       {@const matchedService = findService(params.slug)}

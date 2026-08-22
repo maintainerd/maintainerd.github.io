@@ -19,6 +19,7 @@ const routes = [
   "/services/cache/",
   "/services/domains/",
   "/services/secret/",
+  "/services/secret/docs/",
   "/services/gateway/",
   "/services/storage/",
   "/services/messaging/",

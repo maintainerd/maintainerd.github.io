@@ -59,8 +59,8 @@
         <div class="callout">
           <h3>Documentation</h3>
           <p>
-            Auth already has dedicated documentation and API pages. Use them for setup, client configuration,
-            identity providers, OAuth/OIDC integration, tenant management, security controls, and troubleshooting.
+            {service.name} already has dedicated documentation{service.apiHref ? " and API pages" : ""}.
+            {service.docsBlurb || ""}
           </p>
           <div class="feature-links">
             {#if service.docsHref}<a href={service.docsHref}>Open docs</a>{/if}
