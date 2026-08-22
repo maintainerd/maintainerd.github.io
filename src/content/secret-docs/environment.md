@@ -81,6 +81,20 @@ Outside `APP_ENV=development` a missing or malformed root key is a boot error, n
 | `SECRET_WEBHOOK_MAX_TIMEOUT_SEC` | `30` | Ceiling on a per-endpoint delivery timeout, applied at registration and again at delivery. |
 | `SECRET_WEBHOOK_MAX_ATTEMPTS` | `10` | Ceiling on a per-endpoint retry count, applied the same way. |
 
+## Dynamic-Credential Reaper
+
+This sweep is what makes a dynamic credential short-lived. Issuing one creates a **real PostgreSQL role**; the lease row records when it must stop existing, but a row expiring does not drop a role — the reaper is the only thing that does.
+
+| Var | Default | Purpose |
+|---|---|---|
+| `SECRET_DYNAMIC_REAPER_ENABLED` | `true` | Revoke dynamic credentials whose leases have expired. Turning it off means **issued credentials outlive their leases**, and the boot log says exactly that. |
+| `SECRET_DYNAMIC_REAPER_INTERVAL` | `1m` | How often the sweep runs. Finer than the rotator's, because the overdue window is the window in which a credential nobody is entitled to still works. |
+| `SECRET_DYNAMIC_REAPER_BATCH` | `100` | Leases revoked per pass, so a mass expiry is not an unbounded run of DDL against a target database in a single tick. |
+
+It runs on the **election leader only** (see `SECRET_LEADER_ELECTION_ENABLED`). Two replicas revoking the same lease means the loser drops an account that is already gone and records a failure for a lease that was correctly closed — which, in the audit trail, is indistinguishable from a revocation that genuinely did not happen.
+
+A revocation the target database refused leaves the lease **open** and increments an attempt counter, and is retried on the next pass. That is deliberate: the account still exists, so the row demanding its removal has to survive. A lease the sweep could not even attempt — its role config is gone, so there is no revocation template to render — is counted separately, because no number of retries fixes it and an operator has to restore the config first.
+
 ## Setup And Default Scope
 
 | Var | Default | Purpose |

@@ -149,8 +149,49 @@ That is strictly stronger than a baseline. A segment pair can only ever be as st
 | `POST /api/v1/secrets/rotation-policy` | `secret:ManageRotation` | **user-only** | — |
 | `POST /api/v1/bulk/get` | `secret:GetSecret` | any | Every item, on its own MRN |
 | `POST /api/v1/bulk/put` | `secret:PutSecret` | any | Every item, on its own MRN |
+| `GET /api/v1/secrets/lease-policy` | `secret:ReadMetadata` | any | — |
+| `GET /api/v1/secrets/leases` | `secret:ReadMetadata` | any | — |
+| `POST /api/v1/secrets/lease-policy` | `secret:ManageLease` | **user-only** | — |
+| `POST /api/v1/secrets/leases/revoke` | `secret:ManageLease` | **user-only** | — |
+
+### Transit
+
+| Route | Permission | Actor | Also enforced deeper |
+|---|---|---|---|
+| `GET /api/v1/transit` | `secret:ReadMetadata` | any | — |
+| `GET /api/v1/transit/describe` | `secret:ReadMetadata` | any | — |
+| `GET /api/v1/transit/versions` | `secret:ReadMetadata` | any | — |
+| `POST /api/v1/transit` | `secret:ManageTransitKey` | **user-only** | — |
+| `PATCH /api/v1/transit` | `secret:ManageTransitKey` | **user-only** | — |
+| `DELETE /api/v1/transit` | `secret:ManageTransitKey` | **user-only** | — |
+| `POST /api/v1/transit/rotate` | `secret:ManageTransitKey` | **user-only** | — |
+| `POST /api/v1/transit/encrypt` | `secret:Encrypt` | any | — |
+| `POST /api/v1/transit/decrypt` | `secret:Decrypt` | any | Authorized against the **token's** key |
+
+### Dynamic credentials
+
+| Route | Permission | Actor | Also enforced deeper |
+|---|---|---|---|
+| `GET /api/v1/dynamic` | `secret:ReadMetadata` | any | — |
+| `GET /api/v1/dynamic/describe` | `secret:ReadMetadata` | any | — |
+| `GET /api/v1/dynamic/leases` | `secret:ReadMetadata` | any | — |
+| `POST /api/v1/dynamic` | `secret:ManageDynamicRole` | **user-only** | — |
+| `PATCH /api/v1/dynamic` | `secret:ManageDynamicRole` | **user-only** | — |
+| `DELETE /api/v1/dynamic` | `secret:ManageDynamicRole` | **user-only** | Refused while any lease is outstanding |
+| `POST /api/v1/dynamic/credentials` | `secret:IssueDynamicCredential` | any | — |
+| `POST /api/v1/dynamic/credentials/revoke` | `secret:IssueDynamicCredential` | any | — |
 
 A few rows are worth reading twice.
+
+**Transit decrypt is authorized against the token's key, not the project.** The ciphertext token names the key that sealed it, and that name is what the permission check resolves — otherwise a grant on one key in a project would open every ciphertext in it. The service then resolves the same name inside the caller's own tenant and rebuilds the binding from the row it found, so the key checked is the key opened.
+
+**Revoking a dynamic credential takes the issue grant, not the management grant.** A workload handing back the credential it asked for is the ordinary end of the lifecycle. Putting revocation behind `ManageDynamicRole` would mean the only principal able to clean up is one no workload holds, so credentials would be left to expire instead of being returned — and revoking early is strictly the safe direction. The store is idempotent on an already-revoked lease, so a retry reports success rather than a conflict: making the safe action look like a failure teaches callers not to take it.
+
+**Deleting a dynamic role is refused while credentials are outstanding.** The revocation template is the only thing that can drop the accounts issued from that role, so removing the config first would strand every one of them permanently.
+
+**Issuing is a write, and it is audited before the credential is returned.** If the audit row cannot be written the account that was just created is **dropped** and the lease closed. Returning it would leave a live account nobody can prove was issued; returning an error and leaving it up would leave one nobody knows to revoke.
+
+**Neither `IssueDynamicCredential` nor anything else exposes the target DSN.** A role config holds a secret *reference* to the administrative connection string, resolved internally at issue time and returned by no path. That is the point of a credential broker: requiring the caller to be able to read the admin DSN would mean every consumer held the admin DSN, which is the situation dynamic secrets exist to end.
 
 **Listing is not describing.** `GET /api/v1/secrets` authorizes a whole **scope** against the folder's MRN, which is a broader capability than describing one secret whose name you already know — hence `secret:ListSecrets` rather than `secret:ReadMetadata`.
 
