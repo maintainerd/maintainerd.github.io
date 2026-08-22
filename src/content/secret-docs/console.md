@@ -24,6 +24,8 @@ It is React with Vite, TypeScript, Tailwind, and Radix, authenticating with OAut
 
 What a signed-in user can actually do comes from **their grants in Auth**, not from what the console requests. See [Permissions](#permissions).
 
+Several of those surfaces are additionally **user-only**: projects, environments, folders and imports, webhooks, rotation policies, restore and destroy, and the audit log accept a caller the service classifies as a human and refuse a machine identity outright. That is why the console signs an operator in rather than carrying a service credential — the interactive flow below is what makes its token a user token. A screen that answers `403` with the code `actor_kind_not_permitted` is not a missing grant; it is a machine token driving a console surface.
+
 ## The OAuth Client It Expects
 
 The console is the **frontend SPA client** from [Standalone setup](#standalone-setup) step 5. In standalone mode you create it by hand in Auth's console; in core-attached mode Core creates it from a template.
@@ -42,6 +44,8 @@ Either way it must have:
 Its client id is `SECRET_CONSOLE_CLIENT_ID`. **The service validates that variable at boot** in standalone mode outside development, and this console signs in with it, so there is exactly one value to set and no way for the two halves to disagree.
 
 **Do not confuse it with `SECRET_CLIENT_ID` and `SECRET_CLIENT_SECRET`**, which are the service's own backend machine-to-machine client. That secret must never appear in `config.js`, in a `.env` consumed by the bundler, or in anything else served to a browser.
+
+Substituting the m2m client here does not merely leak a credential — it does not work. A `client_credentials` token is classified as a **service** principal, and every administrative screen in this console refuses one.
 
 ## Configuration
 
@@ -101,14 +105,14 @@ These are not stylistic. Each one exists because the alternative turns a single 
 3. **Reveal is visibly marked as audited.** The dialog opens with an alert saying the read wrote a row naming the operator, before the value appears.
 4. **A secret's address never enters a URL.** Secret detail is a dialog, not a route, because a route would put the address in browser history, the referer header, and every proxy log in between — the same reason the service made reveal a `POST`. The browse listing does not mirror a searched-for key name into the query string either.
 5. **The setup gate fails closed.** An unreadable setup status is treated as *not* set up, so the wizard is the landing surface rather than a full console pointed at a vault that may not exist.
-6. **`401` goes to login; `403` becomes an in-place "not permitted" state.** Metadata access and value access are separate grants, so a `403` means "you are signed in and lack this" — bouncing it to identity would loop forever.
+6. **`401` goes to login; `403` becomes an in-place "not permitted" state.** Metadata access and value access are separate grants, so a `403` means "you are signed in and lack this" — bouncing it to identity would loop forever. A `403` can also mean the caller is the wrong *class* rather than under-granted; the response's `code` field says which.
 7. **Nothing logs a request or response body.** A put body carries a plaintext and a reveal response carries one; the API client and the error boundary print statuses and messages only.
 
 ## Guard-Open Mode
 
 If the issuer, the token URL, and the client id are **all** absent, the console runs without a bearer token and shows a permanent, non-dismissible banner plus a "Guard open" chip in the brand bar.
 
-That matches a service running with `APP_ENV=development` and no `AUTH_JWKS_URL`, `AUTH_ISSUER`, or `AUTH_AUDIENCE`, whose guard serves every caller as a blanket-granted principal. **It is the local-development posture and must never be pointed at a production vault.**
+That matches a service running with `APP_ENV=development` and no `AUTH_JWKS_URL`, `AUTH_ISSUER`, or `AUTH_AUDIENCE`, whose guard serves every caller as a blanket-granted principal. The guard short-circuits before it consults its table in that mode, so the user-only administrative surfaces are open to everyone too — there is no token to classify. **It is the local-development posture and must never be pointed at a production vault.**
 
 A *partial* identity configuration is treated as none, deliberately: it would otherwise send the operator to an authorize endpoint whose code can never be exchanged.
 

@@ -51,6 +51,10 @@ secret:ManageRotation    secret:ReadAudit         secret:Admin
 
 The list is not decorative and it is not a superset to trim. Secret's guard demands these strings. A permission that exists in the guard and not in Auth can never be carried by any token, so **every call using it answers `403` regardless of who makes it, with nothing in any log saying why.**
 
+Six of them are the data plane — `ReadMetadata`, `GetSecret`, `PutSecret`, `DeleteSecret`, `RotateSecret`, `ListSecrets` — and six are the management plane the console drives: `ManageProject`, `ManageEnvironment`, `ManageFolder`, `ManageRotation`, `ReadAudit`, `Admin`. Registering only the first six leaves the console's project, environment, folder, webhook, and audit screens answering `403` to everyone, which reads as a broken console rather than as a missing permission.
+
+**These are the same twelve Core registers automatically in core-attached mode**, from its own catalog. An instance that moves between modes therefore demands and receives the same vocabulary — the manual list here and Core's automatic one are one list. See [Run modes](#run-modes).
+
 A running instance reports the same list at `GET /api/v1/setup/status` (with the setup token or `secret:Admin`), derived from the code that enforces it. Check against that rather than against a document if they ever disagree.
 
 What each permission guards is on the [Permissions](#permissions) page.
@@ -81,6 +85,10 @@ Create a **public** client for Secret's console — `authorization_code` with PK
 
 Keep its **client id**. It becomes `SECRET_CONSOLE_CLIENT_ID`.
 
+**This client must be the one that produces the console's token, and it must be an interactive login.** Secret classifies every caller as a *user* or a *service* from the verified claims, and its administrative surfaces — creating projects and environments, moving and deleting folders, managing scope imports, wiring webhooks, setting rotation policies, restoring and destroying secrets, and reading the audit trail — accept a **user** principal only. The authorization-code + PKCE flow this client uses is what makes the operator's token a user token; a `client_credentials` token is classified as a service and is refused on those surfaces with the code `actor_kind_not_permitted`, whatever grants it carries.
+
+That is why an operator must never "make the console work" by handing it a machine credential. The two caller classes, and which surfaces each may reach, are on [Permissions](#permissions).
+
 ### SPA Client Versus Backend Client
 
 These are **two different clients** and confusing them is the most common way to get this setup wrong.
@@ -109,6 +117,8 @@ All three of `AUTH_ISSUER`, `AUTH_JWKS_URL`, and `AUTH_AUDIENCE` must be set tog
 What a signed-in user can do in the console comes from **their grants in Auth**, not from what the console asks for.
 
 Start people on `secret:ReadMetadata` and add `secret:GetSecret` deliberately — they are separate grants precisely so that reveal is a decision. Grants can be narrowed to a project or an environment; see the grant grammar on [Permissions](#permissions).
+
+A grant is necessary but not always sufficient. The administrative surfaces additionally accept a **user** principal only, so the same `secret:ManageProject` grant works from the console and is refused to a workload's machine token. Grant your *workloads* the data-plane permissions — reveal, list, describe, and the writes they own — narrowed to the MRNs they actually need.
 
 ### 8. Start Secret
 
@@ -202,7 +212,10 @@ Then open the console and sign in. See [Console](#console).
 | Every call answers `503`. | The guard resolved to unavailable — the identity configuration is absent outside development. Check the `authorization:` boot line. |
 | Every call answers `401`. | The token's `iss` or `aud` does not match. Compare the `run mode: standalone` log fields against the token. A trailing slash on the issuer, or the resource API's *name* instead of its *identifier*, are the usual causes. |
 | Every call using one permission answers `403`, regardless of who makes it. | That permission string is not registered in Auth, so no token can carry it. Re-check step 3 against `GET /api/v1/setup/status`. |
+| The console's project, environment, folder, webhook, or audit screens all answer `403`. | The six management permissions were not registered. Re-check step 3 — the list is twelve, not six. |
+| A `403` whose `code` is `actor_kind_not_permitted`. | The caller's **class** is wrong, not its grants. Something is driving an administrative surface with a machine token — a console pointed at a `client_credentials` client, or an m2m credential being used where a person should be. Widening the grant will not help. |
 | A signed-in operator can browse but not reveal. | Working as designed. `secret:GetSecret` is a separate grant from `secret:ReadMetadata`. |
+| A workload can reveal and write, but cannot create a project or read the audit trail. | Working as designed. Those surfaces are user-only. |
 | The wizard answers `setup_orchestrated`. | `MAINTAINERD_MODE=core`, or an orchestrator already owns this instance. Use the gRPC `SetupService`. |
 | The wizard answers `setup_disabled`. | `SETUP_BOOTSTRAP_TOKEN` is not set. It is required outside development. |
 | The process refuses to start, complaining about `DB_SSLMODE`. | `disable` is not allowed outside development. |

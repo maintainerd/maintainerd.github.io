@@ -61,8 +61,9 @@ The audit trail is append-only and **it records reads**. `secret.read` (metadata
 | Successful reveal | Yes — and the operation cannot report success if the audit row could not be written. An unaudited reveal that the caller believes succeeded is strictly worse than a failed reveal, because the value is out and nothing records it. |
 | Successful mutation | Yes, on the same strict terms. |
 | **Denial** | Yes, before the `403` is returned. A denied attempt is the most interesting row in the table — it is how an over-reaching or compromised principal is spotted. |
+| The **class** of caller | Yes, on every row including denials. `actor_kind` records whether the caller was a human or a machine identity, taken from the verified claims and never from anything the caller supplied. An incident review can tell a person reading a value from a workload reading it. |
 | Non-authorization failure | Yes, with the cause redacted. An internal error's wrapped cause is deliberately excluded: it is a database message describing the store's structure, and the audit log is readable by anyone with `secret:ReadAudit` — a broader audience than the operator reading the server log. |
-| Reading the trail itself | Yes. The first move of an attacker who has read a credential is to find out what the trail says about it. |
+| Reading the trail itself | Yes. The first move of an attacker who has read a credential is to find out what the trail says about it. Reading it also requires a **user** principal — a workload reading the trail is reconnaissance rather than work. |
 | Each item of a batch | Individually authorized and individually audited. A batch is a transport optimisation, not a semantic one. |
 
 The service refuses to run an authorized operation at all without an auditor configured, so there is structurally no unaudited path to a value.
@@ -76,7 +77,7 @@ The service refuses to run an authorized operation at all without an auditor con
 | Errors | No error in this service carries a value, a DEK, or a root key. |
 | Webhook payloads | A delivery carries the resource name and version and never a value. Deliveries are HMAC-signed. |
 | Credentials in the boot log | Neither the client secret nor the private-key path is ever logged. The issuer, audience, and the two public client ids are, because they appear in every token the service verifies and are the values most often subtly wrong. |
-| URLs | Reveal and batch-get are `POST` requests so a secret's address lands in a body rather than in access logs, proxy logs, browser history, and referer headers. The console holds the same line — see [Console](#console). |
+| URLs | Reveal and batch-get are `POST` requests so a secret's address lands in a body rather than in access logs, proxy logs, browser history, and referer headers. That is a transport decision, not a weaker check: both routes demand `secret:GetSecret` at the door. The console holds the same line — see [Console](#console). |
 
 ## Tenant Isolation
 
@@ -85,6 +86,36 @@ The service refuses to run an authorized operation at all without an auditor con
 A caller may *name* any tenant. Asking is free; the answer for a tenant you hold no grant in is a denial, and an audited one, rather than a data leak. The tenant a request names is a **selector**, never an authorization: naming a tenant gets you a resource name in that tenant, and the grant check then decides whether you may touch it.
 
 Resource-name matching is segment-aware rather than a flat glob, so a wildcard cannot run across a segment boundary — a grant written for tenant `acme` can never reach into `acmecorp`. See [Permissions](#permissions).
+
+## Every Surface Demands What It Performs
+
+The surface guard — the HTTP middleware and the gRPC interceptors — demands the permission the operation **actually performs**, route by route. It is not a baseline with the real privilege deferred to a deeper check.
+
+That ordering matters because the surface guard runs **first**. A weak rule at the door is the check an attacker meets first, and a handler added later that forgets its deeper check would ship carrying only that weak permission. The `/secrets` and `/bulk` segments used to work that way — every verb, including the write, the delete, and the destroy, resolved to `secret:ReadMetadata`. They are now declared route by route and are not in the segment table at all, so a new handler mounted beside them matches nothing and is **denied to every caller** rather than inheriting a permission.
+
+Two properties are enforced by test rather than by convention:
+
+- **No surface whose handler changes durable state may be guarded by a read-only permission** (`secret:ReadMetadata`, `secret:ListSecrets`, `secret:ReadAudit`). Those are the grants an operator hands out broadly precisely because they cannot change anything.
+- **The two transports must agree**, surface by surface, on both the permission and the class of caller. A rule that held over REST and not over gRPC would be no rule at all — a refused caller would simply open a channel.
+
+The per-operation check against the target's MRN is still made, and it is still the only place a scoped grant is narrowed. It is now the second layer rather than the only one. See [Permissions](#permissions).
+
+## Two Classes Of Caller
+
+A permission answers "may this principal do X". It cannot answer "should this **class** of caller be doing X at all" — and that is the question that catches a **stolen machine-to-machine credential**, whose grants are real and which therefore passes every permission check.
+
+So each surface also declares which class may reach it, derived from the verified claims on the token:
+
+| Class | Reaches |
+|---|---|
+| Service — a machine identity carrying Auth's `svc` claim, or a `sub_type` of `service`, `client`, or `exchange` | Reveal, describe, list, bulk get and put, and the ordinary write, rotate, and soft delete of a secret it holds a grant on. |
+| User — a person signed in through the interactive authorization-code + PKCE flow | All of the above, plus the administrative surfaces: setup, audit, restore, destroy, and project, environment, folder, import, webhook, and rotation-policy management. |
+
+Writes and rotation are deliberately open to services. A rotator replacing the credential it manages is the case a secret store exists to enable, and the blast radius is bounded by the **MRN grant** rather than by the caller's class. Restore and destroy are not: both authorize at **tenant** scope, so they need a grant far wider than any single workload's, and destroy is irreversible.
+
+An **unclassified** caller — one this service cannot place in either class — is refused by every constrained surface. "We could not classify this caller" is not a reason to admit it to a surface somebody deliberately restricted.
+
+A class refusal carries the distinct code `actor_kind_not_permitted` rather than `insufficient_permission`, because the two want different responses: one is fixed by granting a permission, and the other is a misconfigured client or a stolen credential and is not a permissions problem at all. Both answer `403`, deliberately — the reason differs but the answer does not, and a distinct status would tell a caller probing the surface why it was refused.
 
 ## Fail-Closed Startup
 

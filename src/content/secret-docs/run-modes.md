@@ -40,6 +40,10 @@ Missing any of them is a boot error naming **all** of them at once — not a sil
 
 Maintainerd Core provisions the service principal, the resource API, the permissions, and both clients from its templates, drives the gRPC `SetupService`, and records itself as this instance's controller.
 
+**Core registers the same twelve permissions** a standalone operator registers by hand — the six data-plane actions and the six management ones — from its own catalog. The two modes converge: whichever provisions the instance, the vocabulary Auth knows is the vocabulary Secret's guard demands, so an instance that starts standalone and is later adopted by Core keeps working. The list is on [Permissions](#permissions), and the manual runbook for it is [Standalone setup](#standalone-setup) step 3.
+
+Core cannot import Secret's package — Secret is optional and independently released — so the two lists are kept in step by review rather than by the compiler. A permission Secret demands and Core omits would exist nowhere in Auth, so no token could carry it and every route behind it would answer `403` to everyone, silently, and **only** in core-provisioned installs. If a controlled install shows that symptom, compare `GET /api/v1/setup/status` against what Auth actually has.
+
 None of the standalone credentials are required here — they are Core's to provision — so booting before Core has run is normal, expected, and warned about rather than refused. The API answers `503` until it happens.
 
 **The REST setup wizard refuses from the first boot in this mode**, with the error code `setup_orchestrated`. Two open first-run paths is a race whose winner owns the vault, and the REST one is reachable by anything on the network; declaring the mode closes that window instead of relying on the controller to win it.
