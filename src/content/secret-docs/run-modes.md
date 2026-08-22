@@ -17,7 +17,7 @@ In neither mode does Secret manage authentication. Auth mints tokens and owns pr
 |---|---|---|
 | A team that wants a vault, already running Auth, with no interest in the rest of the platform. | Standalone | Nothing about Core is involved or required. You own the wiring, and the runbook is eight steps in Auth's console. |
 | A developer running Secret locally. | Standalone with `APP_ENV=development` | The guard opens with a loud boot banner and the console talks to the API without a token. Never point this at a production vault. |
-| An operator running the Maintainerd platform, where Core provisions services. | Core-attached | Core creates the service principal, the resource API, the twelve permissions, and both OAuth clients from its templates, so there is nothing to type twice. |
+| An operator running the Maintainerd platform, where Core provisions services. | Core-attached | Core creates the service principal, the resource API, the eighteen permissions, and both OAuth clients from its templates, so there is nothing to type twice. |
 
 ## Standalone
 
@@ -40,7 +40,7 @@ Missing any of them is a boot error naming **all** of them at once — not a sil
 
 Maintainerd Core provisions the service principal, the resource API, the permissions, and both clients from its templates, drives the gRPC `SetupService`, and records itself as this instance's controller.
 
-**Core registers the same twelve permissions** a standalone operator registers by hand — the six data-plane actions and the six management ones — from its own catalog. The two modes converge: whichever provisions the instance, the vocabulary Auth knows is the vocabulary Secret's guard demands, so an instance that starts standalone and is later adopted by Core keeps working. The list is on [Permissions](#permissions), and the manual runbook for it is [Standalone setup](#standalone-setup) step 3.
+**Core registers the same eighteen permissions** a standalone operator registers by hand — the data-plane actions, the management ones, and the dynamic/transit/lease ones — from its own catalog. The two modes converge: whichever provisions the instance, the vocabulary Auth knows is the vocabulary Secret's guard demands, so an instance that starts standalone and is later adopted by Core keeps working. The list is on [Permissions](#permissions), and the manual runbook for it is [Standalone setup](#standalone-setup) step 3.
 
 Core cannot import Secret's package — Secret is optional and independently released — so the two lists are kept in step by review rather than by the compiler. A permission Secret demands and Core omits would exist nowhere in Auth, so no token could carry it and every route behind it would answer `403` to everyone, silently, and **only** in core-provisioned installs. If a controlled install shows that symptom, compare `GET /api/v1/setup/status` against what Auth actually has.
 

@@ -4,7 +4,7 @@ This page is the authorization reference for Secret: every `secret:` action, eve
 
 Permission checking is not hand-rolled in this service. Every route and every RPC is guarded through the shared Maintainerd SDK — the same enforcement point every Maintainerd service and third-party resource server uses. Secret contributes only its *vocabulary*: the permission constants, the exact route table, the gRPC method table, and the exemption set.
 
-Auth is the policy authority: it owns principals, roles, and grants, and it mints the tokens that carry them. Secret enforces what a token carries. The twelve permission strings must be registered in Auth before any token can carry them — see [Standalone setup](#standalone-setup) step 3, or [Run modes](#run-modes) if Core provisions the service for you.
+Auth is the policy authority: it owns principals, roles, and grants, and it mints the tokens that carry them. Secret enforces what a token carries. The eighteen permission strings must be registered in Auth before any token can carry them — see [Standalone setup](#standalone-setup) step 3, or [Run modes](#run-modes) if Core provisions the service for you.
 
 ## Two Layers, Two Questions
 
@@ -19,7 +19,7 @@ Every request passes two independent checks. Both are required, and **neither is
 
 Every route now declares its own rule, so **layer 1 is correct on its own and layer 2 is defence in depth** rather than the only defence. Layer 2 is still where a scoped grant is narrowed to a target MRN, and it is the only place a second, resource-dependent permission can be demanded — see [Permissions enforced deeper](#permissions-enforced-deeper).
 
-## The Twelve Permissions
+## The Eighteen Permissions
 
 | Permission | Grants |
 |---|---|
@@ -34,9 +34,25 @@ Every route now declares its own rule, so **layer 1 is correct on its own and la
 | `secret:ManageFolder` | Create, move, and delete folders, and manage scope imports (an import is a property of a folder). |
 | `secret:ManageRotation` | Rotation policies and webhook endpoints — the machinery that rotates values and announces the change. |
 | `secret:ReadAudit` | Read the access trail. |
+| `secret:ManageDynamicRole` | Configure a dynamic role: which PostgreSQL instance it targets, the SQL that creates and revokes a credential, and the TTLs. |
+| `secret:IssueDynamicCredential` | Obtain one on-demand credential from a role, and revoke one. Does **not** imply any ability to read the role's administrative connection string. |
+| `secret:Encrypt` | Seal a plaintext under a transit key and receive a ciphertext token. Recovers nothing on its own. |
+| `secret:Decrypt` | Recover a plaintext from a transit ciphertext token. Audited on every use, like a reveal. |
+| `secret:ManageTransitKey` | Create, rotate, update, and delete transit keys. Key *lifecycle*, never key material — there is no export operation to grant. |
+| `secret:ManageLease` | Set and clear a secret's lease policy, and revoke outstanding leases. **Not** required in order to read a leased secret. |
 | `secret:Admin` | Blanket. Implies every permission above. It does **not** widen resource scope. |
 
-These twelve are the whole vocabulary. A standalone operator registers them by hand; Core registers exactly the same twelve when it provisions the service. See [Registering the permissions in Auth](#registering-the-permissions-in-auth).
+These eighteen are the whole vocabulary. A standalone operator registers them by hand; Core registers exactly the same eighteen when it provisions the service. See [Registering the permissions in Auth](#registering-the-permissions-in-auth).
+
+### Why Dynamic, Transit, And Lease Actions Are Split The Way They Are
+
+Each split exists to keep a blast radius small, and collapsing any of them would undo the feature it belongs to.
+
+**Configuring a dynamic role is not issuing from one.** Whoever holds `ManageDynamicRole` writes the SQL that decides what every credential issued from that role can do — a privileged, reviewable act. `IssueDynamicCredential` only asks for the short-lived account that configuration already described, which is why it is deliberately open to **service** principals: a workload fetching its own database credential at boot *is* the feature, and demanding a human there would push consumers back onto a shared static password. The blast radius is bounded by the MRN grant (which roles) and by the role's creation template (what the credential can do) — not by the caller's class.
+
+**Encrypt is not Decrypt.** A write-only workload — an ingest path that stores encrypted fields and never reads them back — can hold `Encrypt` alone. If the two were one permission, every service that *writes* an encrypted column could also *read* every encrypted column. That is the same mistake as folding `ReadMetadata` into `GetSecret`.
+
+**A lease is not authorization.** Reading a leased secret still requires `secret:GetSecret`; `ManageLease` is the administrative grant that decides *how much* reading an already-authorized principal may do. Requiring both to read would make every leased secret unreadable by exactly the consumers the lease was written for.
 
 ### `secret:Admin`
 
@@ -455,8 +471,8 @@ The list Secret *reports* is **derived from the enforcement table** rather than 
 | Mode | Who registers them |
 |---|---|
 | Standalone | You do, by hand, on the resource API. See [Standalone setup](#standalone-setup) step 3. |
-| Core-attached | Core registers the same twelve from its catalog when it provisions the service. See [Run modes](#run-modes). |
+| Core-attached | Core registers the same eighteen from its catalog when it provisions the service. See [Run modes](#run-modes). |
 
-The two lists are the same twelve, so an instance that moves between modes demands and receives the same vocabulary. Core cannot import Secret's package — Secret is optional and independently released — so its catalog is kept in step by review rather than by the compiler. If a core-provisioned install answers `403` on one whole area of the console, that is the drift to check first.
+The two lists are the same eighteen, so an instance that moves between modes demands and receives the same vocabulary. Core cannot import Secret's package — Secret is optional and independently released — so its catalog is kept in step by review rather than by the compiler. If a core-provisioned install answers `403` on one whole area of the console, that is the drift to check first.
 
 A running instance reports the enforced list — derived from the code that enforces it — at `GET /api/v1/setup/status`, with the setup token or a verified `secret:Admin` grant. **If a document and that endpoint ever disagree, the endpoint is right.**

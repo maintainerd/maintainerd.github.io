@@ -21,7 +21,7 @@ If Core provisions your services, none of this applies — see [Run modes](#run-
 |---:|---|---|
 | 1 | Create the service principal for Secret. | The identity Auth knows the vault by. |
 | 2 | Create the resource API and give it an identifier. | `AUTH_AUDIENCE` |
-| 3 | Register the twelve `secret:` permissions on that resource API. | The vocabulary tokens can carry. |
+| 3 | Register the eighteen `secret:` permissions on that resource API. | The vocabulary tokens can carry. |
 | 4 | Create the backend m2m client. | `SECRET_CLIENT_ID` plus `SECRET_CLIENT_SECRET` or `SECRET_CLIENT_PRIVATE_KEY_FILE` |
 | 5 | Create the frontend SPA client for the console. | `SECRET_CONSOLE_CLIENT_ID` |
 | 6 | Note Auth's issuer and JWKS URL. | `AUTH_ISSUER`, `AUTH_JWKS_URL` |
@@ -40,20 +40,28 @@ This identifier is the `aud` claim Secret will demand, so write it down: it beco
 
 ### 3. Register The Permissions
 
-Register **exactly** these twelve on that resource API, spelled exactly like this:
+Register **exactly** these eighteen on that resource API, spelled exactly like this:
 
 ```text
 secret:ReadMetadata      secret:GetSecret         secret:PutSecret
 secret:DeleteSecret      secret:RotateSecret      secret:ListSecrets
 secret:ManageProject     secret:ManageEnvironment secret:ManageFolder
-secret:ManageRotation    secret:ReadAudit         secret:Admin
+secret:ManageRotation    secret:ReadAudit         secret:ManageLease
+secret:ManageDynamicRole secret:IssueDynamicCredential
+secret:Encrypt           secret:Decrypt           secret:ManageTransitKey
+secret:Admin
 ```
 
 The list is not decorative and it is not a superset to trim. Secret's guard demands these strings. A permission that exists in the guard and not in Auth can never be carried by any token, so **every call using it answers `403` regardless of who makes it, with nothing in any log saying why.**
 
-Six of them are the data plane — `ReadMetadata`, `GetSecret`, `PutSecret`, `DeleteSecret`, `RotateSecret`, `ListSecrets` — and six are the management plane the console drives: `ManageProject`, `ManageEnvironment`, `ManageFolder`, `ManageRotation`, `ReadAudit`, `Admin`. Registering only the first six leaves the console's project, environment, folder, webhook, and audit screens answering `403` to everyone, which reads as a broken console rather than as a missing permission.
+They fall into four groups:
 
-**These are the same twelve Core registers automatically in core-attached mode**, from its own catalog. An instance that moves between modes therefore demands and receives the same vocabulary — the manual list here and Core's automatic one are one list. See [Run modes](#run-modes).
+- **Data plane** — `ReadMetadata`, `GetSecret`, `PutSecret`, `DeleteSecret`, `RotateSecret`, `ListSecrets`.
+- **Management plane**, the surfaces the console drives — `ManageProject`, `ManageEnvironment`, `ManageFolder`, `ManageRotation`, `ReadAudit`. Registering only the data plane leaves the console's project, environment, folder, webhook, and audit screens answering `403` to everyone, which reads as a broken console rather than as a missing permission.
+- **Dynamic credentials** — `ManageDynamicRole` configures a role (its target, its SQL templates, its TTLs) and `IssueDynamicCredential` obtains one credential from it. Separate because configuring a role decides what *every* credential issued from it can do, while issuing one is the routine workload-facing ask.
+- **Transit and leases** — `Encrypt`, `Decrypt`, `ManageTransitKey`, `ManageLease`. `Encrypt` and `Decrypt` are separate so a write-only workload that stores encrypted fields cannot also read every encrypted column back.
+
+**These are the same eighteen Core registers automatically in core-attached mode**, from its own catalog. An instance that moves between modes therefore demands and receives the same vocabulary — the manual list here and Core's automatic one are one list. See [Run modes](#run-modes).
 
 A running instance reports the same list at `GET /api/v1/setup/status` (with the setup token or `secret:Admin`), derived from the code that enforces it. Check against that rather than against a document if they ever disagree.
 
@@ -212,7 +220,8 @@ Then open the console and sign in. See [Console](#console).
 | Every call answers `503`. | The guard resolved to unavailable — the identity configuration is absent outside development. Check the `authorization:` boot line. |
 | Every call answers `401`. | The token's `iss` or `aud` does not match. Compare the `run mode: standalone` log fields against the token. A trailing slash on the issuer, or the resource API's *name* instead of its *identifier*, are the usual causes. |
 | Every call using one permission answers `403`, regardless of who makes it. | That permission string is not registered in Auth, so no token can carry it. Re-check step 3 against `GET /api/v1/setup/status`. |
-| The console's project, environment, folder, webhook, or audit screens all answer `403`. | The six management permissions were not registered. Re-check step 3 — the list is twelve, not six. |
+| The console's project, environment, folder, webhook, or audit screens all answer `403`. | The management permissions were not registered. Re-check step 3 — the list is eighteen, not six. |
+| The dynamic-credential, transit, or lease screens answer `403` while the rest of the console works. | The six newest permissions were not registered — `ManageDynamicRole`, `IssueDynamicCredential`, `Encrypt`, `Decrypt`, `ManageTransitKey`, `ManageLease`. An instance set up before those features existed has a twelve-permission resource API; add the missing six. |
 | A `403` whose `code` is `actor_kind_not_permitted`. | The caller's **class** is wrong, not its grants. Something is driving an administrative surface with a machine token — a console pointed at a `client_credentials` client, or an m2m credential being used where a person should be. Widening the grant will not help. |
 | A signed-in operator can browse but not reveal. | Working as designed. `secret:GetSecret` is a separate grant from `secret:ReadMetadata`. |
 | A workload can reveal and write, but cannot create a project or read the audit trail. | Working as designed. Those surfaces are user-only. |
